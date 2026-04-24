@@ -4,7 +4,7 @@
     "role": "Assessment Designer",
     "concept": "fractions",
     "scope_label": "Option A: 3.NF.A.1-3 + 4.NF.A.1-2 with prerequisites 2.G.A.3 and 3.G.A.2",
-    "num_problems": 24,
+    "num_problems": 27,
     "mechanic": "Build-a-Fraction (drag unit pieces into a target shape; commit by dragging the built assembly onto a numeral target). Self-correcting via gap/overhang. Numeral assembled from digit chips (no typing, no multiple choice).",
     "replaces": "Prior typed-answer / show-your-work problem bank has been replaced. This bank assumes the drag-and-build input modality decided on 2026-04-23.",
     "coverage_standards": {
@@ -13,11 +13,11 @@
       "3.NF.A.1": 5,
       "3.NF.A.2.a": 2,
       "3.NF.A.2.b": 3,
-      "3.NF.A.3.a": 3,
-      "3.NF.A.3.b": 2,
+      "3.NF.A.3.a": 4,
+      "3.NF.A.3.b": 3,
       "3.NF.A.3.c": 3,
       "3.NF.A.3.d": 3,
-      "4.NF.A.1": 2,
+      "4.NF.A.1": 3,
       "4.NF.A.2": 3
     },
     "coverage_misconceptions": {
@@ -363,6 +363,46 @@
       "real_world_context": { "scenario": "pizza", "framing_text": "Here is a small pizza and a LARGE pizza. Build 1/2 of the small one and 1/4 of the large one. Which piece is actually bigger?" },
       "difficulty": 3,
       "show_your_work_note": "Two different-sized wholes. Targets m06 directly: 1/4 of a big pizza may exceed 1/2 of a small one. Commit by dragging a 'bigger' tag onto the winning circle."
+    },
+
+    {
+      "id": "p025",
+      "ccss_standard_ids": ["3.NF.A.3.a", "3.NF.A.1"],
+      "target_misconception_ids": ["m04_equivalent_fractions_unrecognized"],
+      "problem_type": "build_fraction",
+      "target_shape": "bar",
+      "target_whole_value": 1,
+      "available_denominators": [4, 8],
+      "goal": { "numerator": 1, "denominator": 2 },
+      "real_world_context": { "scenario": null, "framing_text": "Build one-half of this bar. You do not have a 1/2 piece — find another way." },
+      "difficulty": 2,
+      "show_your_work_note": "Goal denom 2 is absent from palette to force equivalence reasoning. Two 1/4 pieces OR four 1/8 pieces both succeed. Which path the learner takes is diagnostic for 3.NF.A.3.a recognition."
+    },
+    {
+      "id": "p026",
+      "ccss_standard_ids": ["3.NF.A.3.b", "3.NF.A.3.a"],
+      "target_misconception_ids": ["m04_equivalent_fractions_unrecognized", "m08_additive_equivalence"],
+      "problem_type": "build_fraction",
+      "target_shape": "bar",
+      "target_whole_value": 1,
+      "available_denominators": [6],
+      "goal": { "numerator": 2, "denominator": 3 },
+      "real_world_context": { "scenario": null, "framing_text": "Build two-thirds of this bar. Only sixths are available — generate an equivalent." },
+      "difficulty": 2,
+      "show_your_work_note": "Correct path: four 1/6 pieces = 2/3. Learner must generate equivalent 4/6 from 2/3. An m08 learner may try 3 sixths (adding 1 to each term); the bar shows the gap."
+    },
+    {
+      "id": "p027",
+      "ccss_standard_ids": ["4.NF.A.1", "3.NF.A.3.b"],
+      "target_misconception_ids": ["m04_equivalent_fractions_unrecognized", "m08_additive_equivalence"],
+      "problem_type": "build_fraction",
+      "target_shape": "bar",
+      "target_whole_value": 1,
+      "available_denominators": [8],
+      "goal": { "numerator": 3, "denominator": 4 },
+      "real_world_context": { "scenario": null, "framing_text": "Build three-fourths of this bar using only eighths." },
+      "difficulty": 2,
+      "show_your_work_note": "Correct: six 1/8 pieces = 3/4. Probes 4.NF.A.1 scaling-based equivalence (num × 2, denom × 2). m08 learner may attempt 4 eighths (adding 1 to each term); bar shows shortfall."
     }
   ]
 }

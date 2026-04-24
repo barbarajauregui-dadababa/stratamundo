@@ -2,7 +2,22 @@ import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import AnalyzeButton from './AnalyzeButton'
 import GeneratePlanButton from './GeneratePlanButton'
-import PlanDisplay, { type PlanContent } from './PlanDisplay'
+import type { PlanContent } from './PlanDisplay'
+import FocusedProbeButton from './FocusedProbeButton'
+import ActivityTile, { type CompletedActivity } from './ActivityTile'
+import resourcesRaw from '@/content/fractions-resources.json'
+
+interface ResourceRow {
+  id: string
+  title: string
+  modality: string
+  source_site?: string
+  url?: string | null
+}
+const resources = resourcesRaw as unknown as { resources: ResourceRow[] }
+function resourceById(id: string): ResourceRow | undefined {
+  return resources.resources.find((r) => r.id === id)
+}
 import coherenceMapRaw from '@/content/coherence-map-fractions.json'
 import misconceptionsRaw from '@/content/fractions-misconceptions.json'
 
@@ -76,16 +91,18 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
 
   // Fetch the active plan for this assessment (if Plan Architect has run).
   let planContent: PlanContent | null = null
+  let planId: string | null = null
   let planGeneratedAt: string | null = null
   if (masteryMap) {
     const { data: planRow } = await supabase
       .from('plans')
-      .select('plan_content, generated_at')
+      .select('id, plan_content, generated_at')
       .eq('assessment_id', id)
       .eq('status', 'active')
       .maybeSingle()
     if (planRow) {
       planContent = planRow.plan_content as PlanContent
+      planId = planRow.id as string
       planGeneratedAt = planRow.generated_at as string
     }
   }
@@ -162,6 +179,9 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
               standardIds={sortedByLayer(byState.misconception)}
               masteryMap={masteryMap}
               plan={planContent}
+              planId={planId}
+              learnerId={assessment.learner_id}
+              showProbeButton
               defaultOpen
             />
             <Bucket
@@ -172,6 +192,9 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
               standardIds={sortedByLayer(byState.working)}
               masteryMap={masteryMap}
               plan={planContent}
+              planId={planId}
+              learnerId={assessment.learner_id}
+              showProbeButton
               defaultOpen
             />
             <Bucket
@@ -182,6 +205,9 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
               standardIds={sortedByLayer(byState.demonstrated)}
               masteryMap={masteryMap}
               plan={planContent}
+              planId={planId}
+              learnerId={assessment.learner_id}
+              showProbeButton={false}
               defaultOpen={false}
             />
           </section>
@@ -197,14 +223,28 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
               <GeneratePlanButton assessmentId={id} />
             </section>
           )}
-          {planContent && (
+          {planContent && planId && (
             <>
               <div className="text-xs text-zinc-500">
                 Plan generated{' '}
-                {planGeneratedAt && new Date(planGeneratedAt).toLocaleString()}.{' '}
-                <GeneratePlanButton assessmentId={id} />
+                {planGeneratedAt && new Date(planGeneratedAt).toLocaleString()}.
               </div>
-              <PlanDisplay plan={planContent} />
+              {planContent.prerequisite_check_recommendations &&
+                planContent.prerequisite_check_recommendations.length > 0 && (
+                  <div className="rounded-md border border-amber-300 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/40 p-4 text-sm leading-relaxed">
+                    <div className="mb-1 text-xs font-medium uppercase tracking-wide text-amber-700 dark:text-amber-300">
+                      Next assessment — consider probing
+                    </div>
+                    <ul className="list-disc ml-5 space-y-1">
+                      {planContent.prerequisite_check_recommendations.map((sid) => (
+                        <li key={sid}>
+                          {standardName(sid)}{' '}
+                          <span className="font-mono text-xs text-amber-700/80">({sid})</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
             </>
           )}
         </>
@@ -306,6 +346,9 @@ function Bucket({
   standardIds,
   masteryMap,
   plan,
+  planId,
+  learnerId,
+  showProbeButton,
   defaultOpen,
 }: {
   title: string
@@ -315,8 +358,12 @@ function Bucket({
   standardIds: string[]
   masteryMap: MasteryMap
   plan: PlanContent | null
+  planId: string | null
+  learnerId: string
+  showProbeButton: boolean
   defaultOpen: boolean
 }) {
+  const completed: CompletedActivity[] = plan?._completed_activities ?? []
   if (standardIds.length === 0) return null
   return (
     <details open={defaultOpen} className={`rounded-md border ${containerClass}`}>
@@ -340,6 +387,13 @@ function Bucket({
                   <span className="font-medium">{standardName(sid)}</span>
                   <span className="text-xs font-mono text-zinc-500">{sid}</span>
                 </div>
+                {showProbeButton && (
+                  <FocusedProbeButton
+                    learnerId={learnerId}
+                    standardId={sid}
+                    standardName={standardName(sid)}
+                  />
+                )}
               </div>
               {report.reasoning && (
                 <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
@@ -362,26 +416,41 @@ function Bucket({
                   </div>
                 </details>
               )}
-              {gap && (
+              {gap && planId && (
                 <div className="mt-3 pt-3 border-t border-zinc-200 dark:border-zinc-800">
-                  <div className="text-xs font-medium uppercase tracking-wide text-zinc-500 mb-1">
+                  <div className="text-xs font-medium uppercase tracking-wide text-zinc-500 mb-2">
                     Prescribed activities
+                    {gap.diagnosis === 'prerequisite-gap' && (
+                      <span className="ml-2 text-amber-700 dark:text-amber-400">
+                        · Prerequisite gap
+                      </span>
+                    )}
                   </div>
-                  <p className="text-sm text-zinc-700 dark:text-zinc-300 mb-2">
-                    {gap.rationale_for_this_gap}
-                  </p>
-                  <ol className="text-sm text-zinc-700 dark:text-zinc-300 list-decimal ml-5 space-y-1">
+                  {gap.rationale_for_this_gap && (
+                    <p className="text-sm text-zinc-700 dark:text-zinc-300 mb-3">
+                      {gap.rationale_for_this_gap}
+                    </p>
+                  )}
+                  <ol className="flex flex-col gap-2">
                     {gap.activities
                       .slice()
                       .sort((a, b) => a.order - b.order)
-                      .map((act) => (
-                        <li key={act.resource_id}>
-                          <span className="font-medium">
-                            {act.resource_id}
-                          </span>
-                          : {act.rationale}
-                        </li>
-                      ))}
+                      .map((act) => {
+                        const r = resourceById(act.resource_id)
+                        const done = completed.find((c) => c.resource_id === act.resource_id)
+                        return (
+                          <ActivityTile
+                            key={act.resource_id}
+                            planId={planId}
+                            order={act.order}
+                            resourceId={act.resource_id}
+                            rationale={act.rationale}
+                            resource={r}
+                            completedAt={done?.done_at ?? null}
+                            allCompleted={completed}
+                          />
+                        )
+                      })}
                   </ol>
                 </div>
               )}

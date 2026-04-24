@@ -13,7 +13,10 @@
  * We only need one of each for v1, so run once and save the IDs.
  */
 
-import 'dotenv/config'
+import { config as loadEnv } from 'dotenv'
+// Load .env.local explicitly (dotenv's default is .env, but Next.js
+// convention for local secrets is .env.local).
+loadEnv({ path: '.env.local' })
 import Anthropic from '@anthropic-ai/sdk'
 import { PLAN_ARCHITECT_SYSTEM_PROMPT } from '../lib/plan-architect-prompt'
 

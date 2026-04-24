@@ -43,6 +43,24 @@ export function getProblemById(id: string): Problem | undefined {
 }
 
 /**
+ * Select problems for a focused probe on a single CCSS standard.
+ * Returns every UI-supported problem tagged to that standard (primary OR secondary),
+ * sorted by difficulty. Typical probe is 3–5 problems; caller can cap.
+ */
+export function selectFocusedProbeProblems(
+  standardId: string,
+  options?: { supportedTypes?: ProblemType[]; maxCount?: number },
+): Problem[] {
+  const supportedTypes = options?.supportedTypes ?? ['build_fraction']
+  const maxCount = options?.maxCount ?? 6
+  const pool = problemBank.problems
+    .filter((p) => supportedTypes.includes(p.problem_type))
+    .filter((p) => p.ccss_standard_ids.includes(standardId))
+    .sort((a, b) => a.difficulty - b.difficulty)
+  return pool.slice(0, maxCount)
+}
+
+/**
  * Select a balanced subset of problems for a full assessment.
  *
  * Strategy: for each primary CCSS standard, round-robin across the 6

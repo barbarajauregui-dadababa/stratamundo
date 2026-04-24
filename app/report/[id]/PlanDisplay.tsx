@@ -1,6 +1,7 @@
 import coherenceMapRaw from '@/content/coherence-map-fractions.json'
 import misconceptionsRaw from '@/content/fractions-misconceptions.json'
 import resourcesRaw from '@/content/fractions-resources.json'
+import ActivityTile, { type CompletedActivity } from './ActivityTile'
 
 interface Activity {
   resource_id: string
@@ -22,6 +23,7 @@ export interface PlanContent {
   priority_gaps: PriorityGap[]
   overall_notes: string
   prerequisite_check_recommendations?: string[]
+  _completed_activities?: CompletedActivity[]
 }
 
 interface CoherenceNode {
@@ -55,7 +57,8 @@ function resourceById(id: string): Resource | undefined {
   return resources.resources.find((r) => r.id === id)
 }
 
-export default function PlanDisplay({ plan }: { plan: PlanContent }) {
+export default function PlanDisplay({ planId, plan }: { planId: string; plan: PlanContent }) {
+  const completed = plan._completed_activities ?? []
   return (
     <section className="flex flex-col gap-6">
       {plan.overall_notes && (
@@ -74,7 +77,7 @@ export default function PlanDisplay({ plan }: { plan: PlanContent }) {
       )}
 
       {plan.priority_gaps.map((gap) => (
-        <GapCard key={gap.standard_id} gap={gap} />
+        <GapCard key={gap.standard_id} planId={planId} gap={gap} completed={completed} />
       ))}
 
       {plan.prerequisite_check_recommendations && plan.prerequisite_check_recommendations.length > 0 && (
@@ -96,7 +99,15 @@ export default function PlanDisplay({ plan }: { plan: PlanContent }) {
   )
 }
 
-function GapCard({ gap }: { gap: PriorityGap }) {
+function GapCard({
+  planId,
+  gap,
+  completed,
+}: {
+  planId: string
+  gap: PriorityGap
+  completed: CompletedActivity[]
+}) {
   const stateClass =
     gap.current_state === 'misconception'
       ? 'border-red-300 dark:border-red-900 bg-red-50/60 dark:bg-red-950/20'
@@ -140,41 +151,18 @@ function GapCard({ gap }: { gap: PriorityGap }) {
           .sort((a, b) => a.order - b.order)
           .map((act) => {
             const r = resourceById(act.resource_id)
+            const doneEntry = completed.find((c) => c.resource_id === act.resource_id)
             return (
-              <li
+              <ActivityTile
                 key={act.resource_id}
-                className="rounded-md bg-white dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 p-3"
-              >
-                <div className="flex items-baseline justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-zinc-900 text-xs font-medium text-white dark:bg-zinc-100 dark:text-zinc-900">
-                      {act.order}
-                    </span>
-                    <span className="font-medium text-sm">
-                      {r?.title ?? act.resource_id}
-                    </span>
-                    {r?.modality && (
-                      <span className="text-xs text-zinc-500">· {r.modality}</span>
-                    )}
-                  </div>
-                  {r?.url && (
-                    <a
-                      href={r.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-xs text-blue-700 dark:text-blue-300 hover:underline"
-                    >
-                      Open ↗
-                    </a>
-                  )}
-                </div>
-                <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed">
-                  {act.rationale}
-                </p>
-                {r?.source_site && !r?.url && (
-                  <p className="mt-1 text-xs text-zinc-500">Source: {r.source_site}</p>
-                )}
-              </li>
+                planId={planId}
+                order={act.order}
+                resourceId={act.resource_id}
+                rationale={act.rationale}
+                resource={r}
+                completedAt={doneEntry?.done_at ?? null}
+                allCompleted={completed}
+              />
             )
           })}
       </ol>
