@@ -22,6 +22,7 @@ export interface PublicProblem {
     | 'compare_fractions'
   target_shape: 'bar' | 'circle' | 'number_line' | 'set_of_objects'
   available_denominators: PieceDenominator[]
+  target_whole_value?: number
   goal: unknown
   framing_text?: string
 }
@@ -184,6 +185,7 @@ function toBuildFractionProblem(p: PublicProblem): BuildFractionProblem {
     target_shape: 'bar',
     goal: { numerator: goal.numerator, denominator: goal.denominator },
     available_denominators: p.available_denominators,
+    target_whole_value: p.target_whole_value,
     framing_text: p.framing_text,
   }
 }

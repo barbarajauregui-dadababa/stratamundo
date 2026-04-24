@@ -1,9 +1,13 @@
 import type { Fraction } from '@/lib/fraction-math'
 
-export type PieceDenominator = 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12
+/**
+ * Piece denominators the UI can render. 1 = a whole-unit piece (used for
+ * problems where the goal is a whole number as a fraction, e.g. 3/1).
+ */
+export type PieceDenominator = 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12
 
 export interface PlacedPiece {
-  /** Unique per placement (timestamp + random). Used as a React key and for telemetry. */
+  /** Unique per placement (random). Used as a React key and for telemetry. */
   id: string
   denominator: PieceDenominator
 }
@@ -20,5 +24,8 @@ export interface BuildFractionProblem {
   target_shape: 'bar'
   goal: Fraction
   available_denominators: PieceDenominator[]
+  /** How many whole units the target represents. Default 1. For improper
+   *  fractions (5/4) or whole-number fractions (3/1) this is 2 or 3 etc. */
+  target_whole_value?: number
   framing_text?: string
 }

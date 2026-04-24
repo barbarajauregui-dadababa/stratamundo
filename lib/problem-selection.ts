@@ -17,6 +17,8 @@ export interface Problem {
   target_misconception_ids: string[]
   problem_type: ProblemType
   target_shape: TargetShape
+  /** Number of whole units the target represents. 1 for standard < 1 fractions,
+   *  > 1 for improper / whole-number-as-fraction problems (e.g. 5/4 → 2). */
   target_whole_value: number
   available_denominators: PieceDenominator[]
   /** Shape depends on problem_type — see the JSON for details. */

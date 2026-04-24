@@ -28,6 +28,7 @@ export default async function AssessPage(props: PageProps<'/assess/[id]'>) {
       problem_type: p.problem_type,
       target_shape: p.target_shape,
       available_denominators: p.available_denominators,
+      target_whole_value: p.target_whole_value,
       goal: p.goal,
       framing_text: p.real_world_context?.framing_text,
     }))

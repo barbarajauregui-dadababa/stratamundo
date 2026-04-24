@@ -78,24 +78,24 @@
       "problem_type": "build_fraction",
       "target_shape": "bar",
       "target_whole_value": 1,
-      "available_denominators": [2, 3, 4, 6, 8],
+      "available_denominators": [2, 3, 6, 8],
       "goal": { "numerator": 1, "denominator": 4 },
-      "real_world_context": { "scenario": "brownies", "framing_text": "Build one-quarter of this brownie pan." },
+      "real_world_context": { "scenario": "brownies", "framing_text": "Build one-fourth of this brownie pan. You do not have a 1/4 piece — find another way." },
       "difficulty": 1,
-      "show_your_work_note": "Correct: one 1/4 piece. Using a 1/2 or 1/8 piece produces visible gap/overhang. Numeral commit uses digits 1 and 4."
+      "show_your_work_note": "Goal denom 4 is intentionally absent from the palette to force equivalence reasoning. Two 1/8 pieces = 1/4. Commit = 1 over 4."
     },
     {
       "id": "p004",
       "ccss_standard_ids": ["3.NF.A.1"],
       "target_misconception_ids": ["m05_unequal_partitioning", "m07_notational_confusion"],
       "problem_type": "build_fraction",
-      "target_shape": "circle",
+      "target_shape": "bar",
       "target_whole_value": 1,
       "available_denominators": [2, 3, 4, 6, 8],
       "goal": { "numerator": 3, "denominator": 4 },
-      "real_world_context": { "scenario": "pizza", "framing_text": "Three-quarters of this pizza got eaten. Build what was eaten." },
+      "real_world_context": { "scenario": "brownies", "framing_text": "Build three-fourths of this brownie pan." },
       "difficulty": 1,
-      "show_your_work_note": "Three 1/4 wedges fill 3/4 of the circle. Commit = 3 over 4."
+      "show_your_work_note": "Three 1/4 pieces. Commit = 3 over 4. (Previous framing used a pizza context; swapped to brownie pan since pizza would need a circle target.)"
     },
     {
       "id": "p005",

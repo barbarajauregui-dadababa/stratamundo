@@ -9,10 +9,14 @@ import type {
   TelemetryEvent,
 } from './types'
 
-const BAR_WIDTH_PX = 480
+/** Pixel width representing one whole unit (1/1 of a bar). Pieces are sized
+ *  as WIDTH_PER_WHOLE / denominator. Multi-unit targets (goal > 1) render
+ *  numWholes * WIDTH_PER_WHOLE total. */
+const WIDTH_PER_WHOLE_PX = 320
 const BAR_HEIGHT_PX = 64
 
 const PIECE_COLORS: Record<PieceDenominator, string> = {
+  1: 'bg-lime-500',
   2: 'bg-sky-400',
   3: 'bg-purple-400',
   4: 'bg-emerald-400',
@@ -24,6 +28,7 @@ const PIECE_COLORS: Record<PieceDenominator, string> = {
 }
 
 const PIECE_BORDER: Record<PieceDenominator, string> = {
+  1: 'border-lime-700',
   2: 'border-sky-600',
   3: 'border-purple-600',
   4: 'border-emerald-600',
@@ -35,7 +40,11 @@ const PIECE_BORDER: Record<PieceDenominator, string> = {
 }
 
 function pieceWidthPx(denominator: PieceDenominator): number {
-  return BAR_WIDTH_PX / denominator
+  return WIDTH_PER_WHOLE_PX / denominator
+}
+
+function pieceLabel(denominator: PieceDenominator): string {
+  return denominator === 1 ? '1' : `1/${denominator}`
 }
 
 function makePieceId(): string {
@@ -67,11 +76,10 @@ interface Props {
 
 type DragState =
   | { origin: 'palette'; denominator: PieceDenominator; pointerId: number }
-  | { origin: 'bar'; denominator: PieceDenominator; pieceId: string; pointerId: number }
 
 export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetryEvent }: Props) {
   const [startedAt] = useState<number>(() => Date.now())
-  const [barEl, setBarEl] = useState<HTMLDivElement | null>(null)
+  const [dropZoneEl, setDropZoneEl] = useState<HTMLDivElement | null>(null)
 
   const [placed, setPlaced] = useState<PlacedPiece[]>([])
   const [drag, setDrag] = useState<DragState | null>(null)
@@ -79,6 +87,9 @@ export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetr
   const [commitState, setCommitState] = useState<'idle' | 'bouncing' | 'success'>('idle')
   const [commitBounceKey, setCommitBounceKey] = useState(0)
   const [telemetryLog, setTelemetryLog] = useState<TelemetryEvent[]>([])
+
+  const numWholes = Math.max(1, problem.target_whole_value ?? 1)
+  const totalTargetWidthPx = WIDTH_PER_WHOLE_PX * numWholes
 
   const logEvent = useCallback(
     (event: TelemetryEvent) => {
@@ -88,16 +99,14 @@ export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetr
     [onTelemetryEvent]
   )
 
-  const isPointOverBar = useCallback(
+  const isPointOverDropZone = useCallback(
     (x: number, y: number): boolean => {
-      if (!barEl) return false
-      const r = barEl.getBoundingClientRect()
+      if (!dropZoneEl) return false
+      const r = dropZoneEl.getBoundingClientRect()
       return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom
     },
-    [barEl]
+    [dropZoneEl]
   )
-
-  // --- Drag from palette ---
 
   const handlePalettePointerDown = useCallback(
     (e: React.PointerEvent, denominator: PieceDenominator) => {
@@ -111,7 +120,7 @@ export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetr
 
   const handlePalettePointerMove = useCallback(
     (e: React.PointerEvent) => {
-      if (!drag || drag.origin !== 'palette') return
+      if (!drag) return
       setDragPos({ x: e.clientX, y: e.clientY })
     },
     [drag]
@@ -119,10 +128,10 @@ export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetr
 
   const handlePalettePointerUp = useCallback(
     (e: React.PointerEvent) => {
-      if (!drag || drag.origin !== 'palette') return
-      const overBar = isPointOverBar(e.clientX, e.clientY)
+      if (!drag) return
+      const overDrop = isPointOverDropZone(e.clientX, e.clientY)
       ;(e.currentTarget as Element).releasePointerCapture(e.pointerId)
-      if (overBar) {
+      if (overDrop) {
         const newPiece: PlacedPiece = { id: makePieceId(), denominator: drag.denominator }
         const next = [...placed, newPiece]
         setPlaced(next)
@@ -136,10 +145,9 @@ export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetr
       setDrag(null)
       setDragPos(null)
     },
-    [drag, isPointOverBar, placed, logEvent, startedAt]
+    [drag, isPointOverDropZone, placed, logEvent, startedAt]
   )
 
-  // --- Placed piece: click to remove ---
   const removePlaced = useCallback(
     (pieceId: string) => {
       if (commitState === 'success') return
@@ -157,7 +165,6 @@ export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetr
     [commitState, placed, logEvent, startedAt]
   )
 
-  // --- Commit ---
   const handleCommit = useCallback(() => {
     if (commitState === 'success' || placed.length === 0) return
     const result = checkMatch(
@@ -190,10 +197,14 @@ export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetr
 
   const placedWithGeom = computePlacedGeometry(placed)
   const totalFilledPx = placedWithGeom.reduce((acc, p) => acc + p.widthPx, 0)
-  const overhangPx = Math.max(0, totalFilledPx - BAR_WIDTH_PX)
-  const gapPx = Math.max(0, BAR_WIDTH_PX - totalFilledPx)
+  const overhangPx = Math.max(0, totalFilledPx - totalTargetWidthPx)
+  const gapPx = Math.max(0, totalTargetWidthPx - totalFilledPx)
 
   const currentSum = sumPieces(placed.map((p) => p.denominator))
+
+  // Unit divider positions (vertical lines at each whole-unit boundary, when numWholes > 1)
+  const dividerXs: number[] = []
+  for (let i = 1; i < numWholes; i++) dividerXs.push(i * WIDTH_PER_WHOLE_PX)
 
   return (
     <div className="flex flex-col items-center gap-6 select-none">
@@ -209,38 +220,60 @@ export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetr
         key={commitBounceKey}
         className={commitState === 'bouncing' ? 'animate-shake' : ''}
       >
-        <div className="relative" style={{ width: BAR_WIDTH_PX + overhangPx, height: BAR_HEIGHT_PX }}>
-          {/* Bar outline */}
+        {/* Drop zone — a padded rectangle around the bar(s) so pieces can land
+            in the overhang area, not just inside the whole(s). */}
+        <div
+          ref={setDropZoneEl}
+          className="relative px-4 py-3 rounded-lg"
+          style={{ width: totalTargetWidthPx + overhangPx + 32 }}
+        >
+          {/* Bar(s) outline — one big rounded rectangle numWholes wholes wide,
+              with vertical dividers at each whole boundary. */}
           <div
-            ref={setBarEl}
-            className="absolute left-0 top-0 rounded-md border-2 border-zinc-400 dark:border-zinc-500 bg-zinc-50 dark:bg-zinc-900"
-            style={{ width: BAR_WIDTH_PX, height: BAR_HEIGHT_PX }}
-          />
-          {/* Placed pieces (inside or overhanging) */}
+            className="relative rounded-md border-2 border-zinc-400 dark:border-zinc-500 bg-zinc-50 dark:bg-zinc-900"
+            style={{ width: totalTargetWidthPx, height: BAR_HEIGHT_PX }}
+          >
+            {dividerXs.map((x) => (
+              <div
+                key={x}
+                className="absolute top-0 h-full border-l-2 border-dashed border-zinc-300 dark:border-zinc-700"
+                style={{ left: x }}
+              />
+            ))}
+          </div>
+
+          {/* Placed pieces positioned over (and potentially past) the bar area.
+              Offset accounts for the drop zone's px-4 padding. */}
           {placedWithGeom.map((p) => (
             <button
               key={p.id}
               type="button"
               onClick={() => removePlaced(p.id)}
-              aria-label={`Remove 1/${p.denominator} piece`}
-              className={`absolute top-0 h-full rounded-sm border-2 ${PIECE_COLORS[p.denominator]} ${PIECE_BORDER[p.denominator]} flex items-center justify-center text-xs font-bold text-white drop-shadow hover:brightness-110 transition`}
-              style={{ left: p.leftPx, width: p.widthPx }}
+              aria-label={`Remove ${pieceLabel(p.denominator)} piece — click to remove`}
+              title="Click to remove"
+              className={`absolute rounded-sm border-2 ${PIECE_COLORS[p.denominator]} ${PIECE_BORDER[p.denominator]} flex items-center justify-center text-xs font-bold text-white drop-shadow hover:brightness-110 hover:ring-2 hover:ring-rose-400 transition cursor-pointer`}
+              style={{
+                left: p.leftPx + 16, // +16 to account for drop zone's px-4 padding
+                top: 12, // drop zone's py-3 + a bit
+                width: p.widthPx,
+                height: BAR_HEIGHT_PX,
+              }}
               disabled={commitState === 'success'}
             >
-              1/{p.denominator}
+              {pieceLabel(p.denominator)}
             </button>
           ))}
         </div>
-        {overhangPx > 0 && (
-          <p className="mt-2 text-xs text-rose-600 dark:text-rose-400 text-center">
-            Your pieces stick out past the whole.
-          </p>
-        )}
-        {gapPx > 0 && overhangPx === 0 && placed.length > 0 && (
-          <p className="mt-2 text-xs text-zinc-500 text-center">
-            A gap remains on the right.
-          </p>
-        )}
+        <div className="h-5 mt-2 flex items-center justify-center">
+          {overhangPx > 0 && (
+            <p className="text-xs text-rose-600 dark:text-rose-400">
+              Your pieces go past {numWholes === 1 ? 'the whole' : `${numWholes} wholes`}.
+            </p>
+          )}
+          {overhangPx === 0 && gapPx > 0 && placed.length > 0 && (
+            <p className="text-xs text-zinc-500">A gap remains.</p>
+          )}
+        </div>
       </div>
 
       <button
@@ -265,28 +298,31 @@ export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetr
               disabled={commitState === 'success'}
               className={`rounded-sm border-2 ${PIECE_COLORS[d]} ${PIECE_BORDER[d]} h-10 flex items-center justify-center text-xs font-bold text-white drop-shadow cursor-grab active:cursor-grabbing touch-none disabled:opacity-40`}
               style={{ width: pieceWidthPx(d) }}
-              aria-label={`Drag a 1/${d} piece`}
+              aria-label={`Drag a ${pieceLabel(d)} piece`}
             >
-              1/{d}
+              {pieceLabel(d)}
             </button>
           ))}
         </div>
-        <p className="text-xs text-zinc-500 mt-1">Drag a piece into the bar. Click a placed piece to remove it.</p>
+        <p className="text-xs text-zinc-500 mt-1">
+          Drag a piece into the bar. Click a placed piece to remove it.
+        </p>
       </div>
 
-      {/* Dev-only debug strip — shows current sum + events. Remove on integration. */}
       <details className="w-full text-xs text-zinc-500 mt-2">
         <summary className="cursor-pointer">Debug (current state)</summary>
         <div className="mt-2 space-y-1">
           <div>
             Sum: {currentSum.numerator}/{currentSum.denominator}
           </div>
-          <div>Placed: [{placed.map((p) => `1/${p.denominator}`).join(', ')}]</div>
+          <div>
+            Placed: [{placed.map((p) => pieceLabel(p.denominator)).join(', ')}]
+          </div>
+          <div>Target wholes: {numWholes}</div>
           <div>Events: {telemetryLog.length}</div>
         </div>
       </details>
 
-      {/* Dragging floater (follows cursor) */}
       {drag && dragPos && (
         <div
           className={`fixed pointer-events-none z-50 rounded-sm border-2 ${PIECE_COLORS[drag.denominator]} ${PIECE_BORDER[drag.denominator]} h-10 flex items-center justify-center text-xs font-bold text-white shadow-lg`}
@@ -296,7 +332,7 @@ export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetr
             top: dragPos.y - 20,
           }}
         >
-          1/{drag.denominator}
+          {pieceLabel(drag.denominator)}
         </div>
       )}
     </div>
