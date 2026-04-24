@@ -1,39 +1,35 @@
 /**
- * Static visual mockups of three possible directions for the Build-a-Fraction
- * mechanic, for Barbara to compare before deciding which one we build out.
+ * Static visual mockups of the remaining Build-a-Fraction UI directions,
+ * after Barbara's round-2 feedback:
+ * - Drop Option C (goal numeral must always be shown)
+ * - Remove shading from Option B's reference (no pre-shading allowed)
+ * - Target divisions match the goal's denominator only (not a chaotic
+ *   overlay of halves/thirds/fourths)
  *
- * These are NON-INTERACTIVE — just SVG visuals showing what each variant
- * would look like on a sample problem ("Build 3/4 of a bar"). Apply Barbara's
- * constraints: same-color pieces (size is the information), dotted-line
- * divisions on target (not pre-shaded), and an "add another whole" button
- * for multi-unit extension.
+ * Non-interactive — pure visual comparison. Pick one and I'll build it.
  */
 
 const BAR_WIDTH = 320
 const BAR_HEIGHT = 56
 const BORDER_COLOR = '#52525b' // zinc-600
-const PIECE_FILL = '#f4f4f5' // zinc-100 — same color for all pieces, size is the info
-const PIECE_STROKE = '#52525b' // zinc-600
+const PIECE_FILL = '#f4f4f5' // zinc-100 — same color for all pieces; size is the information
+const PIECE_STROKE = '#52525b'
 const DOTTED_COLOR = '#a1a1aa' // zinc-400
-
-// Division tick positions on a bar target (common denominators shown as subtle dotted verticals)
-const DEFAULT_DIVISIONS = [2, 3, 4] // halves, thirds, fourths as hint ticks
+const OUTLINE_COLOR = '#b45309' // amber-700 for the dashed "region" outline — no fill, outline only
 
 function BarTarget({
   widthPx,
   heightPx,
-  dividers,
+  denominatorDivisions,
 }: {
   widthPx: number
   heightPx: number
-  /** Denominators to show as dotted division ticks on the empty target. */
-  dividers: number[]
+  /** Number of equal parts to mark on the target with dotted lines (= goal's denominator). */
+  denominatorDivisions: number
 }) {
-  const tickLines: { x: number; label: string }[] = []
-  for (const d of dividers) {
-    for (let i = 1; i < d; i++) {
-      tickLines.push({ x: (i / d) * widthPx, label: `1/${d}` })
-    }
+  const lines: number[] = []
+  for (let i = 1; i < denominatorDivisions; i++) {
+    lines.push((i / denominatorDivisions) * widthPx)
   }
   return (
     <svg width={widthPx} height={heightPx} className="rounded">
@@ -47,11 +43,11 @@ function BarTarget({
         stroke={BORDER_COLOR}
         strokeWidth="2"
       />
-      {tickLines.map((t, i) => (
+      {lines.map((x, i) => (
         <line
           key={i}
-          x1={t.x}
-          x2={t.x}
+          x1={x}
+          x2={x}
           y1={4}
           y2={heightPx - 4}
           stroke={DOTTED_COLOR}
@@ -63,7 +59,7 @@ function BarTarget({
   )
 }
 
-/** A single same-color piece of a given proportion (fraction of a whole). */
+/** A single same-color piece whose WIDTH is proportional to its fraction value. */
 function PieceBar({
   proportion,
   widthPerWhole,
@@ -90,7 +86,6 @@ function PieceBar({
   )
 }
 
-/** The palette: same-color pieces differentiated only by size. */
 function Palette({
   denominators,
   widthPerWhole,
@@ -123,8 +118,9 @@ function GoalNumeral({
   )
 }
 
-/** Option A: unlabeled same-color pieces + numeral goal + dotted-line target.
- *  Closest to what we have today, minus labels and with same-color pieces. */
+/** Option A: unlabeled same-color pieces + numeral goal + target with
+ *  dotted divisions matching the goal's denominator (so for 3/4: 3 dotted
+ *  lines making 4 equal parts). No shading anywhere. */
 function OptionA() {
   return (
     <div className="flex flex-col gap-4 items-center text-sm">
@@ -133,10 +129,11 @@ function OptionA() {
         <GoalNumeral numerator={3} denominator={4} />
       </div>
 
-      <BarTarget widthPx={BAR_WIDTH} heightPx={BAR_HEIGHT} dividers={DEFAULT_DIVISIONS} />
+      <BarTarget widthPx={BAR_WIDTH} heightPx={BAR_HEIGHT} denominatorDivisions={4} />
 
-      <div className="text-xs text-zinc-500 italic">
-        Target has subtle dotted tick marks at halves / thirds / fourths as hints, but no shading.
+      <div className="text-xs text-zinc-500 italic max-w-md text-center">
+        Target bar is divided into 4 equal dotted parts (matching the goal&apos;s denominator).
+        No shading, no pre-fill. Pieces are all the same color — size is the information.
       </div>
 
       <div className="mt-2 text-xs uppercase tracking-wide text-zinc-500">Pieces</div>
@@ -145,13 +142,10 @@ function OptionA() {
   )
 }
 
-/** Option B: numeral goal + small visual reference shape alongside it. Visual
- *  reference is a small outlined bar divided at the goal's denominator in
- *  dotted lines; the goal fraction's portion is subtly highlighted (still no
- *  heavy shading — just a light tint so the learner sees "this much of this
- *  many parts" without relying on numerals alone). */
+/** Option B: Option A PLUS a small visual reference next to the numeral,
+ *  showing the whole divided into 4 dotted parts with the 3/4 region
+ *  marked by a dashed outline (no fill, no tint — just the boundary). */
 function OptionB() {
-  // Visual reference showing 3/4: bar divided into 4 dotted parts; 3 of them lightly tinted
   const refWidth = 140
   const refHeight = 36
   const numerator = 3
@@ -163,121 +157,51 @@ function OptionB() {
         <span className="text-xs uppercase tracking-wide text-zinc-500">Goal</span>
         <GoalNumeral numerator={numerator} denominator={denominator} />
         <span className="text-zinc-400">=</span>
-        <svg width={refWidth} height={refHeight}>
+        <svg width={refWidth + 4} height={refHeight + 4}>
           <rect
             x="1"
             y="1"
-            width={refWidth - 2}
-            height={refHeight - 2}
+            width={refWidth}
+            height={refHeight}
             rx="3"
             fill="white"
             stroke={BORDER_COLOR}
             strokeWidth="2"
           />
-          {/* Light-tint the 3/4 portion */}
-          <rect
-            x="1"
-            y="1"
-            width={numerator * segWidth - 2}
-            height={refHeight - 2}
-            rx="3"
-            fill="#fef3c7"
-            opacity="0.7"
-          />
-          {/* Dotted division lines */}
+          {/* Dotted division lines at each 1/4 boundary */}
           {Array.from({ length: denominator - 1 }).map((_, i) => (
             <line
               key={i}
               x1={(i + 1) * segWidth}
               x2={(i + 1) * segWidth}
               y1={3}
-              y2={refHeight - 3}
+              y2={refHeight - 1}
               stroke={DOTTED_COLOR}
               strokeDasharray="3 3"
             />
           ))}
-        </svg>
-      </div>
-
-      <BarTarget widthPx={BAR_WIDTH} heightPx={BAR_HEIGHT} dividers={DEFAULT_DIVISIONS} />
-
-      <div className="text-xs text-zinc-500 italic max-w-md text-center">
-        Goal shows the numeral <em>and</em> a small reference shape: the whole is divided into
-        4 dotted parts with 3 lightly tinted, so the learner sees the fraction visually and
-        symbolically. Build area is clean with only subtle hint ticks.
-      </div>
-
-      <div className="mt-2 text-xs uppercase tracking-wide text-zinc-500">Pieces</div>
-      <Palette denominators={[2, 3, 4, 6, 8]} widthPerWhole={BAR_WIDTH} />
-    </div>
-  )
-}
-
-/** Option C: visual-only goal (no numeral). A target shape is shown with
- *  dotted division lines AND a visual outline of the portion to fill — but
- *  the portion to fill is indicated by a dashed boundary, not by pre-shading.
- *  The learner has to build pieces that together fit inside the dashed
- *  boundary. Commit = filled region matches the dashed boundary area. */
-function OptionC() {
-  // Goal: the target itself. Divided into fourths (dotted), with a dashed
-  // red outline around the 3/4 region that the learner should fill.
-  const goalWidth = 200
-  const goalHeight = 48
-  const denom = 4
-  const num = 3
-  const segW = goalWidth / denom
-  return (
-    <div className="flex flex-col gap-4 items-center text-sm">
-      <div className="flex flex-col items-center gap-1">
-        <span className="text-xs uppercase tracking-wide text-zinc-500">Goal</span>
-        <svg width={goalWidth + 4} height={goalHeight + 4}>
-          <rect
-            x="1"
-            y="1"
-            width={goalWidth}
-            height={goalHeight}
-            rx="4"
-            fill="white"
-            stroke={BORDER_COLOR}
-            strokeWidth="2"
-          />
-          {/* All dotted division lines */}
-          {Array.from({ length: denom - 1 }).map((_, i) => (
-            <line
-              key={i}
-              x1={(i + 1) * segW + 1}
-              x2={(i + 1) * segW + 1}
-              y1={4}
-              y2={goalHeight - 2}
-              stroke={DOTTED_COLOR}
-              strokeDasharray="3 3"
-            />
-          ))}
-          {/* Dashed RED outline showing the region to fill (3/4) */}
+          {/* Dashed outline around the 3/4 region — no fill. */}
           <rect
             x="2"
             y="2"
-            width={num * segW - 2}
-            height={goalHeight - 2}
-            rx="3"
+            width={numerator * segWidth - 2}
+            height={refHeight - 2}
+            rx="2"
             fill="none"
-            stroke="#dc2626"
+            stroke={OUTLINE_COLOR}
             strokeWidth="2"
-            strokeDasharray="6 3"
+            strokeDasharray="5 3"
           />
         </svg>
-        <span className="text-xs text-zinc-500 italic mt-1">
-          No numeral. &ldquo;Fill the dashed area with pieces.&rdquo;
-        </span>
       </div>
+
+      <BarTarget widthPx={BAR_WIDTH} heightPx={BAR_HEIGHT} denominatorDivisions={4} />
 
       <div className="text-xs text-zinc-500 italic max-w-md text-center">
-        Goal is purely visual: the learner sees the whole divided into 4 parts with 3 of them
-        outlined as &ldquo;the area to fill.&rdquo; No &ldquo;3/4&rdquo; numeral anywhere. Pure CPA — the learner
-        builds to a spatial goal. Commit = filled region visually matches the dashed outline.
+        Goal shows the numeral AND a small reference shape: the whole divided into 4 dotted
+        parts with a dashed amber outline around the 3/4 region. No shading, just the
+        boundary. Build area below matches the same denominator divisions.
       </div>
-
-      <BarTarget widthPx={BAR_WIDTH} heightPx={BAR_HEIGHT} dividers={[denom]} />
 
       <div className="mt-2 text-xs uppercase tracking-wide text-zinc-500">Pieces</div>
       <Palette denominators={[2, 3, 4, 6, 8]} widthPerWhole={BAR_WIDTH} />
@@ -285,13 +209,11 @@ function OptionC() {
   )
 }
 
-/** Illustration of "add another whole" affordance — an explicit + button
- *  that appends another empty bar to the right, so multi-unit targets
- *  grow as the learner needs them rather than being pre-rendered. */
+/** Illustration of "add another whole" affordance — orthogonal to A/B. */
 function AddWholeIllustration() {
   return (
     <div className="flex items-center gap-3">
-      <BarTarget widthPx={200} heightPx={40} dividers={[2, 3, 4]} />
+      <BarTarget widthPx={200} heightPx={40} denominatorDivisions={4} />
       <button
         type="button"
         aria-label="Add another whole"
@@ -302,7 +224,7 @@ function AddWholeIllustration() {
       </button>
       <span className="text-xs text-zinc-500 italic max-w-xs">
         &ldquo;+&rdquo; button adds another whole to the right when the learner needs more room.
-        No pre-rendering of 2 or 3 wholes.
+        Start with one whole; grow as needed. No pre-rendering.
       </span>
     </div>
   )
@@ -312,11 +234,11 @@ export default function MechanicOptionsPage() {
   return (
     <main className="flex flex-1 w-full max-w-5xl mx-auto flex-col gap-12 py-10 px-6">
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight">Mechanic options — visual comparison</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Mechanic options — round 2</h1>
         <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-2 max-w-2xl">
-          Three directions for the Build-a-Fraction UI. All three use same-color pieces (size is
-          the information, not color) and dotted-line hints on the target instead of pre-shading
-          — per your Montessori-aligned feedback. Pick one and I&apos;ll build it out.
+          Fixes from your last round: goal numeral kept in both options, no pre-shading, and
+          dotted target divisions now match the goal&apos;s denominator only (no more overlapping
+          tick chaos). Pick one.
         </p>
       </header>
 
@@ -330,44 +252,26 @@ export default function MechanicOptionsPage() {
           <OptionA />
         </div>
         <p className="text-xs text-zinc-600 max-w-2xl">
-          Simplest change. Drop the &ldquo;1/2&rdquo; / &ldquo;1/4&rdquo; text from pieces — size is the only distinction.
-          Goal stays as the numeral (3/4). Target bar is empty with subtle dotted ticks at 1/2, 1/3, 1/4
-          as possible-landing hints.
+          Simplest. Pieces are all one color — size tells you what they are. Goal stays as the
+          numeral (3/4). Target is divided into 4 equal dotted parts. Learner builds to fill
+          3 of those 4 parts.
         </p>
       </section>
 
       <section className="flex flex-col gap-4">
         <div className="flex items-baseline gap-3">
           <h2 className="text-lg font-semibold">Option B</h2>
-          <span className="text-sm text-zinc-500">numeral + small visual reference</span>
+          <span className="text-sm text-zinc-500">numeral + outlined visual reference</span>
           <span className="text-xs text-zinc-400 ml-auto">~1 hr to build</span>
         </div>
         <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-8">
           <OptionB />
         </div>
         <p className="text-xs text-zinc-600 max-w-2xl">
-          Goal has BOTH the numeral (3/4) and a small reference shape next to it: a mini-bar
-          divided into 4 dotted parts with 3 of them lightly tinted. Connects the symbol to
-          the shape; CPA-reinforcing. Build area itself stays clean like Option A.
-        </p>
-      </section>
-
-      <section className="flex flex-col gap-4">
-        <div className="flex items-baseline gap-3">
-          <h2 className="text-lg font-semibold">Option C</h2>
-          <span className="text-sm text-zinc-500">visual-only goal, no numeral</span>
-          <span className="text-xs text-zinc-400 ml-auto">~2–3 hr to build</span>
-        </div>
-        <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-8">
-          <OptionC />
-        </div>
-        <p className="text-xs text-zinc-600 max-w-2xl">
-          Pure PhET / Montessori style. No &ldquo;3/4&rdquo; numeral anywhere on the page. The goal IS a
-          shape: a whole divided into 4 dotted parts with the 3/4 region outlined in a dashed
-          red boundary. The learner builds pieces that fit inside the outlined region. Commit =
-          the filled region visually matches the boundary. Strongest pedagogy for this age
-          group, but biggest build (needs new analysis logic — the mastery map doesn&apos;t know
-          what fraction the learner built without a numeral check).
+          Option A PLUS a small reference shape next to the numeral: the whole shown divided
+          into 4 dotted parts with a dashed amber outline around the 3/4 region.
+          No shading — just the boundary. Reinforces the numeral↔shape connection for learners
+          who are still building notational fluency.
         </p>
       </section>
 
@@ -377,19 +281,18 @@ export default function MechanicOptionsPage() {
           <AddWholeIllustration />
         </div>
         <p className="text-xs text-zinc-600 max-w-2xl">
-          Orthogonal to A/B/C: instead of pre-rendering 2 or 3 empty wholes for improper
-          fractions, show ONE whole and a &ldquo;+&rdquo; button. Learner adds wholes as they fill the
-          current one. More PhET-like; more natural for the &ldquo;I didn&apos;t know 5/4 needed two
-          wholes until I ran out of space&rdquo; insight.
+          Orthogonal to A/B. Instead of pre-rendering 2 or 3 wholes for improper fractions,
+          the learner starts with one whole and hits &ldquo;+&rdquo; when they need more room. More
+          natural for the &ldquo;oh, 5/4 needs more than one whole&rdquo; insight.
         </p>
       </section>
 
       <section className="text-sm text-zinc-700 border-t border-zinc-200 pt-8">
         <h2 className="text-lg font-semibold mb-3">Tell me</h2>
         <ul className="list-disc ml-5 space-y-1 text-zinc-600">
-          <li>Which of A / B / C feels right (or a mix)?</li>
+          <li>Option A or Option B?</li>
           <li>Add-another-whole button: yes or no?</li>
-          <li>Anything about the piece / target / goal styling to adjust before I build it out?</li>
+          <li>Any styling to change before I build it out (piece color, outline convention, etc.)?</li>
         </ul>
       </section>
     </main>
