@@ -37,7 +37,7 @@ These rules replace "did they get the right answer" with "what does the trajecto
 
 **R8. No commit_attempt in a problem's telemetry → "not_assessed" for that problem.** The learner may have opened and skipped. If at least one commit_attempt exists (success or fail), treat it as attempted.
 
-**R9. Evidence must be traceable.** Every claim in a sub-skill's "reasoning" field must cite specific problem IDs (p003, p024, etc.). Describe the trajectory in concrete terms ("committed [1/2, 1/4] — an overhang — reset and committed [1/4, 1/4, 1/4] successfully").
+**R9. Evidence must be traceable — but in the data, not the narrative.** Populate \`evidence_problem_ids\` with the specific problem IDs that support your claim (this is for audit). In the human-readable \`reasoning\` field, write in PLAIN LANGUAGE for a guide or parent. Do NOT reference internal problem IDs ("p003", "p024") inside the reasoning prose — instead say "on the first problem," "on one of the later problems," "across several problems." Do NOT cite piece compositions as bracketed arrays like "[1/8, 1/8, 1/8]" — instead say "three 1/8 pieces" or "two 1/2 pieces and a 1/4." Describe what the learner tried and where they got stuck or succeeded, in words a non-technical guide would use.
 
 **R10. Variety requirement for "demonstrated".** A standard is "demonstrated" only if the learner succeeded across at least 2 problems tagged to that standard, with at least one showing clear reasoning (first-try success OR self-correction via strategy change). A single success in one problem = "working on it" at best.
 
@@ -60,10 +60,10 @@ export const ANALYSIS_USER_INSTRUCTIONS = `Return a single JSON object with this
       "state": "misconception" | "working" | "demonstrated" | "not_assessed",
       "evidence_problem_ids": ["p003", "p024"],
       "flagged_misconception_ids": ["m08_additive_equivalence"],
-      "reasoning": "One or two sentences explaining the state. Cite specific problem IDs and describe trajectories in concrete terms (which pieces were placed, whether a strategy change happened on reset, whether commits were rapid-fire or deliberate). Written for a guide to read, not for the learner."
+      "reasoning": "One or two sentences in PLAIN LANGUAGE explaining the state. Describe what the learner did in natural terms (no internal problem IDs, no bracketed piece-count arrays). Put the problem IDs in evidence_problem_ids, not in this narrative. Written for a guide or parent to read, not for the learner."
     }
   },
-  "overall_notes": "Two or three sentences summarizing the learner's strongest standard and the most prominent misconception or pattern, if any. Written for the guide. Never address the learner in second person. Never use percentages or numerical scores."
+  "overall_notes": "Two or three sentences summarizing the learner's strongest area and the most prominent misconception pattern, if any. Written for the guide in PLAIN LANGUAGE. Do NOT reference problem IDs (p003, p024) — say 'on the unit-fraction problems' or similar. Do NOT use bracketed piece arrays. Never address the learner in second person. Never use percentages or numerical scores."
 }
 
 Use CCSS-M standard IDs (e.g., "3.NF.A.1", "4.NF.A.2") as the keys, NOT the old sub_skill_ids. Produce an entry for every standard in the SUB-SKILL LIST below, even if "not_assessed".

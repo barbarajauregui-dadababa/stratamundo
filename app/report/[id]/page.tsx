@@ -133,12 +133,20 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
 
       {masteryMap && (
         <>
-          {/* Banner summary — prefers plan's overall_notes if a plan exists,
-              otherwise falls back to the mastery map's overall_notes. */}
+          {/* At-a-glance summary — deterministically derived from the mastery
+              map. Structured + scannable. The Plan Architect's / analysis
+              engine's narrative appears below as supplementary notes. */}
+          <AtAGlanceSummary
+            masteryMap={masteryMap}
+            byState={byState}
+          />
+
+          {/* Supplementary narrative from Plan Architect (if it ran) or from
+              the analysis engine. Shown smaller, below the structured summary. */}
           {(planContent?.overall_notes ?? masteryMap.overall_notes) && (
-            <section className="rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 p-4 text-sm leading-relaxed">
+            <section className="rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 p-4 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
               <div className="mb-1 text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-                Summary
+                Analyst&apos;s notes
               </div>
               {planContent?.overall_notes ?? masteryMap.overall_notes}
             </section>
@@ -205,6 +213,91 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
   )
 }
 
+function AtAGlanceSummary({
+  masteryMap,
+  byState,
+}: {
+  masteryMap: MasteryMap
+  byState: { misconception: string[]; working: string[]; demonstrated: string[] }
+}) {
+  const notAssessed = Object.entries(masteryMap.standards)
+    .filter(([, r]) => r.state === 'not_assessed')
+    .map(([sid]) => sid)
+
+  const misconceptionNamesForAttention = new Set<string>()
+  for (const sid of byState.misconception) {
+    for (const mid of masteryMap.standards[sid].flagged_misconception_ids) {
+      misconceptionNamesForAttention.add(misconceptionName(mid))
+    }
+  }
+  for (const sid of byState.working) {
+    for (const mid of masteryMap.standards[sid].flagged_misconception_ids) {
+      misconceptionNamesForAttention.add(misconceptionName(mid))
+    }
+  }
+
+  return (
+    <section className="rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/40 p-5">
+      <div className="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400 mb-3">
+        At a glance
+      </div>
+      <ul className="flex flex-col gap-3 text-sm">
+        {/* Knows well (green/demonstrated) */}
+        <li className="flex items-start gap-2">
+          <span className="mt-1.5 h-2 w-2 rounded-full bg-green-500 shrink-0" />
+          <div>
+            <div className="font-medium">
+              Knows well ({byState.demonstrated.length})
+            </div>
+            <div className="text-zinc-600 dark:text-zinc-400">
+              {byState.demonstrated.length === 0
+                ? '—'
+                : byState.demonstrated.map((sid) => standardName(sid)).join('; ')}
+            </div>
+          </div>
+        </li>
+
+        {/* Working on it */}
+        <li className="flex items-start gap-2">
+          <span className="mt-1.5 h-2 w-2 rounded-full bg-yellow-500 shrink-0" />
+          <div>
+            <div className="font-medium">
+              Working on ({byState.working.length + byState.misconception.length})
+            </div>
+            <div className="text-zinc-600 dark:text-zinc-400">
+              {byState.working.length + byState.misconception.length === 0
+                ? '—'
+                : [...byState.misconception, ...byState.working]
+                    .map((sid) => standardName(sid))
+                    .join('; ')}
+            </div>
+            {misconceptionNamesForAttention.size > 0 && (
+              <div className="text-xs text-zinc-500 mt-1">
+                Flagged misconceptions: {[...misconceptionNamesForAttention].join('; ')}
+              </div>
+            )}
+          </div>
+        </li>
+
+        {/* Probe next session (not_assessed) */}
+        {notAssessed.length > 0 && (
+          <li className="flex items-start gap-2">
+            <span className="mt-1.5 h-2 w-2 rounded-full bg-zinc-400 shrink-0" />
+            <div>
+              <div className="font-medium">
+                Probe next session ({notAssessed.length})
+              </div>
+              <div className="text-zinc-600 dark:text-zinc-400">
+                {notAssessed.map((sid) => standardName(sid)).join('; ')}
+              </div>
+            </div>
+          </li>
+        )}
+      </ul>
+    </section>
+  )
+}
+
 function Bucket({
   title,
   subtitle,
@@ -255,14 +348,19 @@ function Bucket({
               )}
               {report.flagged_misconception_ids.length > 0 && (
                 <div className="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
-                  Flagged:{' '}
+                  <span className="font-medium">Flagged misconception:</span>{' '}
                   {report.flagged_misconception_ids.map((m) => misconceptionName(m)).join(', ')}
                 </div>
               )}
               {report.evidence_problem_ids.length > 0 && (
-                <div className="mt-1 text-xs font-mono text-zinc-500">
-                  Evidence: {report.evidence_problem_ids.join(', ')}
-                </div>
+                <details className="mt-1 text-xs text-zinc-500">
+                  <summary className="cursor-pointer select-none">
+                    Audit — which problems informed this?
+                  </summary>
+                  <div className="mt-1 font-mono">
+                    {report.evidence_problem_ids.join(', ')}
+                  </div>
+                </details>
               )}
               {gap && (
                 <div className="mt-3 pt-3 border-t border-zinc-200 dark:border-zinc-800">
