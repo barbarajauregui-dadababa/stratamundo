@@ -28,11 +28,11 @@ const BAR_HEIGHT_PX = 56
 const WHOLE_GAP_PX = 16
 
 /** Pixel width for one whole unit. Fixed (not adaptive to numWholes) so that
- *  pieces do NOT change size when the learner adds or removes wholes. The
- *  container is allowed to scroll horizontally if the drawn wholes exceed the
- *  card's inner width. Chosen to keep 3 wholes within ~780px (fits comfortably
- *  within a wider workspace) while keeping 1/12 pieces still draggable (20px). */
-const WIDTH_PER_WHOLE_PX = 240
+ *  pieces do NOT change size when the learner adds or removes wholes.
+ *  Sized so 3 wholes + gaps + +/- buttons + padding fit inside the card's
+ *  inner width (~848px for a max-w-4xl card with p-6) without horizontal
+ *  scrolling. 1/12 pieces stay draggable at ~18px. */
+const WIDTH_PER_WHOLE_PX = 220
 
 const PIECE_FILL = 'bg-sky-400'
 const PIECE_BORDER = 'border-sky-700'
