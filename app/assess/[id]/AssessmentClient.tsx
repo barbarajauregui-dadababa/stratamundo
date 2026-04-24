@@ -39,9 +39,15 @@ interface Props {
   assessmentId: string
   problems: PublicProblem[]
   learnerName: string
+  parentAssessmentId: string | null
 }
 
-export default function AssessmentClient({ assessmentId, problems, learnerName }: Props) {
+export default function AssessmentClient({
+  assessmentId,
+  problems,
+  learnerName,
+  parentAssessmentId,
+}: Props) {
   const router = useRouter()
   const supabase = createClient()
 
@@ -88,13 +94,16 @@ export default function AssessmentClient({ assessmentId, problems, learnerName }
         .update({ responses, completed_at: new Date().toISOString() })
         .eq('id', assessmentId)
       if (updateError) throw updateError
-      router.push(`/report/${assessmentId}`)
+      const nextUrl = parentAssessmentId
+        ? `/report/${assessmentId}?parent=${parentAssessmentId}`
+        : `/report/${assessmentId}`
+      router.push(nextUrl)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Could not submit assessment.'
       setError(message)
       setIsSubmitting(false)
     }
-  }, [assessmentId, isSubmitting, problems, router, supabase, telemetryByProblem])
+  }, [assessmentId, isSubmitting, parentAssessmentId, problems, router, supabase, telemetryByProblem])
 
   function goNext() {
     if (isLast) void submit()

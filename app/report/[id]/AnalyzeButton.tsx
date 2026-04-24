@@ -3,7 +3,13 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-export default function AnalyzeButton({ assessmentId }: { assessmentId: string }) {
+export default function AnalyzeButton({
+  assessmentId,
+  parentAssessmentId,
+}: {
+  assessmentId: string
+  parentAssessmentId?: string | null
+}) {
   const router = useRouter()
   const [isRunning, setIsRunning] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -16,13 +22,20 @@ export default function AnalyzeButton({ assessmentId }: { assessmentId: string }
       const res = await fetch('/api/analyze-assessment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ assessment_id: assessmentId }),
+        body: JSON.stringify({
+          assessment_id: assessmentId,
+          parent_assessment_id: parentAssessmentId ?? undefined,
+        }),
       })
       if (!res.ok) {
         const text = await res.text()
         throw new Error(text || `Analysis failed with status ${res.status}`)
       }
-      router.refresh()
+      if (parentAssessmentId) {
+        router.push(`/report/${parentAssessmentId}`)
+      } else {
+        router.refresh()
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Analysis failed.'
       setError(message)

@@ -9,9 +9,15 @@ interface Props {
   learnerId: string
   standardId: string
   standardName: string
+  parentAssessmentId: string
 }
 
-export default function FocusedProbeButton({ learnerId, standardId, standardName }: Props) {
+export default function FocusedProbeButton({
+  learnerId,
+  standardId,
+  standardName,
+  parentAssessmentId,
+}: Props) {
   const router = useRouter()
   const supabase = createClient()
   const [isStarting, setIsStarting] = useState(false)
@@ -49,7 +55,7 @@ export default function FocusedProbeButton({ learnerId, standardId, standardName
         .single()
       if (insertError) throw insertError
 
-      router.push(`/assess/${assessment.id}`)
+      router.push(`/assess/${assessment.id}?parent=${parentAssessmentId}`)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Could not start focused probe.'
       setError(message)

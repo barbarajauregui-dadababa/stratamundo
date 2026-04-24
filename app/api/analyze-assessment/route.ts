@@ -24,13 +24,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'ANTHROPIC_API_KEY not set on server' }, { status: 500 })
   }
 
-  let body: { assessment_id?: string }
+  let body: { assessment_id?: string; parent_assessment_id?: string }
   try {
     body = await req.json()
   } catch {
     return NextResponse.json({ error: 'invalid JSON body' }, { status: 400 })
   }
   const assessmentId = body.assessment_id
+  const parentAssessmentId = body.parent_assessment_id
   if (!assessmentId) {
     return NextResponse.json({ error: 'assessment_id required' }, { status: 400 })
   }
@@ -129,8 +130,44 @@ ${ANALYSIS_USER_INSTRUCTIONS}`,
     return NextResponse.json({ error: updateError.message }, { status: 500 })
   }
 
+  // Focused-probe flow: merge the probe's findings back into the parent
+  // assessment's mastery map. Only overwrite standards the probe actually
+  // assessed (state !== 'not_assessed') so we don't wipe out unrelated ones.
+  let parentMerged = false
+  if (parentAssessmentId) {
+    const { data: parent } = await supabase
+      .from('assessments')
+      .select('mastery_map')
+      .eq('id', parentAssessmentId)
+      .single()
+    if (parent?.mastery_map) {
+      type StandardEntry = {
+        state: 'misconception' | 'working' | 'demonstrated' | 'not_assessed'
+      }
+      type MMap = { standards: Record<string, StandardEntry>; overall_notes?: string }
+      const parentMap = parent.mastery_map as MMap
+      const probeMap = masteryMap as MMap
+      const mergedStandards = { ...parentMap.standards }
+      for (const [sid, entry] of Object.entries(probeMap.standards ?? {})) {
+        if (entry.state !== 'not_assessed') {
+          mergedStandards[sid] = entry
+        }
+      }
+      const merged: MMap = {
+        ...parentMap,
+        standards: mergedStandards,
+      }
+      const { error: parentErr } = await supabase
+        .from('assessments')
+        .update({ mastery_map: merged })
+        .eq('id', parentAssessmentId)
+      parentMerged = !parentErr
+    }
+  }
+
   return NextResponse.json({
     mastery_map: masteryMap,
+    parent_merged: parentMerged,
     usage: apiResponse.usage,
   })
 }

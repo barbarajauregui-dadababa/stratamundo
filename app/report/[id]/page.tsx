@@ -71,6 +71,9 @@ function sortedByLayer(ids: string[]): string[] {
 
 export default async function ReportPage(props: PageProps<'/report/[id]'>) {
   const { id } = await props.params
+  const sp = await props.searchParams
+  const rawParent = sp?.parent
+  const parentAssessmentId = typeof rawParent === 'string' ? rawParent : null
   const supabase = await createClient()
 
   const { data: assessment, error } = await supabase
@@ -144,7 +147,7 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
             Run analysis to produce the mastery map.
           </p>
-          <AnalyzeButton assessmentId={id} />
+          <AnalyzeButton assessmentId={id} parentAssessmentId={parentAssessmentId} />
         </section>
       )}
 
@@ -181,6 +184,7 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
               plan={planContent}
               planId={planId}
               learnerId={assessment.learner_id}
+              parentAssessmentId={id}
               showProbeButton
               defaultOpen
             />
@@ -194,6 +198,7 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
               plan={planContent}
               planId={planId}
               learnerId={assessment.learner_id}
+              parentAssessmentId={id}
               showProbeButton
               defaultOpen
             />
@@ -207,6 +212,7 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
               plan={planContent}
               planId={planId}
               learnerId={assessment.learner_id}
+              parentAssessmentId={id}
               showProbeButton={false}
               defaultOpen={false}
             />
@@ -348,6 +354,7 @@ function Bucket({
   plan,
   planId,
   learnerId,
+  parentAssessmentId,
   showProbeButton,
   defaultOpen,
 }: {
@@ -360,6 +367,7 @@ function Bucket({
   plan: PlanContent | null
   planId: string | null
   learnerId: string
+  parentAssessmentId: string
   showProbeButton: boolean
   defaultOpen: boolean
 }) {
@@ -392,6 +400,7 @@ function Bucket({
                     learnerId={learnerId}
                     standardId={sid}
                     standardName={standardName(sid)}
+                    parentAssessmentId={parentAssessmentId}
                   />
                 )}
               </div>

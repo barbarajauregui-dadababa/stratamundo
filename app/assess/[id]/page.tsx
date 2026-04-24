@@ -5,6 +5,9 @@ import AssessmentClient, { type PublicProblem } from './AssessmentClient'
 
 export default async function AssessPage(props: PageProps<'/assess/[id]'>) {
   const { id } = await props.params
+  const sp = await props.searchParams
+  const rawParent = sp?.parent
+  const parentAssessmentId = typeof rawParent === 'string' ? rawParent : null
   const supabase = await createClient()
 
   const { data: assessment, error } = await supabase
@@ -14,7 +17,9 @@ export default async function AssessPage(props: PageProps<'/assess/[id]'>) {
     .single()
 
   if (error || !assessment) notFound()
-  if (assessment.completed_at) redirect(`/report/${id}`)
+  if (assessment.completed_at) {
+    redirect(parentAssessmentId ? `/report/${parentAssessmentId}` : `/report/${id}`)
+  }
 
   type ResponseSkeleton = { problem_id: string }
   const responses = (assessment.responses as ResponseSkeleton[] | null) ?? []
@@ -43,6 +48,7 @@ export default async function AssessPage(props: PageProps<'/assess/[id]'>) {
       assessmentId={id}
       problems={publicProblems}
       learnerName={displayName}
+      parentAssessmentId={parentAssessmentId}
     />
   )
 }
