@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { checkMatch, sumPieces, type Fraction } from '@/lib/fraction-math'
 import type {
   BuildFractionProblem,
@@ -9,10 +9,10 @@ import type {
   TelemetryEvent,
 } from './types'
 
-/** Pixel width representing one whole unit (1/1 of a bar). Pieces are sized
- *  as WIDTH_PER_WHOLE / denominator. Multi-unit targets (goal > 1) render
- *  numWholes * WIDTH_PER_WHOLE total. */
+/** Pixel width representing one whole unit. Multi-unit targets (goal > 1)
+ *  render numWholes separate rounded rectangles with WHOLE_GAP_PX between them. */
 const WIDTH_PER_WHOLE_PX = 320
+const WHOLE_GAP_PX = 16
 const BAR_HEIGHT_PX = 64
 
 const PIECE_COLORS: Record<PieceDenominator, string> = {
@@ -52,17 +52,27 @@ function makePieceId(): string {
 }
 
 interface PlacedPieceGeom extends PlacedPiece {
+  /** Visual left offset accounting for inter-whole gaps. */
   leftPx: number
   widthPx: number
 }
 
+/**
+ * Compute piece positions in logical "total content" coords, then shift by
+ * the number of whole-boundaries crossed × WHOLE_GAP_PX to get visual coords.
+ * Pieces may visually straddle a gap if their placement would cross a whole
+ * boundary — that's a rare case (happens only with awkward piece combos) and
+ * acceptable for v1 since the math still resolves correctly.
+ */
 function computePlacedGeometry(placed: PlacedPiece[]): PlacedPieceGeom[] {
   const result: PlacedPieceGeom[] = []
-  let offset = 0
+  let logicalOffset = 0
   for (const p of placed) {
     const widthPx = pieceWidthPx(p.denominator)
-    result.push({ ...p, leftPx: offset, widthPx })
-    offset += widthPx
+    const wholeIndex = Math.floor(logicalOffset / WIDTH_PER_WHOLE_PX)
+    const visualLeft = logicalOffset + wholeIndex * WHOLE_GAP_PX
+    result.push({ ...p, leftPx: visualLeft, widthPx })
+    logicalOffset += widthPx
   }
   return result
 }
@@ -77,6 +87,8 @@ interface Props {
 type DragState =
   | { origin: 'palette'; denominator: PieceDenominator; pointerId: number }
 
+type CommitState = 'idle' | 'failed' | 'success'
+
 export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetryEvent }: Props) {
   const [startedAt] = useState<number>(() => Date.now())
   const [dropZoneEl, setDropZoneEl] = useState<HTMLDivElement | null>(null)
@@ -84,12 +96,15 @@ export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetr
   const [placed, setPlaced] = useState<PlacedPiece[]>([])
   const [drag, setDrag] = useState<DragState | null>(null)
   const [dragPos, setDragPos] = useState<{ x: number; y: number } | null>(null)
-  const [commitState, setCommitState] = useState<'idle' | 'bouncing' | 'success'>('idle')
+  const [commitState, setCommitState] = useState<CommitState>('idle')
   const [commitBounceKey, setCommitBounceKey] = useState(0)
+  const [commitAttempts, setCommitAttempts] = useState(0)
   const [telemetryLog, setTelemetryLog] = useState<TelemetryEvent[]>([])
 
   const numWholes = Math.max(1, problem.target_whole_value ?? 1)
-  const totalTargetWidthPx = WIDTH_PER_WHOLE_PX * numWholes
+  const wholesTotalPx = WIDTH_PER_WHOLE_PX * numWholes
+  const wholesVisualWidthPx = wholesTotalPx + (numWholes - 1) * WHOLE_GAP_PX
+  const locked = commitState !== 'idle'
 
   const logEvent = useCallback(
     (event: TelemetryEvent) => {
@@ -110,12 +125,12 @@ export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetr
 
   const handlePalettePointerDown = useCallback(
     (e: React.PointerEvent, denominator: PieceDenominator) => {
-      if (commitState === 'success') return
+      if (locked) return
       ;(e.currentTarget as Element).setPointerCapture(e.pointerId)
       setDrag({ origin: 'palette', denominator, pointerId: e.pointerId })
       setDragPos({ x: e.clientX, y: e.clientY })
     },
-    [commitState]
+    [locked]
   )
 
   const handlePalettePointerMove = useCallback(
@@ -131,7 +146,7 @@ export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetr
       if (!drag) return
       const overDrop = isPointOverDropZone(e.clientX, e.clientY)
       ;(e.currentTarget as Element).releasePointerCapture(e.pointerId)
-      if (overDrop) {
+      if (overDrop && !locked) {
         const newPiece: PlacedPiece = { id: makePieceId(), denominator: drag.denominator }
         const next = [...placed, newPiece]
         setPlaced(next)
@@ -145,12 +160,12 @@ export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetr
       setDrag(null)
       setDragPos(null)
     },
-    [drag, isPointOverDropZone, placed, logEvent, startedAt]
+    [drag, isPointOverDropZone, placed, logEvent, startedAt, locked]
   )
 
   const removePlaced = useCallback(
     (pieceId: string) => {
-      if (commitState === 'success') return
+      if (locked) return
       const piece = placed.find((p) => p.id === pieceId)
       if (!piece) return
       const next = placed.filter((p) => p.id !== pieceId)
@@ -162,11 +177,11 @@ export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetr
         placed_count_after: next.length,
       })
     },
-    [commitState, placed, logEvent, startedAt]
+    [locked, placed, logEvent, startedAt]
   )
 
   const handleCommit = useCallback(() => {
-    if (commitState === 'success' || placed.length === 0) return
+    if (locked || placed.length === 0) return
     const result = checkMatch(
       placed.map((p) => p.denominator),
       problem.goal
@@ -178,33 +193,40 @@ export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetr
       result,
     }
     logEvent(commitEvent)
+    setCommitAttempts((n) => n + 1)
     if (result === 'success') {
       setCommitState('success')
       onCommitSuccess?.([...telemetryLog, commitEvent])
     } else {
-      setCommitState('bouncing')
+      setCommitState('failed')
       setCommitBounceKey((k) => k + 1)
     }
-  }, [commitState, placed, problem.goal, startedAt, logEvent, onCommitSuccess, telemetryLog])
+  }, [locked, placed, problem.goal, startedAt, logEvent, onCommitSuccess, telemetryLog])
 
-  useEffect(() => {
-    if (commitState !== 'bouncing') return
-    const t = setTimeout(() => setCommitState('idle'), 450)
-    return () => clearTimeout(t)
-  }, [commitState, commitBounceKey])
+  const handleTryAgain = useCallback(() => {
+    logEvent({
+      type: 'reset',
+      t: Date.now() - startedAt,
+      after_commit_attempt_number: commitAttempts,
+    })
+    setPlaced([])
+    setCommitState('idle')
+  }, [logEvent, startedAt, commitAttempts])
 
   // --- Rendering ---
 
   const placedWithGeom = computePlacedGeometry(placed)
-  const totalFilledPx = placedWithGeom.reduce((acc, p) => acc + p.widthPx, 0)
-  const overhangPx = Math.max(0, totalFilledPx - totalTargetWidthPx)
-  const gapPx = Math.max(0, totalTargetWidthPx - totalFilledPx)
+  const totalFilledLogicalPx = placedWithGeom.reduce((acc, p) => acc + p.widthPx, 0)
+  const overhangPx = Math.max(0, totalFilledLogicalPx - wholesTotalPx)
+  const gapPx = Math.max(0, wholesTotalPx - totalFilledLogicalPx)
 
   const currentSum = sumPieces(placed.map((p) => p.denominator))
 
-  // Unit divider positions (vertical lines at each whole-unit boundary, when numWholes > 1)
-  const dividerXs: number[] = []
-  for (let i = 1; i < numWholes; i++) dividerXs.push(i * WIDTH_PER_WHOLE_PX)
+  // Rightmost extent any placed piece reaches, in visual pixels (for sizing
+  // the container if pieces overhang).
+  const lastPiece = placedWithGeom[placedWithGeom.length - 1]
+  const rightmostVisualPx = lastPiece ? lastPiece.leftPx + lastPiece.widthPx : 0
+  const containerWidthPx = Math.max(wholesVisualWidthPx, rightmostVisualPx) + 32
 
   return (
     <div className="flex flex-col items-center gap-6 select-none">
@@ -218,72 +240,95 @@ export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetr
 
       <div
         key={commitBounceKey}
-        className={commitState === 'bouncing' ? 'animate-shake' : ''}
+        className={commitState === 'failed' ? 'animate-shake' : ''}
       >
-        {/* Drop zone — a padded rectangle around the bar(s) so pieces can land
-            in the overhang area, not just inside the whole(s). */}
+        {/* Drop zone — padded so pieces can land past the rightmost whole too. */}
         <div
           ref={setDropZoneEl}
           className="relative px-4 py-3 rounded-lg"
-          style={{ width: totalTargetWidthPx + overhangPx + 32 }}
+          style={{ width: containerWidthPx }}
         >
-          {/* Bar(s) outline — one big rounded rectangle numWholes wholes wide,
-              with vertical dividers at each whole boundary. */}
-          <div
-            className="relative rounded-md border-2 border-zinc-400 dark:border-zinc-500 bg-zinc-50 dark:bg-zinc-900"
-            style={{ width: totalTargetWidthPx, height: BAR_HEIGHT_PX }}
-          >
-            {dividerXs.map((x) => (
-              <div
-                key={x}
-                className="absolute top-0 h-full border-l-2 border-dashed border-zinc-300 dark:border-zinc-700"
-                style={{ left: x }}
-              />
-            ))}
-          </div>
+          {/* Whole-unit rectangles, side by side with gaps between them. */}
+          {Array.from({ length: numWholes }).map((_, i) => (
+            <div
+              key={i}
+              className="absolute rounded-md border-2 border-zinc-400 dark:border-zinc-500 bg-zinc-50 dark:bg-zinc-900"
+              style={{
+                left: 16 + i * (WIDTH_PER_WHOLE_PX + WHOLE_GAP_PX),
+                top: 12,
+                width: WIDTH_PER_WHOLE_PX,
+                height: BAR_HEIGHT_PX,
+              }}
+            />
+          ))}
 
-          {/* Placed pieces positioned over (and potentially past) the bar area.
-              Offset accounts for the drop zone's px-4 padding. */}
+          {/* Placed pieces — positioned in visual coords above the whole rects. */}
           {placedWithGeom.map((p) => (
             <button
               key={p.id}
               type="button"
               onClick={() => removePlaced(p.id)}
-              aria-label={`Remove ${pieceLabel(p.denominator)} piece — click to remove`}
+              aria-label={`${pieceLabel(p.denominator)} piece. Click to remove.`}
               title="Click to remove"
-              className={`absolute rounded-sm border-2 ${PIECE_COLORS[p.denominator]} ${PIECE_BORDER[p.denominator]} flex items-center justify-center text-xs font-bold text-white drop-shadow hover:brightness-110 hover:ring-2 hover:ring-rose-400 transition cursor-pointer`}
+              className={`absolute rounded-sm border-2 ${PIECE_COLORS[p.denominator]} ${PIECE_BORDER[p.denominator]} flex items-center justify-center text-xs font-bold text-white drop-shadow ${locked ? 'cursor-default' : 'hover:brightness-110 hover:ring-2 hover:ring-rose-400 cursor-pointer'} transition`}
               style={{
-                left: p.leftPx + 16, // +16 to account for drop zone's px-4 padding
-                top: 12, // drop zone's py-3 + a bit
+                left: p.leftPx + 16,
+                top: 12,
                 width: p.widthPx,
                 height: BAR_HEIGHT_PX,
               }}
-              disabled={commitState === 'success'}
+              disabled={locked}
             >
               {pieceLabel(p.denominator)}
             </button>
           ))}
         </div>
         <div className="h-5 mt-2 flex items-center justify-center">
-          {overhangPx > 0 && (
+          {overhangPx > 0 && commitState !== 'success' && (
             <p className="text-xs text-rose-600 dark:text-rose-400">
               Your pieces go past {numWholes === 1 ? 'the whole' : `${numWholes} wholes`}.
             </p>
           )}
-          {overhangPx === 0 && gapPx > 0 && placed.length > 0 && (
+          {overhangPx === 0 && gapPx > 0 && placed.length > 0 && commitState !== 'success' && (
             <p className="text-xs text-zinc-500">A gap remains.</p>
           )}
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={handleCommit}
-        disabled={placed.length === 0 || commitState === 'success'}
-        className="inline-flex h-10 items-center justify-center rounded-md bg-zinc-900 px-6 text-sm font-medium text-white disabled:opacity-40 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-      >
-        {commitState === 'success' ? 'Locked in ✓' : 'Check my answer'}
-      </button>
+      <div className="flex flex-col items-center gap-2">
+        {commitState === 'idle' && (
+          <button
+            type="button"
+            onClick={handleCommit}
+            disabled={placed.length === 0}
+            className="inline-flex h-10 items-center justify-center rounded-md bg-zinc-900 px-6 text-sm font-medium text-white disabled:opacity-40 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+          >
+            Check my answer
+          </button>
+        )}
+        {commitState === 'failed' && (
+          <>
+            <p className="text-sm text-rose-700 dark:text-rose-300">
+              Not quite. Want to try a different way?
+            </p>
+            <button
+              type="button"
+              onClick={handleTryAgain}
+              className="inline-flex h-10 items-center justify-center rounded-md bg-zinc-900 px-6 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            >
+              Try again
+            </button>
+            <p className="text-xs text-zinc-500 mt-1">
+              Or use Next below to move on. Your thinking on this problem is saved either way.
+            </p>
+          </>
+        )}
+        {commitState === 'success' && (
+          <p className="inline-flex h-10 items-center justify-center rounded-md bg-emerald-100 dark:bg-emerald-950 px-6 text-sm font-medium text-emerald-900 dark:text-emerald-200">
+            Locked in ✓
+          </p>
+        )}
+      </div>
 
       <div className="w-full border-t border-zinc-200 dark:border-zinc-800 pt-6 flex flex-col items-center gap-2">
         <p className="text-xs uppercase tracking-wide text-zinc-500">Pieces</p>
@@ -295,7 +340,7 @@ export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetr
               onPointerDown={(e) => handlePalettePointerDown(e, d)}
               onPointerMove={handlePalettePointerMove}
               onPointerUp={handlePalettePointerUp}
-              disabled={commitState === 'success'}
+              disabled={locked}
               className={`rounded-sm border-2 ${PIECE_COLORS[d]} ${PIECE_BORDER[d]} h-10 flex items-center justify-center text-xs font-bold text-white drop-shadow cursor-grab active:cursor-grabbing touch-none disabled:opacity-40`}
               style={{ width: pieceWidthPx(d) }}
               aria-label={`Drag a ${pieceLabel(d)} piece`}
@@ -305,7 +350,11 @@ export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetr
           ))}
         </div>
         <p className="text-xs text-zinc-500 mt-1">
-          Drag a piece into the bar. Click a placed piece to remove it.
+          {locked
+            ? commitState === 'success'
+              ? 'Locked in. Use Next below to move on.'
+              : 'Pieces are locked. Try again to clear and start over, or use Next.'
+            : 'Drag a piece into the bar. Click a placed piece to remove it.'}
         </p>
       </div>
 
@@ -319,6 +368,7 @@ export default function FractionWorkspace({ problem, onCommitSuccess, onTelemetr
             Placed: [{placed.map((p) => pieceLabel(p.denominator)).join(', ')}]
           </div>
           <div>Target wholes: {numWholes}</div>
+          <div>Commit attempts: {commitAttempts}</div>
           <div>Events: {telemetryLog.length}</div>
         </div>
       </details>
@@ -344,12 +394,12 @@ function GoalDisplay({
   commitState,
 }: {
   goal: Fraction
-  commitState: 'idle' | 'bouncing' | 'success'
+  commitState: CommitState
 }) {
   const ring =
     commitState === 'success'
       ? 'ring-4 ring-emerald-400'
-      : commitState === 'bouncing'
+      : commitState === 'failed'
       ? 'ring-4 ring-rose-400'
       : 'ring-2 ring-zinc-300 dark:ring-zinc-700'
   return (

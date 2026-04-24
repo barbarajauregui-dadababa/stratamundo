@@ -80,7 +80,7 @@
       "target_whole_value": 1,
       "available_denominators": [2, 3, 6, 8],
       "goal": { "numerator": 1, "denominator": 4 },
-      "real_world_context": { "scenario": "brownies", "framing_text": "Build one-fourth of this brownie pan. You do not have a 1/4 piece — find another way." },
+      "real_world_context": { "scenario": null, "framing_text": "Build one-fourth of this bar. You do not have a 1/4 piece — find another way." },
       "difficulty": 1,
       "show_your_work_note": "Goal denom 4 is intentionally absent from the palette to force equivalence reasoning. Two 1/8 pieces = 1/4. Commit = 1 over 4."
     },
@@ -93,9 +93,9 @@
       "target_whole_value": 1,
       "available_denominators": [2, 3, 4, 6, 8],
       "goal": { "numerator": 3, "denominator": 4 },
-      "real_world_context": { "scenario": "brownies", "framing_text": "Build three-fourths of this brownie pan." },
+      "real_world_context": { "scenario": null, "framing_text": "Build three-fourths of this bar." },
       "difficulty": 1,
-      "show_your_work_note": "Three 1/4 pieces. Commit = 3 over 4. (Previous framing used a pizza context; swapped to brownie pan since pizza would need a circle target.)"
+      "show_your_work_note": "Three 1/4 pieces. Commit = 3 over 4. (Framing kept abstract pending illustrated real-world targets.)"
     },
     {
       "id": "p005",
@@ -119,7 +119,7 @@
       "target_whole_value": 2,
       "available_denominators": [2, 3, 4],
       "goal": { "numerator": 5, "denominator": 4 },
-      "real_world_context": { "scenario": "brownies", "framing_text": "We have two brownie pans. Build 5/4 — enough for five kids who each get 1/4." },
+      "real_world_context": { "scenario": null, "framing_text": "Here are two bars. Build 5/4 — five pieces that are each one-fourth of a bar." },
       "difficulty": 3,
       "show_your_work_note": "Target is two bars (two wholes). Five 1/4 pieces = 1 full bar + 1/4 of the second bar. Probes acceptance of numerator > denominator. Commit = 5 over 4."
     },
@@ -280,7 +280,7 @@
       "target_whole_value": 1,
       "available_denominators": [2, 3, 4, 6],
       "goal": { "numerator": 4, "denominator": 4 },
-      "real_world_context": { "scenario": "brownies", "framing_text": "Build the whole brownie pan using fourths." },
+      "real_world_context": { "scenario": null, "framing_text": "Build the whole bar using fourths." },
       "difficulty": 1,
       "show_your_work_note": "Four 1/4 wedges fill the whole. Commit = 4 over 4. Probes that a whole equals a fraction."
     },

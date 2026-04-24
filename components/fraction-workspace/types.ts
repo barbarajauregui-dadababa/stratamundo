@@ -17,6 +17,8 @@ export type TelemetryEvent =
   | { type: 'placement'; t: number; denominator: number; placed_count_after: number }
   | { type: 'removal'; t: number; denominator: number; placed_count_after: number }
   | { type: 'commit_attempt'; t: number; placed: number[]; result: 'success' | 'gap' | 'overhang' }
+  /** Learner clicked "Try again" after a failed commit — workspace cleared. */
+  | { type: 'reset'; t: number; after_commit_attempt_number: number }
 
 export interface BuildFractionProblem {
   id: string
