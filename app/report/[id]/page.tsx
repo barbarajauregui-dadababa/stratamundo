@@ -1,28 +1,30 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import AnalyzeButton from './AnalyzeButton'
-import conceptGraphRaw from '@/content/fractions-concept-graph.json'
+import coherenceMapRaw from '@/content/coherence-map-fractions.json'
 import misconceptionsRaw from '@/content/fractions-misconceptions.json'
 
-type SubSkillState = 'misconception' | 'working' | 'demonstrated' | 'not_assessed'
+type StandardState = 'misconception' | 'working' | 'demonstrated' | 'not_assessed'
 
-interface SubSkillReport {
-  state: SubSkillState
+interface StandardReport {
+  state: StandardState
   evidence_problem_ids: string[]
   flagged_misconception_ids: string[]
   reasoning: string
 }
 
 interface MasteryMap {
-  sub_skills: Record<string, SubSkillReport>
+  standards: Record<string, StandardReport>
   overall_notes: string
 }
 
-interface ConceptNode {
+interface CoherenceNode {
   id: string
   name: string
-  short_description: string
-  level: number
+  statement: string
+  grade: number
+  role: 'prerequisite' | 'core'
+  layer: number
 }
 
 interface Misconception {
@@ -30,10 +32,10 @@ interface Misconception {
   name: string
 }
 
-const conceptGraph = conceptGraphRaw as unknown as { nodes: ConceptNode[] }
+const coherenceMap = coherenceMapRaw as unknown as { nodes: CoherenceNode[] }
 const misconceptions = misconceptionsRaw as unknown as { misconceptions: Misconception[] }
 
-const stateStyles: Record<SubSkillState, { label: string; dot: string; bg: string }> = {
+const stateStyles: Record<StandardState, { label: string; dot: string; bg: string }> = {
   misconception: {
     label: 'Misconception detected',
     dot: 'bg-red-500',
@@ -56,12 +58,23 @@ const stateStyles: Record<SubSkillState, { label: string; dot: string; bg: strin
   },
 }
 
-function subSkillName(id: string) {
-  return conceptGraph.nodes.find((n) => n.id === id)?.name ?? id
+function standardName(id: string): string {
+  return coherenceMap.nodes.find((n) => n.id === id)?.name ?? id
 }
 
-function misconceptionName(id: string) {
+function misconceptionName(id: string): string {
   return misconceptions.misconceptions.find((m) => m.id === id)?.name ?? id
+}
+
+// Sort standards by their layer in the Coherence Map (prerequisites first,
+// dependents last), so the guide reads the progression top-to-bottom.
+function sortedStandardIds(ids: string[]): string[] {
+  return [...ids].sort((a, b) => {
+    const la = coherenceMap.nodes.find((n) => n.id === a)?.layer ?? 99
+    const lb = coherenceMap.nodes.find((n) => n.id === b)?.layer ?? 99
+    if (la !== lb) return la - lb
+    return a.localeCompare(b)
+  })
 }
 
 export default async function ReportPage(props: PageProps<'/report/[id]'>) {
@@ -76,10 +89,9 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
 
   if (error || !assessment) notFound()
 
-  const learnerName =
-    Array.isArray(assessment.learners)
-      ? assessment.learners[0]?.name
-      : (assessment.learners as { name: string } | null)?.name
+  const learnerName = Array.isArray(assessment.learners)
+    ? assessment.learners[0]?.name
+    : (assessment.learners as { name: string } | null)?.name
   const displayName = learnerName ?? 'Learner'
 
   const masteryMap = assessment.mastery_map as MasteryMap | null
@@ -125,19 +137,21 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
           )}
 
           <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-medium">Sub-skills</h2>
+            <h2 className="text-lg font-medium">Standards (CCSS-M)</h2>
             <ul className="flex flex-col gap-3">
-              {Object.entries(masteryMap.sub_skills).map(([subSkillId, report]) => {
+              {sortedStandardIds(Object.keys(masteryMap.standards)).map((standardId) => {
+                const report = masteryMap.standards[standardId]
                 const style = stateStyles[report.state]
                 return (
                   <li
-                    key={subSkillId}
+                    key={standardId}
                     className={`rounded-md border px-4 py-3 ${style.bg}`}
                   >
                     <div className="flex items-baseline justify-between gap-3">
                       <div className="flex items-center gap-2">
                         <span className={`inline-block h-2.5 w-2.5 rounded-full ${style.dot}`} />
-                        <span className="font-medium">{subSkillName(subSkillId)}</span>
+                        <span className="font-medium">{standardName(standardId)}</span>
+                        <span className="text-xs font-mono text-zinc-500">{standardId}</span>
                       </div>
                       <span className="text-xs font-medium uppercase tracking-wide text-zinc-600 dark:text-zinc-400">
                         {style.label}

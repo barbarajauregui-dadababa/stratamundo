@@ -3,14 +3,20 @@ import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@/lib/supabase/server'
 import { getAllProblems } from '@/lib/problem-selection'
 import { ANALYSIS_SYSTEM_PROMPT, ANALYSIS_USER_INSTRUCTIONS } from '@/lib/analysis-prompt'
-import conceptGraphRaw from '@/content/fractions-concept-graph.json'
+import coherenceMapRaw from '@/content/coherence-map-fractions.json'
 import misconceptionsRaw from '@/content/fractions-misconceptions.json'
+import type { TelemetryEvent } from '@/components/fraction-workspace/types'
 
 // Opus is the premium tier; 10–25 sec typical runtime. Raise Vercel timeout
 // so the synchronous fetch doesn't get cut off on slow analyses.
 export const maxDuration = 60
 
-type LearnerResponse = { problem_id: string; answer: string | null; work_shown: string | null }
+interface StoredResponse {
+  problem_id: string
+  problem_type: string
+  telemetry: TelemetryEvent[]
+  committed_success: boolean
+}
 
 export async function POST(req: NextRequest) {
   const apiKey = process.env.ANTHROPIC_API_KEY
@@ -43,21 +49,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'assessment not yet completed' }, { status: 400 })
   }
 
-  const responses = (assessment.responses as LearnerResponse[] | null) ?? []
+  const responses = (assessment.responses as StoredResponse[] | null) ?? []
   if (responses.length === 0) {
     return NextResponse.json({ error: 'assessment has no responses' }, { status: 400 })
   }
 
   const anthropic = new Anthropic({ apiKey })
 
-  // Cache breakpoint strategy: system prompt + full problem bank + misconceptions are
-  // stable across every analysis call (same bank, same taxonomy). Put the cache marker
-  // on the last system block so the whole system array is cached. Learner responses
-  // vary per call and stay uncached. One breakpoint = minimum overhead, max hit rate.
+  // Cache breakpoint strategy: system prompt + full problem bank + misconceptions +
+  // Coherence Map are stable across every analysis call. One ephemeral breakpoint
+  // at the end of the system array caches all four so subsequent analyses pay
+  // ~10% of the cached-input cost.
 
   const problemBank = getAllProblems()
-  const conceptGraph = conceptGraphRaw as unknown as { nodes: Array<{ id: string }> }
-  const subSkillIds = conceptGraph.nodes.map((n) => n.id)
+  const coherenceMap = coherenceMapRaw as unknown as {
+    nodes: Array<{ id: string; name: string; statement: string }>
+  }
+  const standardIds = coherenceMap.nodes.map((n) => n.id)
 
   const apiResponse = await anthropic.messages.create({
     model: 'claude-opus-4-7',
@@ -71,17 +79,21 @@ export async function POST(req: NextRequest) {
       {
         type: 'text',
         text: `MISCONCEPTION TAXONOMY (reference):\n${JSON.stringify(misconceptionsRaw, null, 2)}`,
+      },
+      {
+        type: 'text',
+        text: `COHERENCE MAP SUBGRAPH (reference — CCSS standards covered by this assessment):\n${JSON.stringify(coherenceMap, null, 2)}`,
         cache_control: { type: 'ephemeral' },
       },
     ],
     messages: [
       {
         role: 'user',
-        content: `LEARNER RESPONSES:
+        content: `LEARNER RESPONSES (telemetry-based):
 ${JSON.stringify(responses, null, 2)}
 
-SUB-SKILL LIST (produce an entry for each, even if "not_assessed"):
-${JSON.stringify(subSkillIds)}
+SUB-SKILL LIST — produce an entry for each, using CCSS standard IDs as keys:
+${JSON.stringify(standardIds)}
 
 ${ANALYSIS_USER_INSTRUCTIONS}`,
       },
