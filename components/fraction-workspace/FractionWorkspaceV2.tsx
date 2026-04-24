@@ -226,6 +226,12 @@ export default function FractionWorkspaceV2({
     setNumWholes((n) => n + 1)
   }, [locked, numWholes, maxWholes])
 
+  const handleRemoveWhole = useCallback(() => {
+    if (locked) return
+    if (numWholes <= 1) return
+    setNumWholes((n) => n - 1)
+  }, [locked, numWholes])
+
   const handleCommit = useCallback(() => {
     if (locked || placed.length === 0) return
     const result = checkMatch(
@@ -265,17 +271,17 @@ export default function FractionWorkspaceV2({
   const placedWithGeom = computePlacedGeometry(placed, widthPerWhole)
   const totalFilledLogicalPx = placedWithGeom.reduce((acc, p) => acc + p.widthPx, 0)
   const overhangPx = Math.max(0, totalFilledLogicalPx - wholesTotalPx)
-  const gapPx = Math.max(0, wholesTotalPx - totalFilledLogicalPx)
 
   const currentSum = sumPieces(placed.map((p) => p.denominator))
   const canAddMore = numWholes < maxWholes && !locked
+  const canRemove = numWholes > 1 && !locked
 
   const lastPiece = placedWithGeom[placedWithGeom.length - 1]
   const rightmostVisualPx = lastPiece ? lastPiece.leftPx + lastPiece.widthPx : 0
   const containerContentWidthPx = Math.max(wholesVisualWidthPx, rightmostVisualPx)
-  // Extra padding: 16 each side + space for the "+" button on the right if present
-  const plusButtonSpace = canAddMore ? 52 : 0
-  const containerWidthPx = containerContentWidthPx + 32 + plusButtonSpace
+  // Extra padding: 16 each side + space for + and - buttons on the right
+  const addButtonsSpace = canAddMore || canRemove ? 96 : 0
+  const containerWidthPx = containerContentWidthPx + 32 + addButtonsSpace
 
   return (
     <div className="flex flex-col items-center gap-6 select-none">
@@ -315,23 +321,39 @@ export default function FractionWorkspaceV2({
             )
           })}
 
-          {/* "+" add-another-whole button to the right of the last whole */}
-          {canAddMore && (
-            <button
-              type="button"
-              onClick={handleAddWhole}
-              aria-label="Add another whole"
-              title="Add another whole"
-              className="absolute rounded-md border-2 border-dashed border-zinc-400 dark:border-zinc-600 text-zinc-500 text-xl font-light flex items-center justify-center hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+          {/* "-" and "+" buttons to adjust how many wholes are on screen. */}
+          {(canAddMore || canRemove) && (
+            <div
+              className="absolute flex items-center gap-2"
               style={{
                 left: 16 + numWholes * (widthPerWhole + WHOLE_GAP_PX),
                 top: 12,
-                width: 36,
                 height: BAR_HEIGHT_PX,
               }}
             >
-              +
-            </button>
+              {canRemove && (
+                <button
+                  type="button"
+                  onClick={handleRemoveWhole}
+                  aria-label="Remove the last whole"
+                  title="Remove a whole"
+                  className="rounded-md border-2 border-dashed border-zinc-400 dark:border-zinc-600 text-zinc-500 text-xl font-light flex items-center justify-center hover:bg-zinc-100 dark:hover:bg-zinc-800 transition w-9 h-full"
+                >
+                  −
+                </button>
+              )}
+              {canAddMore && (
+                <button
+                  type="button"
+                  onClick={handleAddWhole}
+                  aria-label="Add another whole"
+                  title="Add a whole"
+                  className="rounded-md border-2 border-dashed border-zinc-400 dark:border-zinc-600 text-zinc-500 text-xl font-light flex items-center justify-center hover:bg-zinc-100 dark:hover:bg-zinc-800 transition w-9 h-full"
+                >
+                  +
+                </button>
+              )}
+            </div>
           )}
 
           {/* Placed pieces — positioned at their exact logical+gap-adjusted visual coords. */}
@@ -360,9 +382,6 @@ export default function FractionWorkspaceV2({
               Your pieces go past {numWholes === 1 ? 'the whole' : `${numWholes} wholes`}.
               {canAddMore && ' Tap + to add another whole.'}
             </p>
-          )}
-          {overhangPx === 0 && gapPx > 0 && placed.length > 0 && commitState !== 'success' && (
-            <p className="text-xs text-zinc-500">A gap remains.</p>
           )}
         </div>
       </div>
@@ -399,33 +418,54 @@ export default function FractionWorkspaceV2({
         )}
       </div>
 
-      {/* Palette — pieces at exact-size (same width AND height as their slot) */}
+      {/* Palette — each piece is shown inside its whole-context (PhET pattern).
+          Each entry is a widthPerWhole-wide rectangle with:
+            - a light dashed outline (the "whole" context)
+            - internal dashed dividers at 1/N positions showing how that whole would be divided
+            - a solid blue piece filling the leftmost 1/N (the draggable)
+          Entries stack vertically so the pieces stay at exact placed-size. */}
       <div className="w-full border-t border-zinc-200 dark:border-zinc-800 pt-6 flex flex-col items-center gap-3">
         <p className="text-xs uppercase tracking-wide text-zinc-500">Pieces</p>
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          {displayedDenominators.map((d) => (
-            <button
-              key={d}
-              type="button"
-              onPointerDown={(e) => handlePalettePointerDown(e, d)}
-              onPointerMove={handlePalettePointerMove}
-              onPointerUp={handlePalettePointerUp}
-              disabled={locked}
-              aria-label="Drag piece"
-              className={`rounded-sm border-2 ${PIECE_FILL} ${PIECE_BORDER} drop-shadow cursor-grab active:cursor-grabbing touch-none disabled:opacity-40`}
-              style={{
-                width: pieceWidthPx(d, widthPerWhole),
-                height: BAR_HEIGHT_PX,
-              }}
-            />
-          ))}
+        <div className="flex flex-col items-center gap-2">
+          {displayedDenominators.map((d) => {
+            const solidWidth = widthPerWhole / d
+            return (
+              <div
+                key={d}
+                className="relative"
+                style={{ width: widthPerWhole, height: BAR_HEIGHT_PX }}
+              >
+                {/* Dotted outline of the whole (context) */}
+                <div className="absolute inset-0 rounded-sm border border-dashed border-zinc-400 dark:border-zinc-600" />
+                {/* Internal dashed dividers at 1/N positions */}
+                {Array.from({ length: d - 1 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute top-1 bottom-1 border-l border-dashed border-zinc-300 dark:border-zinc-700"
+                    style={{ left: ((i + 1) / d) * widthPerWhole - 0.5 }}
+                  />
+                ))}
+                {/* Solid blue draggable piece, sized at 1/N of the whole */}
+                <button
+                  type="button"
+                  onPointerDown={(e) => handlePalettePointerDown(e, d)}
+                  onPointerMove={handlePalettePointerMove}
+                  onPointerUp={handlePalettePointerUp}
+                  disabled={locked}
+                  aria-label="Drag piece"
+                  className={`absolute left-0 top-0 rounded-sm border-2 ${PIECE_FILL} ${PIECE_BORDER} drop-shadow cursor-grab active:cursor-grabbing touch-none disabled:opacity-40`}
+                  style={{ width: solidWidth, height: BAR_HEIGHT_PX }}
+                />
+              </div>
+            )
+          })}
         </div>
         <p className="text-xs text-zinc-500">
           {locked
             ? commitState === 'success'
               ? 'Locked in.'
               : 'Pieces are locked. Try again to clear and start over.'
-            : 'Drag a piece into the target. Click a placed piece to remove it.'}
+            : 'Drag a blue piece into the target. Click a placed piece to remove it.'}
         </p>
       </div>
 
