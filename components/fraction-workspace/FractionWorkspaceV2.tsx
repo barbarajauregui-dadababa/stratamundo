@@ -29,10 +29,12 @@ const WHOLE_GAP_PX = 16
 
 /** Pixel width for one whole unit. Fixed (not adaptive to numWholes) so that
  *  pieces do NOT change size when the learner adds or removes wholes.
- *  Sized so 3 wholes + gaps + +/- buttons + padding fit inside the card's
- *  inner width (~848px for a max-w-4xl card with p-6) without horizontal
- *  scrolling. 1/12 pieces stay draggable at ~18px. */
-const WIDTH_PER_WHOLE_PX = 220
+ *  Sized so 3 wholes + gaps + +/- buttons + container padding fit inside
+ *  the card's inner width: the max-w-4xl card (896px) has both p-6 on the
+ *  card AND p-6 on the inner section, leaving ~800px of usable workspace
+ *  width. At W=200: 3×200 + 2×16 + 96 (buttons) + 32 (container padding) =
+ *  760 px, comfortably inside 800. 1/12 pieces remain draggable at ~17px. */
+const WIDTH_PER_WHOLE_PX = 200
 
 const PIECE_FILL = 'bg-sky-400'
 const PIECE_BORDER = 'border-sky-700'
@@ -310,7 +312,7 @@ export default function FractionWorkspaceV2({
   return (
     <div className="flex flex-col items-center gap-6 select-none">
       {problem.framing_text && (
-        <p className="text-center text-zinc-700 dark:text-zinc-300 max-w-lg">
+        <p className="text-center text-zinc-700 dark:text-zinc-300 max-w-2xl">
           {problem.framing_text}
         </p>
       )}
