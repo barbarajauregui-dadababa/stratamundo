@@ -140,7 +140,8 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
           : `${focusStandards.length} standards`
 
   return (
-    <main className="flex flex-1 w-full max-w-4xl mx-auto flex-col gap-8 py-10 px-8">
+    <main className="bg-paper min-h-screen">
+      <div className="max-w-4xl mx-auto px-6 py-10 flex flex-col gap-8">
       {masteryMap && (
         <div className="flex flex-col gap-3">
           <FourthGradeOverviewStrip />
@@ -153,45 +154,72 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
       )}
 
       {masteryMap && focusLabel ? (
-        <section className="rounded-2xl bg-stone-100 dark:bg-stone-900/60 px-7 py-6 flex flex-col gap-2">
-          <div className="flex items-baseline gap-2 flex-wrap text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-stone-400">
+        <section className="relative rounded-sm border-2 border-brass-deep/40 bg-paper-deep/40 px-7 py-6 flex flex-col gap-2">
+          <div
+            className="flex items-baseline gap-2 flex-wrap text-[10px] tracking-[0.25em] uppercase text-ink-faint"
+            style={{ fontFamily: 'var(--font-cinzel)' }}
+          >
             <span>Current focus</span>
-            <span aria-hidden className="text-stone-300 dark:text-stone-700">·</span>
-            <span className="normal-case tracking-normal text-stone-600 dark:text-stone-300 font-normal">
+            <span aria-hidden className="text-brass-deep/40">·</span>
+            <span
+              className="normal-case tracking-normal text-ink-soft"
+              style={{ fontFamily: 'var(--font-fraunces)', letterSpacing: '0' }}
+            >
               {displayName}
             </span>
           </div>
-          <h1 className="font-serif text-3xl font-semibold tracking-tight text-stone-900 dark:text-stone-50">
+          <h1
+            className="text-3xl tracking-tight text-ink"
+            style={{ fontFamily: 'var(--font-fraunces)', fontWeight: 600 }}
+          >
             {focusLabel}
           </h1>
           {focusStandards.length > 0 && (
-            <div className="mt-1 text-sm text-stone-600 dark:text-stone-400">
+            <div
+              className="mt-1 text-sm text-ink-soft italic"
+              style={{ fontFamily: 'var(--font-fraunces)' }}
+            >
               {focusStandards.length} {focusStandards.length === 1 ? 'standard' : 'standards'} in focus
             </div>
           )}
         </section>
       ) : (
         <header className="flex flex-col gap-2">
-          <h1 className="text-3xl font-semibold tracking-tight">Report</h1>
-          <p className="text-stone-600 dark:text-stone-400">
-            Mastery map for <strong>{displayName}</strong>
+          <p
+            className="text-[10px] tracking-[0.3em] uppercase text-ink-faint"
+            style={{ fontFamily: 'var(--font-cinzel)' }}
+          >
+            Mastery report · {displayName}
+          </p>
+          <h1
+            className="text-3xl tracking-tight text-ink"
+            style={{ fontFamily: 'var(--font-fraunces)', fontWeight: 600 }}
+          >
+            {displayName}&apos;s mastery report
+          </h1>
+          <p className="text-sm text-ink-soft" style={{ fontFamily: 'var(--font-fraunces)' }}>
             {isCompleted
-              ? ` — completed ${new Date(assessment.completed_at!).toLocaleString()}`
-              : ' — not yet completed'}
+              ? `Completed ${new Date(assessment.completed_at!).toLocaleString()}`
+              : 'Not yet completed'}
           </p>
         </header>
       )}
 
       {!isCompleted && (
-        <div className="rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
+        <div className="rounded-sm border-2 border-amber-700/40 bg-paper-deep px-4 py-3 text-sm text-amber-800" style={{ fontFamily: 'var(--font-fraunces)' }}>
           This assessment has not been submitted yet. Finish it before running analysis.
         </div>
       )}
 
       {isCompleted && !masteryMap && (
-        <section className="flex flex-col gap-3 rounded-md border border-stone-200 dark:border-stone-800 p-6">
-          <h2 className="text-lg font-medium">Step 1 — Analyze the responses</h2>
-          <p className="text-sm text-stone-600 dark:text-stone-400">
+        <section className="flex flex-col gap-3 rounded-sm border-2 border-brass-deep/30 bg-paper p-6">
+          <h2
+            className="text-lg text-ink"
+            style={{ fontFamily: 'var(--font-fraunces)', fontWeight: 600 }}
+          >
+            Step I — Analyze the responses
+          </h2>
+          <p className="text-sm text-ink-soft" style={{ fontFamily: 'var(--font-fraunces)' }}>
             Run analysis to produce the mastery map.
           </p>
           <AnalyzeButton assessmentId={id} parentAssessmentId={parentAssessmentId} />
@@ -200,9 +228,6 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
 
       {masteryMap && (
         <>
-          {/* At-a-glance summary — deterministically derived from the mastery
-              map. Structured + scannable. The Plan Architect's / analysis
-              engine's narrative appears below as supplementary notes. */}
           <AtAGlanceSummary
             masteryMap={masteryMap}
             byState={byState}
@@ -211,16 +236,19 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
           <div className="flex items-center justify-end">
             <Link
               href={`/learner/${assessment.learner_id}`}
-              className="text-sm text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-50 underline underline-offset-2 decoration-stone-300"
+              className="text-sm text-copper hover:text-brass-deep underline underline-offset-2 decoration-brass-deep/40 hover:decoration-brass-deep"
+              style={{ fontFamily: 'var(--font-fraunces)' }}
             >
-              View {displayName}&apos;s mastery tree →
+              Open {displayName}&apos;s mastery voyage →
             </Link>
           </div>
 
-          {/* Analyst's notes — bulleted by sentence so the reader can scan. */}
           {(planContent?.overall_notes ?? masteryMap.overall_notes) && (
-            <section className="rounded-md border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900/40 p-4 text-sm leading-relaxed text-stone-700 dark:text-stone-300">
-              <div className="mb-2 text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-stone-400">
+            <section className="rounded-sm border border-stone-300/80 bg-paper p-5 text-sm leading-relaxed text-ink-soft" style={{ fontFamily: 'var(--font-fraunces)' }}>
+              <div
+                className="mb-2 text-[10px] tracking-[0.25em] uppercase text-brass-deep"
+                style={{ fontFamily: 'var(--font-cinzel)' }}
+              >
                 Analyst&apos;s notes
               </div>
               <BulletedSentences
@@ -234,8 +262,8 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
             <Bucket
               title="Needs attention"
               subtitle="Specific misconception detected. Start here."
-              dot="bg-red-500"
-              containerClass="bg-red-50/60 dark:bg-red-950/20 border-red-200 dark:border-red-900"
+              dot="bg-red-600"
+              containerClass="bg-paper border border-red-600/30 border-l-4 border-l-red-600"
               standardIds={sortedByLayer(byState.misconception)}
               masteryMap={masteryMap}
               plan={planContent}
@@ -248,8 +276,8 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
             <Bucket
               title="Working on"
               subtitle="Building the skill. Support with practice."
-              dot="bg-amber-500"
-              containerClass="bg-amber-50/60 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900"
+              dot="bg-amber-600"
+              containerClass="bg-paper border border-amber-700/30 border-l-4 border-l-amber-600"
               standardIds={sortedByLayer(byState.working)}
               masteryMap={masteryMap}
               plan={planContent}
@@ -263,7 +291,7 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
               title="Mastered"
               subtitle="Reliably understood. No action needed."
               dot="bg-emerald-600"
-              containerClass="bg-emerald-50/60 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900"
+              containerClass="bg-paper border border-emerald-700/30 border-l-4 border-l-emerald-600"
               standardIds={sortedByLayer(byState.demonstrated)}
               masteryMap={masteryMap}
               plan={planContent}
@@ -287,8 +315,8 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
               </div>
               {planContent.prerequisite_check_recommendations &&
                 planContent.prerequisite_check_recommendations.length > 0 && (
-                  <div className="rounded-md border border-amber-300 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/40 p-4 text-sm leading-relaxed">
-                    <div className="mb-1 text-xs font-medium uppercase tracking-wide text-amber-700 dark:text-amber-300">
+                  <div className="rounded-md border border-amber-300 bg-amber-50 p-4 text-sm leading-relaxed">
+                    <div className="mb-1 text-xs font-medium uppercase tracking-wide text-amber-700">
                       Next assessment — consider probing
                     </div>
                     <ul className="list-disc ml-5 space-y-1">
@@ -305,6 +333,7 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
           )}
         </>
       )}
+      </div>
     </main>
   )
 }
@@ -321,8 +350,8 @@ function AtAGlanceSummary({
     .map(([sid]) => sid)
 
   return (
-    <section className="rounded-md border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-950/40 p-5">
-      <div className="text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-stone-400 mb-3">
+    <section className="rounded-md border border-stone-200 bg-white p-5">
+      <div className="text-xs font-medium uppercase tracking-wide text-stone-500 mb-3">
         At a glance
       </div>
       <ul className="flex flex-col gap-3 text-sm">
@@ -334,7 +363,7 @@ function AtAGlanceSummary({
               <div className="font-medium">
                 Needs attention ({byState.misconception.length})
               </div>
-              <div className="text-stone-600 dark:text-stone-400">
+              <div className="text-stone-600">
                 {byState.misconception.map((sid) => standardName(sid)).join('; ')}
               </div>
               {byState.misconception.some(
@@ -365,7 +394,7 @@ function AtAGlanceSummary({
               <div className="font-medium">
                 Working on ({byState.working.length})
               </div>
-              <div className="text-stone-600 dark:text-stone-400">
+              <div className="text-stone-600">
                 {byState.working.map((sid) => standardName(sid)).join('; ')}
               </div>
             </div>
@@ -379,7 +408,7 @@ function AtAGlanceSummary({
             <div className="font-medium">
               Mastered ({byState.demonstrated.length})
             </div>
-            <div className="text-stone-600 dark:text-stone-400">
+            <div className="text-stone-600">
               {byState.demonstrated.length === 0
                 ? '—'
                 : byState.demonstrated.map((sid) => standardName(sid)).join('; ')}
@@ -395,7 +424,7 @@ function AtAGlanceSummary({
               <div className="font-medium">
                 Not yet probed ({notAssessed.length})
               </div>
-              <div className="text-stone-600 dark:text-stone-400">
+              <div className="text-stone-600">
                 {notAssessed.map((sid) => standardName(sid)).join('; ')}
               </div>
             </div>
@@ -440,7 +469,7 @@ function Bucket({
       <summary className="cursor-pointer px-4 py-3 flex items-center gap-3 list-none">
         <span className={`inline-block h-2.5 w-2.5 rounded-full ${dot}`} />
         <span className="font-medium">{title}</span>
-        <span className="text-xs text-stone-600 dark:text-stone-400">({standardIds.length})</span>
+        <span className="text-xs text-stone-600">({standardIds.length})</span>
         <span className="text-xs text-stone-500 ml-2">{subtitle}</span>
       </summary>
       <ul className="flex flex-col gap-3 px-4 pb-4">
@@ -450,7 +479,7 @@ function Bucket({
           return (
             <li
               key={sid}
-              className="rounded-md bg-white dark:bg-stone-950/50 border border-stone-200 dark:border-stone-800 px-4 py-3"
+              className="rounded-md bg-white border border-stone-200 px-4 py-3"
             >
               <div className="flex items-baseline justify-between gap-3">
                 <div className="flex items-center gap-2">
@@ -459,12 +488,12 @@ function Bucket({
                 </div>
               </div>
               {report.reasoning && (
-                <div className="mt-2 text-sm text-stone-700 dark:text-stone-300">
+                <div className="mt-2 text-sm text-stone-700">
                   <BulletedSentences text={report.reasoning} />
                 </div>
               )}
               {report.flagged_misconception_ids.length > 0 && (
-                <div className="mt-2 text-xs text-stone-600 dark:text-stone-400">
+                <div className="mt-2 text-xs text-stone-600">
                   <span className="font-medium">Flagged misconception:</span>{' '}
                   {report.flagged_misconception_ids.map((m) => misconceptionName(m)).join(', ')}
                 </div>
@@ -480,17 +509,17 @@ function Bucket({
                 </details>
               )}
               {gap && planId && (
-                <div className="mt-3 pt-3 border-t border-stone-200 dark:border-stone-800">
+                <div className="mt-3 pt-3 border-t border-stone-200">
                   <div className="text-xs font-medium uppercase tracking-wide text-stone-500 mb-2">
                     Prescribed activities
                     {gap.diagnosis === 'prerequisite-gap' && (
-                      <span className="ml-2 text-amber-700 dark:text-amber-400">
+                      <span className="ml-2 text-amber-700">
                         · Prerequisite gap
                       </span>
                     )}
                   </div>
                   {gap.rationale_for_this_gap && (
-                    <div className="text-sm text-stone-700 dark:text-stone-300 mb-3">
+                    <div className="text-sm text-stone-700 mb-3">
                       <BulletedSentences text={gap.rationale_for_this_gap} />
                     </div>
                   )}
@@ -521,11 +550,11 @@ function Bucket({
                       run a focused probe to confirm the misconception
                       resolved. */}
                   {showProbeButton && (
-                    <div className="mt-4 pt-3 border-t border-dashed border-stone-300 dark:border-stone-700 flex flex-col gap-2">
+                    <div className="mt-4 pt-3 border-t border-dashed border-stone-300 flex flex-col gap-2">
                       <div className="text-xs font-medium uppercase tracking-wide text-stone-500">
                         Verify mastery
                       </div>
-                      <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
+                      <p className="text-xs text-stone-600 leading-relaxed">
                         Once the activities above are complete, run a focused probe — a short re-test of just this standard, ~10 minutes — to confirm the misconception has resolved.
                       </p>
                       <FocusedProbeButton

@@ -32,9 +32,9 @@ A Managed Agent — the **Plan Architect** — then writes a tailored, guide-fac
 
 A learner-facing **mastery tree** at `/learner/[id]` visualizes progress: leaves represent standards (colored by state), flowers grow next to leaves for completed practice activities, and fruits appear on branches when an entire IM curriculum section is mastered.
 
-## What's distinctive
+## How the diagnosis is grounded
 
-Two design moves that, as of April 2026, no other AI math tutor surveyed (Khanmigo, Synthesis, Beast Academy, ST Math, DreamBox, IXL, ALEKS, DragonBox, Smart Sparrow, Prodigy, Eureka Math²) makes:
+Two design moves we haven't seen elsewhere in math ed-tech:
 
 1. **Named misconception detection with traceable evidence.** Wrong-answer patterns (e.g., placing four 1/8 pieces when asked for 1/4) are explicitly mapped to misconceptions from the literature (e.g., *m07 — notational confusion*). The mastery map lists which problems fired which misconception.
 2. **Strategy-switching on reset is treated as positive mastery evidence.** A learner who tries 1/4 pieces, gaps, resets, and tries 1/8 pieces successfully is marked as *demonstrated* on equivalence reasoning — comparable strength of evidence to first-try success. Most tools penalize resets; this one rewards self-correction. (Basis: Rittle-Johnson 2017 on iterative conceptual↔procedural; Siegler's overlapping-waves theory.)

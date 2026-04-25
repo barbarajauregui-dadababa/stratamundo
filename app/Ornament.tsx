@@ -100,7 +100,7 @@ export function CartoucheFrame({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 600 200"
-      preserveAspectRatio="none"
+      preserveAspectRatio="xMidYMid meet"
       className={className}
       fill="none"
       stroke="currentColor"

@@ -123,12 +123,13 @@ body {
   animation: turn-slow 50s linear infinite reverse;
 }
 
-/* Gentle balloon float */
+/* Gentle balloon float — slower, smaller amplitude. A period airship
+ * carries weight; it shouldn't bounce. */
 @keyframes balloon-float {
   0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-8px); }
+  50%      { transform: translateY(-4px); }
 }
 
 .animate-balloon-float {
-  animation: balloon-float 8s ease-in-out infinite;
+  animation: balloon-float 12s ease-in-out infinite;
 }

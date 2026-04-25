@@ -143,20 +143,21 @@ export default function MasteryVoyage({ masteryMap, completedByStandard }: Props
             <stop offset="100%" stopColor="oklch(0.85 0.06 55)" />
           </linearGradient>
 
-          {/* Cloud fills, three states */}
-          <radialGradient id="cloud-mastered" cx="0.5" cy="0.5" r="0.6">
-            <stop offset="0%" stopColor="oklch(0.94 0.03 78 / 0.95)" />
-            <stop offset="80%" stopColor="oklch(0.78 0.10 78 / 0.85)" />
-            <stop offset="100%" stopColor="oklch(0.66 0.12 78 / 0.55)" />
+          {/* Cloud fills, three states. Bumped opacity so clouds read
+           *  clearly against the warm sky background. */}
+          <radialGradient id="cloud-mastered" cx="0.5" cy="0.5" r="0.65">
+            <stop offset="0%" stopColor="oklch(0.96 0.04 78 / 1)" />
+            <stop offset="60%" stopColor="oklch(0.84 0.10 78 / 0.95)" />
+            <stop offset="100%" stopColor="oklch(0.68 0.13 78 / 0.7)" />
           </radialGradient>
-          <radialGradient id="cloud-current" cx="0.5" cy="0.5" r="0.6">
-            <stop offset="0%" stopColor="oklch(0.99 0.012 75 / 0.95)" />
-            <stop offset="80%" stopColor="oklch(0.92 0.025 75 / 0.85)" />
-            <stop offset="100%" stopColor="oklch(0.78 0.04 70 / 0.55)" />
+          <radialGradient id="cloud-current" cx="0.5" cy="0.5" r="0.65">
+            <stop offset="0%" stopColor="oklch(0.99 0.012 75 / 1)" />
+            <stop offset="60%" stopColor="oklch(0.94 0.025 75 / 1)" />
+            <stop offset="100%" stopColor="oklch(0.78 0.06 70 / 0.85)" />
           </radialGradient>
-          <radialGradient id="cloud-later" cx="0.5" cy="0.5" r="0.6">
-            <stop offset="0%" stopColor="oklch(0.96 0.012 75 / 0.5)" />
-            <stop offset="100%" stopColor="oklch(0.88 0.018 75 / 0.15)" />
+          <radialGradient id="cloud-later" cx="0.5" cy="0.5" r="0.65">
+            <stop offset="0%" stopColor="oklch(0.97 0.014 75 / 0.95)" />
+            <stop offset="100%" stopColor="oklch(0.86 0.025 75 / 0.55)" />
           </radialGradient>
         </defs>
 
@@ -222,10 +223,10 @@ export default function MasteryVoyage({ masteryMap, completedByStandard }: Props
                   ry={14}
                   fill={
                     status === 'mastered'
-                      ? 'oklch(0.92 0.05 78 / 0.85)'
+                      ? 'oklch(0.94 0.06 78 / 0.95)'
                       : status === 'current'
-                        ? 'oklch(0.97 0.015 75 / 0.85)'
-                        : 'oklch(0.94 0.014 75 / 0.35)'
+                        ? 'oklch(0.98 0.018 75 / 0.95)'
+                        : 'oklch(0.96 0.018 75 / 0.7)'
                   }
                 />
               ))}
