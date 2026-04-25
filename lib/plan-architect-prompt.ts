@@ -59,35 +59,86 @@ You receive a learner's completed mastery map (produced by the prior analysis st
 
 **P10. Keep the plan short and actionable.** A guide scans this in 2 minutes and acts within the week. Avoid jargon. No academic citations in the plan output — save those for Librarian/research memory.
 
+## Fractions progressions (use these EXACT names and standards)
+
+The fractions domain is organized into 5 pedagogical progressions. The roadmap you produce uses these names:
+
+1. **"Unit fractions and partitioning"** — standards: 2.G.A.3, 3.G.A.2, 3.NF.A.1
+2. **"Fractions on a number line"** — standards: 3.NF.A.2.a, 3.NF.A.2.b
+3. **"Equivalent fractions"** — standards: 3.NF.A.3.a, 3.NF.A.3.b, 4.NF.A.1
+4. **"Comparing fractions"** — standards: 3.NF.A.3.d, 4.NF.A.2
+5. **"Whole numbers as fractions"** — standards: 3.NF.A.3.c
+
+Order is fixed (1 → 5). Earlier progressions are prerequisites for later ones.
+
+## Smart-skip rule for the current progression
+
+For each progression in order, look at the standards inside it:
+
+- If ALL standards in the progression are \`"demonstrated"\` (or are \`"not_assessed"\` AND every standard in EVERY EARLIER progression is also \`"demonstrated"\` or \`"not_assessed"\`), mark that progression \`"mastered"\`.
+- Otherwise, the FIRST progression containing at least one \`"misconception"\` or \`"working"\` standard is \`"now"\` — the current focus.
+- All progressions AFTER \`"now"\` are \`"later"\`.
+- A progression with NO probed standards (everything \`"not_assessed"\`) and which comes BEFORE the "now" progression is \`"not_yet_assessed"\` — neutral state, neither mastered nor active.
+
+Only generate priority_gaps for standards inside the \`"now"\` progression. Standards in "later" progressions get no activities yet — they'll be planned after the current progression resolves.
+
 ## Output format
 
 Return a single JSON object with this exact shape. No prose before or after, no markdown code fences, no commentary.
 
 \`\`\`json
 {
+  "current_progression": "Equivalent fractions",
+  "progression_roadmap": [
+    {
+      "name": "Unit fractions and partitioning",
+      "standard_ids": ["2.G.A.3", "3.G.A.2", "3.NF.A.1"],
+      "status": "mastered"
+    },
+    {
+      "name": "Fractions on a number line",
+      "standard_ids": ["3.NF.A.2.a", "3.NF.A.2.b"],
+      "status": "not_yet_assessed"
+    },
+    {
+      "name": "Equivalent fractions",
+      "standard_ids": ["3.NF.A.3.a", "3.NF.A.3.b", "4.NF.A.1"],
+      "status": "now"
+    },
+    {
+      "name": "Comparing fractions",
+      "standard_ids": ["3.NF.A.3.d", "4.NF.A.2"],
+      "status": "later"
+    },
+    {
+      "name": "Whole numbers as fractions",
+      "standard_ids": ["3.NF.A.3.c"],
+      "status": "later"
+    }
+  ],
   "priority_gaps": [
     {
-      "standard_id": "3.NF.A.3.d",
+      "standard_id": "3.NF.A.3.a",
       "current_state": "misconception",
-      "flagged_misconception_ids": ["m01_bigger_denominator_bigger"],
+      "flagged_misconception_ids": ["m04_equivalent_fractions_unrecognized"],
       "diagnosis": "within-concept",
       "prerequisite_flags": [],
       "activities": [
         {
           "resource_id": "r02",
           "order": 1,
-          "rationale": "Physical fraction tiles make the m01 misconception visible: the learner lays a 1/8 tile next to a 1/4 tile and SEES that 1/4 is bigger. No amount of verbal explanation lands like the side-by-side comparison."
+          "rationale": "Physical fraction tiles make equivalence visible: the learner lays two 1/4 tiles next to one 1/2 tile and SEES they are the same length. No amount of verbal explanation lands like the side-by-side comparison."
         },
         {
           "resource_id": "r07",
           "order": 2,
-          "rationale": "Khan Academy's comparison video reinforces the concrete insight with an area-model visualization. Pairs with the tiles to move from concrete to representational."
+          "rationale": "Khan Academy's equivalence video reinforces the concrete insight with an area-model visualization. Pairs with the tiles to move from concrete to representational."
         }
       ],
-      "rationale_for_this_gap": "Katie applies 'bigger denominator = bigger fraction' inconsistently. The fix is concrete first: she has to physically feel that 1/8 is smaller than 1/4 by laying the pieces side by side. Video afterward ties the hand-to-symbol connection."
+      "rationale_for_this_gap": "The learner does not yet recognize that fractions of different denominators can name the same quantity. Concrete tiles first, video afterward — tile-laying makes the same-length fact undeniable; the video then ties the hand-to-symbol connection."
     }
   ],
-  "overall_notes": "Katie demonstrates strong unit-fraction understanding. She has one specific misconception about comparing fractions — address it with fraction tiles this week, then re-probe 3.NF.A.3.d next Friday.",
+  "overall_notes": "The learner has solid unit-fraction understanding and is now working through equivalent fractions. One misconception around equivalence recognition is the focus of this week's plan. Re-probe equivalence after the activities are complete.",
   "prerequisite_check_recommendations": []
 }
 \`\`\`
@@ -97,7 +148,9 @@ Return a single JSON object with this exact shape. No prose before or after, no 
 - **All \`resource_id\` values** must exist in the provided resource library.
 - **All \`standard_id\` values** must exist in the provided Coherence Map subgraph.
 - **All \`flagged_misconception_ids\`** must exist in the provided misconception taxonomy.
-- **priority_gaps ordered by severity**: misconceptions before "working on it". Within each severity, order by Coherence Map layer (prerequisites first).
+- **\`current_progression\`** must equal the name of the progression in \`progression_roadmap\` whose status is \`"now"\` (or be empty string if every progression is mastered).
+- **\`progression_roadmap\`** must contain all 5 fractions progressions in order, with valid status values: \`"mastered" | "now" | "later" | "not_yet_assessed"\`. At most one progression has status \`"now"\`.
+- **priority_gaps ordered by severity**: misconceptions before "working on it". Within each severity, order by Coherence Map layer (prerequisites first). Only standards inside the \`"now"\` progression appear here.
 - **prerequisite_check_recommendations**: optional array of CCSS standard IDs the guide should probe on the NEXT assessment because the current assessment didn't cover them well. Standards in "not_assessed" state that are prerequisites for any flagged red/yellow standard go here.
 
 ## Do not

@@ -5,6 +5,7 @@ import GeneratePlanButton from './GeneratePlanButton'
 import type { PlanContent } from './PlanDisplay'
 import FocusedProbeButton from './FocusedProbeButton'
 import ActivityTile, { type CompletedActivity } from './ActivityTile'
+import { FourthGradeOverviewStrip, FractionsProgressionStrip } from './RoadmapStrip'
 import resourcesRaw from '@/content/fractions-resources.json'
 
 interface ResourceRow {
@@ -139,8 +140,10 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
       }
     }
   }
-  const focusLabel =
-    focusStandards.length === 0
+  const nowProgression = planContent?.progression_roadmap?.find((p) => p.status === 'now')
+  const focusLabel = nowProgression
+    ? nowProgression.name
+    : focusStandards.length === 0
       ? null
       : focusStandards.length === 1
         ? standardName(focusStandards[0])
@@ -150,6 +153,15 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
 
   return (
     <main className="flex flex-1 w-full max-w-4xl mx-auto flex-col gap-8 py-10 px-8">
+      {masteryMap && <FourthGradeOverviewStrip />}
+
+      {masteryMap && planContent?.progression_roadmap && planContent.progression_roadmap.length > 0 && (
+        <FractionsProgressionStrip
+          learnerName={displayName}
+          roadmap={planContent.progression_roadmap}
+        />
+      )}
+
       {masteryMap && focusLabel ? (
         <section className="rounded-2xl bg-stone-100 dark:bg-zinc-900/60 px-7 py-6 flex flex-col gap-2">
           <div className="flex items-baseline gap-2 flex-wrap text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-zinc-400">
@@ -332,24 +344,58 @@ function AtAGlanceSummary({
     .filter(([, r]) => r.state === 'not_assessed')
     .map(([sid]) => sid)
 
-  const misconceptionNamesForAttention = new Set<string>()
-  for (const sid of byState.misconception) {
-    for (const mid of masteryMap.standards[sid].flagged_misconception_ids) {
-      misconceptionNamesForAttention.add(misconceptionName(mid))
-    }
-  }
-  for (const sid of byState.working) {
-    for (const mid of masteryMap.standards[sid].flagged_misconception_ids) {
-      misconceptionNamesForAttention.add(misconceptionName(mid))
-    }
-  }
-
   return (
     <section className="rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/40 p-5">
       <div className="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400 mb-3">
         At a glance
       </div>
       <ul className="flex flex-col gap-3 text-sm">
+        {/* Needs attention (red/misconception) */}
+        {byState.misconception.length > 0 && (
+          <li className="flex items-start gap-2">
+            <span className="mt-1.5 h-2 w-2 rounded-full bg-red-500 shrink-0" />
+            <div>
+              <div className="font-medium">
+                Needs attention ({byState.misconception.length})
+              </div>
+              <div className="text-zinc-600 dark:text-zinc-400">
+                {byState.misconception.map((sid) => standardName(sid)).join('; ')}
+              </div>
+              {byState.misconception.some(
+                (sid) => masteryMap.standards[sid].flagged_misconception_ids.length > 0
+              ) && (
+                <div className="text-xs text-zinc-500 mt-1">
+                  Flagged misconceptions:{' '}
+                  {Array.from(
+                    new Set(
+                      byState.misconception.flatMap((sid) =>
+                        masteryMap.standards[sid].flagged_misconception_ids.map((m) =>
+                          misconceptionName(m)
+                        )
+                      )
+                    )
+                  ).join('; ')}
+                </div>
+              )}
+            </div>
+          </li>
+        )}
+
+        {/* Working on it (yellow) */}
+        {byState.working.length > 0 && (
+          <li className="flex items-start gap-2">
+            <span className="mt-1.5 h-2 w-2 rounded-full bg-yellow-500 shrink-0" />
+            <div>
+              <div className="font-medium">
+                Working on ({byState.working.length})
+              </div>
+              <div className="text-zinc-600 dark:text-zinc-400">
+                {byState.working.map((sid) => standardName(sid)).join('; ')}
+              </div>
+            </div>
+          </li>
+        )}
+
         {/* Knows well (green/demonstrated) */}
         <li className="flex items-start gap-2">
           <span className="mt-1.5 h-2 w-2 rounded-full bg-green-500 shrink-0" />
@@ -362,28 +408,6 @@ function AtAGlanceSummary({
                 ? '—'
                 : byState.demonstrated.map((sid) => standardName(sid)).join('; ')}
             </div>
-          </div>
-        </li>
-
-        {/* Working on it */}
-        <li className="flex items-start gap-2">
-          <span className="mt-1.5 h-2 w-2 rounded-full bg-yellow-500 shrink-0" />
-          <div>
-            <div className="font-medium">
-              Working on ({byState.working.length + byState.misconception.length})
-            </div>
-            <div className="text-zinc-600 dark:text-zinc-400">
-              {byState.working.length + byState.misconception.length === 0
-                ? '—'
-                : [...byState.misconception, ...byState.working]
-                    .map((sid) => standardName(sid))
-                    .join('; ')}
-            </div>
-            {misconceptionNamesForAttention.size > 0 && (
-              <div className="text-xs text-zinc-500 mt-1">
-                Flagged misconceptions: {[...misconceptionNamesForAttention].join('; ')}
-              </div>
-            )}
           </div>
         </li>
 

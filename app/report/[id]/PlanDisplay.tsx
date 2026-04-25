@@ -19,10 +19,20 @@ interface PriorityGap {
   rationale_for_this_gap: string
 }
 
+export type ProgressionStatus = 'mastered' | 'now' | 'later' | 'not_yet_assessed'
+
+export interface ProgressionRoadmapEntry {
+  name: string
+  standard_ids: string[]
+  status: ProgressionStatus
+}
+
 export interface PlanContent {
   priority_gaps: PriorityGap[]
   overall_notes: string
   prerequisite_check_recommendations?: string[]
+  current_progression?: string
+  progression_roadmap?: ProgressionRoadmapEntry[]
   _completed_activities?: CompletedActivity[]
 }
 
