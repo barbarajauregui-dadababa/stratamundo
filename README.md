@@ -2,7 +2,7 @@
 
 *Mastery, layer by layer.*
 
-A misconception-targeted diagnostic and learning-plan system for grade 3–4 math. Currently scoped to fractions; designed to extend to all of 4th-grade math (and beyond) without changing the engine. Built solo in 4 days for the Cerebral Valley **Built with Opus 4.7** hackathon, piloted at Acton Academy Falls Church.
+A misconception-targeted diagnostic and learning-plan system for grade 3–4 math. Currently scoped to fractions; designed to extend to all of 4th-grade math (and beyond) without changing the engine. Built solo in 4 days for the Cerebral Valley **Built with Opus 4.7** hackathon.
 
 🌐 **Live demo:** https://fractions-mastery-tracker.vercel.app *(URL will move to a Strata-branded domain post-hackathon)*
 
@@ -149,10 +149,6 @@ lib/                Supabase clients, problem selection, fraction math, prompts
 scripts/            One-time setup scripts
 ```
 
-## Pilot
-
-Acton Academy Falls Church, April 2026. Pilot learner is the founder's daughter; the founder is also the builder. Written parent permission obtained for demo footage.
-
 ## License
 
 MIT for the code in this repository. See `LICENSE`.
@@ -164,7 +160,6 @@ MIT for the code in this repository. See `LICENSE`.
 
 ## Acknowledgments
 
-- Acton Academy Falls Church for the pilot
 - Bill McCallum and the IM team for the K-5 curriculum that grounds our roadmap
 - Anthropic for Claude Opus 4.7 and Managed Agents
 - Cerebral Valley for hosting the hackathon

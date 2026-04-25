@@ -9,7 +9,7 @@
       "Per spec: 'fewer, better, more actionable' — prefer quality over count.",
       "Montessori materials are physical — URLs don't apply; the description points to the material name and where to get it.",
       "The `source_site` field holds the top-level site (e.g., khanacademy.org) so you can quickly verify each curation decision is in a trusted source.",
-      "When you curate: delete resources you don't like, add ones you do, replace descriptions that don't match how Acton uses them."
+      "When you curate: delete resources you don't like, add ones you do, replace descriptions that don't match how your setting uses them."
     ]
   },
   "resources": [
@@ -164,7 +164,7 @@
       "misconception_ids": ["m04_equivalent_fractions_unrecognized", "m01_bigger_denominator_bigger", "m05_unequal_partitioning"],
       "concept_nodes": ["s01_equal_partitioning", "s02_fraction_notation_and_unit_fractions", "s04_equivalent_fractions"],
       "prerequisites": [],
-      "notes": "Classic Montessori circular fraction insets: whole, halves, thirds, fourths, fifths, sixths, eighths, ninths, tenths. Kids can physically swap 2/4 pieces for 1/2 piece and confirm equivalence by matching perimeter. Strong Acton fit.",
+      "notes": "Classic Montessori circular fraction insets: whole, halves, thirds, fourths, fifths, sixths, eighths, ninths, tenths. Kids can physically swap 2/4 pieces for 1/2 piece and confirm equivalence by matching perimeter. Strong fit for mastery-based settings.",
       "curation_status": "to_curate"
     },
     {
@@ -234,7 +234,7 @@
       "misconception_ids": ["m01_bigger_denominator_bigger", "m04_equivalent_fractions_unrecognized"],
       "concept_nodes": ["s05_fraction_comparison", "s04_equivalent_fractions"],
       "prerequisites": ["s02_fraction_notation_and_unit_fractions"],
-      "notes": "Like the card game 'war' but with fraction cards. Each player flips a card; bigger fraction takes both. Builds comparison fluency with repeated reps. Good for small groups at Acton.",
+      "notes": "Like the card game 'war' but with fraction cards. Each player flips a card; bigger fraction takes both. Builds comparison fluency with repeated reps. Good for small-group practice.",
       "curation_status": "to_curate"
     },
     {
@@ -270,7 +270,7 @@
       "title": "[TO CURATE] Prodigy Math or similar adaptive game — fraction level",
       "modality": "game_or_interactive",
       "source_site": "prodigygame.com (or equivalent)",
-      "url": "[TO VERIFY — Prodigy has fraction content; check Acton's existing game selection first]",
+      "url": "[TO VERIFY — Prodigy has fraction content; check existing game selection first]",
       "duration_minutes": 20,
       "grade_band": "3-4",
       "misconception_ids": [],

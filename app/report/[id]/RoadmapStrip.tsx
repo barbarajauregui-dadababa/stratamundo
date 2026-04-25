@@ -20,23 +20,20 @@ export function FourthGradeOverviewStrip() {
           return (
             <li
               key={d.code}
-              className={`rounded-lg border px-3 py-2.5 flex flex-col gap-0.5 ${
+              className={`rounded-lg border-2 px-3 py-2.5 flex flex-col gap-0.5 ${
                 inProgress
-                  ? 'bg-white dark:bg-stone-950 border-stone-300 dark:border-stone-700 shadow-sm'
+                  ? 'bg-white dark:bg-stone-950 border-blue-500 dark:border-blue-400 shadow-sm'
                   : 'bg-stone-50 dark:bg-stone-900/40 border-stone-200 dark:border-stone-800 opacity-70'
               }`}
             >
               <div className="flex items-center gap-1.5">
                 <span
                   className={`text-xs font-mono ${
-                    inProgress ? 'text-stone-700 dark:text-stone-300' : 'text-stone-500 dark:text-stone-500'
+                    inProgress ? 'text-blue-700 dark:text-blue-300' : 'text-stone-500 dark:text-stone-500'
                   }`}
                 >
                   {d.code}
                 </span>
-                {inProgress && (
-                  <span className="ml-auto h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
-                )}
               </div>
               <div
                 className={`text-xs leading-tight ${
@@ -46,10 +43,10 @@ export function FourthGradeOverviewStrip() {
                 {d.name}
               </div>
               <div
-                className={`text-[10px] mt-0.5 ${
+                className={`mt-1 ${
                   inProgress
-                    ? 'text-emerald-700 dark:text-emerald-400 font-medium'
-                    : 'text-stone-400 dark:text-stone-600 italic'
+                    ? 'text-base font-semibold text-blue-700 dark:text-blue-300'
+                    : 'text-[10px] text-stone-400 dark:text-stone-600 italic'
                 }`}
               >
                 {inProgress ? 'In progress' : 'Coming in v1.5'}
@@ -69,10 +66,10 @@ interface SectionStripProps {
 
 export function FractionsSectionStrip({ learnerName, roadmap }: SectionStripProps) {
   return (
-    <section className="flex flex-col gap-2">
+    <section className="flex flex-col gap-2 pl-4 border-l-2 border-blue-500 dark:border-blue-400">
       <div className="flex items-baseline justify-between gap-3 flex-wrap">
         <div className="text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-stone-400">
-          Fractions sections for {learnerName}
+          Inside 4.NF — fractions sections for {learnerName}
         </div>
         <div className="text-[10px] text-stone-500 dark:text-stone-500 italic">
           Source: Illustrative Mathematics, Grade 3 Unit 5 and Grade 4 Unit 2

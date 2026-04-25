@@ -126,21 +126,7 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
     }
   }
 
-  // Hero stats — derived from plan + resource library.
   const focusStandards = [...byState.misconception, ...byState.working]
-  let totalMinutes = 0
-  let handsOnCount = 0
-  let activityCount = 0
-  if (planContent && masteryMap) {
-    for (const gap of planContent.priority_gaps) {
-      for (const act of gap.activities) {
-        activityCount += 1
-        const r = resourceById(act.resource_id)
-        if (r?.duration_minutes) totalMinutes += r.duration_minutes
-        if (r?.modality === 'manipulative') handsOnCount += 1
-      }
-    }
-  }
   const roadmapEntries = planContent?.section_roadmap ?? planContent?.progression_roadmap
   const nowSection = roadmapEntries?.find((p) => p.status === 'now')
   const focusLabel = nowSection
@@ -155,14 +141,16 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
 
   return (
     <main className="flex flex-1 w-full max-w-4xl mx-auto flex-col gap-8 py-10 px-8">
-      {masteryMap && <FourthGradeOverviewStrip />}
-
-      {masteryMap &&
-        (() => {
-          const roadmap = planContent?.section_roadmap ?? planContent?.progression_roadmap
-          if (!roadmap || roadmap.length === 0) return null
-          return <FractionsSectionStrip learnerName={displayName} roadmap={roadmap} />
-        })()}
+      {masteryMap && (
+        <div className="flex flex-col gap-3">
+          <FourthGradeOverviewStrip />
+          {(() => {
+            const roadmap = planContent?.section_roadmap ?? planContent?.progression_roadmap
+            if (!roadmap || roadmap.length === 0) return null
+            return <FractionsSectionStrip learnerName={displayName} roadmap={roadmap} />
+          })()}
+        </div>
+      )}
 
       {masteryMap && focusLabel ? (
         <section className="rounded-2xl bg-stone-100 dark:bg-stone-900/60 px-7 py-6 flex flex-col gap-2">
@@ -176,26 +164,9 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
           <h1 className="font-serif text-3xl font-semibold tracking-tight text-stone-900 dark:text-stone-50">
             {focusLabel}
           </h1>
-          {activityCount > 0 && (
-            <div className="mt-1 flex items-center gap-3 text-sm text-stone-600 dark:text-stone-400">
-              <span>
-                <span className="font-medium text-stone-800 dark:text-stone-200">{activityCount}</span>{' '}
-                {activityCount === 1 ? 'activity' : 'activities'}
-              </span>
-              {totalMinutes > 0 && (
-                <>
-                  <span aria-hidden className="text-stone-300 dark:text-stone-700">·</span>
-                  <span>~{totalMinutes} min total</span>
-                </>
-              )}
-              {handsOnCount > 0 && (
-                <>
-                  <span aria-hidden className="text-stone-300 dark:text-stone-700">·</span>
-                  <span>
-                    {handsOnCount} hands-on
-                  </span>
-                </>
-              )}
+          {focusStandards.length > 0 && (
+            <div className="mt-1 text-sm text-stone-600 dark:text-stone-400">
+              {focusStandards.length} {focusStandards.length === 1 ? 'standard' : 'standards'} in focus
             </div>
           )}
         </section>
@@ -229,6 +200,14 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
 
       {masteryMap && (
         <>
+          {/* At-a-glance summary — deterministically derived from the mastery
+              map. Structured + scannable. The Plan Architect's / analysis
+              engine's narrative appears below as supplementary notes. */}
+          <AtAGlanceSummary
+            masteryMap={masteryMap}
+            byState={byState}
+          />
+
           <div className="flex items-center justify-end">
             <Link
               href={`/learner/${assessment.learner_id}`}
@@ -238,22 +217,15 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
             </Link>
           </div>
 
-          {/* At-a-glance summary — deterministically derived from the mastery
-              map. Structured + scannable. The Plan Architect's / analysis
-              engine's narrative appears below as supplementary notes. */}
-          <AtAGlanceSummary
-            masteryMap={masteryMap}
-            byState={byState}
-          />
-
-          {/* Supplementary narrative from Plan Architect (if it ran) or from
-              the analysis engine. Shown smaller, below the structured summary. */}
+          {/* Analyst's notes — bulleted by sentence so the reader can scan. */}
           {(planContent?.overall_notes ?? masteryMap.overall_notes) && (
             <section className="rounded-md border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900/40 p-4 text-sm leading-relaxed text-stone-700 dark:text-stone-300">
-              <div className="mb-1 text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-stone-400">
+              <div className="mb-2 text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-stone-400">
                 Analyst&apos;s notes
               </div>
-              {planContent?.overall_notes ?? masteryMap.overall_notes}
+              <BulletedSentences
+                text={planContent?.overall_notes ?? masteryMap.overall_notes ?? ''}
+              />
             </section>
           )}
 
@@ -495,9 +467,9 @@ function Bucket({
                 )}
               </div>
               {report.reasoning && (
-                <p className="mt-2 text-sm text-stone-700 dark:text-stone-300">
-                  {report.reasoning}
-                </p>
+                <div className="mt-2 text-sm text-stone-700 dark:text-stone-300">
+                  <BulletedSentences text={report.reasoning} />
+                </div>
               )}
               {report.flagged_misconception_ids.length > 0 && (
                 <div className="mt-2 text-xs text-stone-600 dark:text-stone-400">
@@ -558,5 +530,30 @@ function Bucket({
         })}
       </ul>
     </details>
+  )
+}
+
+/**
+ * Split a paragraph into sentences and render as bullets. Splits on
+ * sentence-terminal punctuation (.?!) followed by whitespace. Keeps the
+ * punctuation. Falls back to the original text rendered as a single
+ * bullet if it does not split cleanly.
+ */
+function BulletedSentences({ text }: { text: string }) {
+  const trimmed = text.trim()
+  if (!trimmed) return null
+  const sentences = trimmed
+    .split(/(?<=[.!?])\s+/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0)
+  if (sentences.length <= 1) {
+    return <p className="leading-relaxed">{trimmed}</p>
+  }
+  return (
+    <ul className="list-disc ml-5 space-y-1.5 leading-relaxed">
+      {sentences.map((s, i) => (
+        <li key={i}>{s}</li>
+      ))}
+    </ul>
   )
 }

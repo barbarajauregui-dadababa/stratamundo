@@ -5,7 +5,7 @@ export default function Home() {
     <main className="flex flex-1 w-full max-w-4xl mx-auto flex-col gap-12 py-20 px-6">
       <header className="flex flex-col gap-4">
         <p className="text-xs font-medium uppercase tracking-wide text-stone-500">
-          Built with Opus 4.7 hackathon · Acton Academy Falls Church pilot
+          Built with Opus 4.7 hackathon
         </p>
         <h1 className="font-serif text-5xl sm:text-6xl font-semibold tracking-tight text-stone-900">
           Strata

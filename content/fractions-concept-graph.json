@@ -8,7 +8,7 @@
       "8 sub-skills matching spec §7 / §3. Sub-skill IDs are s01..s08.",
       "s08 (visual representations) is orthogonal — it supports every other sub-skill rather than being a gate for any. I've modeled it as a prerequisite for s02 (fraction notation & unit fractions) since visual partitioning is the usual entry point, but it stays 'connected' to all nodes through shared understanding rather than through edges.",
       "Layout hint: use the `level` field as a y-axis placement suggestion (0 = bottom/prerequisite, higher = more dependent).",
-      "One decision to verify: I merged 'fraction notation' and 'unit fractions' into s02 because the Acton assessment is unlikely to separate them at grade 3-4. If you want them split, s02a/s02b can replace s02."
+      "One decision to verify: I merged "fraction notation" and "unit fractions" into s02 because a grade 3-4 assessment is unlikely to separate them. If you want them split, s02a/s02b can replace s02."
     ]
   },
   "nodes": [

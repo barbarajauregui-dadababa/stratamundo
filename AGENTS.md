@@ -22,7 +22,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 A mastery-diagnostic tool for 3rd–4th grade fractions. A learner takes a 30–45 minute show-your-work assessment; Opus 4.7 analyzes the responses to produce a categorical mastery map (misconception detected / working / demonstrated / not assessed) with evidence citations; a Managed Agent (the Plan Architect) generates a tailored guide-facing plan of 2–3 concrete activities per priority gap. Focused ~10-minute re-probes verify whether specific misconceptions have resolved.
 
-Built solo in 4 days for the Cerebral Valley "Built with Opus 4.7" hackathon, with a pilot at Acton Academy Falls Church.
+Built solo in 4 days for the Cerebral Valley "Built with Opus 4.7" hackathon.
 
 ## Stack
 

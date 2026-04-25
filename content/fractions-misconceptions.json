@@ -2,7 +2,7 @@
   "_meta": {
     "concept": "fractions",
     "grade_band": "3-4",
-    "draft_status": "initial draft by Claude Code, Thu Apr 23 2026 — requires Barbara's review for pedagogical accuracy and Acton-specific framing",
+    "draft_status": "initial draft by Claude Code, Thu Apr 23 2026 — requires curator review for pedagogical accuracy",
     "research_basis": "Synthesized from Van de Walle 'Elementary and Middle School Mathematics', Common Core Progressions documents for fractions (3-5), and published research on rational number misconceptions (Behr, Lesh, Post; Mack; Siegler). Nothing copied verbatim.",
     "notes_for_barbara": [
       "Each misconception has: id, name, short_description, manifestation (how it shows up in student work), grade_onset (when it typically appears), diagnostic_signals (what specific wrong answers or work patterns reveal it), prerequisite_links (which prerequisite gaps can masquerade as this misconception).",
