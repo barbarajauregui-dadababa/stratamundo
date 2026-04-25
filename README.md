@@ -8,14 +8,15 @@ A diagnostic, a plan, and a probe loop — together, the voyage through math mas
 
 ---
 
-## The problem
+## The three questions Strata Mundo answers
 
-Existing math tools measure *performance*, not *mastery*. Khan's course challenge probes a year with 30 questions. IXL grades a kid on speed. Beast Academy engages but doesn't diagnose. Most tools treat a wrong answer as a number to lower, not as evidence of a specific misconception to address.
+Every guide and parent serious about mastery wants three things answered:
 
-A guide, parent, or microschool teacher actually wants two questions answered:
+1. **Where is the learner in their math journey, really?** Not what they perform under pressure — what they understand.
+2. **What should they work on next, exactly?** Not a percentage that needs to rise — concrete activities for a specific gap.
+3. **What different effective tools are out there to truly master that skill?** Not the same boxed practice repeated — varied, real-world, hands-on options across modalities.
 
-1. **Where is this learner, really?** Not what she performs under pressure — what she understands.
-2. **What do we work on next, exactly?** Not a percentage that needs to rise — concrete activities for a specific gap.
+Existing math tools answer none of these well. Khan's course challenge probes a year with 30 questions and grades right/wrong. IXL grades a kid on speed. Beast Academy engages but doesn't diagnose. Most tools treat a wrong answer as a number to lower, not as evidence of a specific misconception to address.
 
 ## What this does
 
@@ -30,7 +31,7 @@ A learner takes a ~10 minute drag-and-build fractions assessment. The system rec
 
 A Managed Agent — the **Plan Architect** — then writes a tailored, guide-facing plan: 2–3 concrete activities per priority gap, sequenced concrete-to-representational-to-abstract, with rationale. When the guide thinks a misconception has resolved, a **focused probe** (4–6 problems, ~10 min) verifies it and merges the result back into the original mastery map.
 
-A learner-facing **mastery tree** at `/learner/[id]` visualizes progress: leaves represent standards (colored by state), flowers grow next to leaves for completed practice activities, and fruits appear on branches when an entire IM curriculum section is mastered.
+A learner-facing **mastery voyage** at `/learner/[id]` visualizes progress as a vertical scene of cloud strata. Each stratum is one IM Section. The airship floats at the section the learner is currently working on. Pennants on each stratum mark individual standards, colored by state, with brass dots above for completed activities. Mastered strata shimmer in brass-gold; later strata sit faint and high in the sky.
 
 ## How the diagnosis is grounded
 
