@@ -49,7 +49,7 @@ export default function AnalyzeButton({
         type="button"
         onClick={runAnalysis}
         disabled={isRunning}
-        className="inline-flex h-10 items-center justify-center rounded-md bg-zinc-900 px-4 text-sm font-medium text-white disabled:opacity-50 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 w-fit"
+        className="inline-flex h-10 items-center justify-center rounded-md bg-stone-900 px-4 text-sm font-medium text-white disabled:opacity-50 hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-200 w-fit"
       >
         {isRunning ? 'Analyzing… this takes ~10–20 seconds' : 'Run analysis'}
       </button>

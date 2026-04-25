@@ -232,22 +232,22 @@ export default function MasteryTree({ masteryMap, completedByStandard }: Props) 
       <Legend />
 
       <details className="mt-6 text-sm">
-        <summary className="cursor-pointer text-stone-600 dark:text-zinc-400 font-medium">
+        <summary className="cursor-pointer text-stone-600 dark:text-stone-400 font-medium">
           Standard-by-standard list
         </summary>
-        <ul className="mt-3 flex flex-col gap-2 text-stone-700 dark:text-zinc-300">
+        <ul className="mt-3 flex flex-col gap-2 text-stone-700 dark:text-stone-300">
           {SECTIONS.flatMap((s) =>
             s.standardIds.map((sid) => (
               <li
                 key={sid}
-                className="flex items-center gap-3 rounded-md border border-stone-200 dark:border-zinc-800 px-3 py-2"
+                className="flex items-center gap-3 rounded-md border border-stone-200 dark:border-stone-800 px-3 py-2"
               >
                 <StateDot state={stateOf(sid)} />
                 <span className="font-medium">{standardName(sid)}</span>
-                <span className="text-xs font-mono text-stone-500 dark:text-zinc-500">
+                <span className="text-xs font-mono text-stone-500 dark:text-stone-500">
                   {sid}
                 </span>
-                <span className="ml-auto text-xs text-stone-500 dark:text-zinc-500 italic">
+                <span className="ml-auto text-xs text-stone-500 dark:text-stone-500 italic">
                   {s.fullName}
                 </span>
               </li>
@@ -493,14 +493,14 @@ function SectionLabel({ section }: { section: SectionDef }) {
 
 function Legend() {
   return (
-    <div className="mt-4 flex flex-col items-center gap-3 text-xs text-stone-600 dark:text-zinc-400">
+    <div className="mt-4 flex flex-col items-center gap-3 text-xs text-stone-600 dark:text-stone-400">
       <div className="flex items-center justify-center gap-5 flex-wrap">
         <LegendItem state="demonstrated" />
         <LegendItem state="working" />
         <LegendItem state="misconception" />
         <LegendItem state="not_assessed" />
       </div>
-      <div className="flex items-center justify-center gap-5 flex-wrap text-stone-500 dark:text-zinc-500">
+      <div className="flex items-center justify-center gap-5 flex-wrap text-stone-500 dark:text-stone-500">
         <div className="flex items-center gap-1.5">
           <svg viewBox="-8 -8 16 16" className="h-4 w-4" aria-hidden>
             <defs>

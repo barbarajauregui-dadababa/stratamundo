@@ -69,7 +69,7 @@ export default function FocusedProbeButton({
         type="button"
         onClick={handleClick}
         disabled={isStarting}
-        className="inline-flex h-7 items-center justify-center rounded-md border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-2.5 text-xs font-medium text-zinc-800 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-900 disabled:opacity-50 w-fit"
+        className="inline-flex h-7 items-center justify-center rounded-md border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-950 px-2.5 text-xs font-medium text-stone-800 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-900 disabled:opacity-50 w-fit"
       >
         {isStarting ? 'Starting probe…' : 'Run focused probe'}
       </button>

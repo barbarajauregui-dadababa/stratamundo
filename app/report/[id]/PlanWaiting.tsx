@@ -51,13 +51,13 @@ export default function PlanWaiting({ assessmentId }: Props) {
 
   const seconds = Math.floor(elapsedMs / 1000)
   return (
-    <section className="flex items-center gap-3 rounded-md border border-stone-200 dark:border-zinc-800 bg-stone-50 dark:bg-zinc-900/40 px-5 py-4">
+    <section className="flex items-center gap-3 rounded-md border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900/40 px-5 py-4">
       <Spinner />
       <div className="flex-1">
-        <div className="text-sm font-medium text-stone-800 dark:text-zinc-200">
+        <div className="text-sm font-medium text-stone-800 dark:text-stone-200">
           Plan Architect is working on your plan… ~1–3 minutes
         </div>
-        <div className="text-xs text-stone-500 dark:text-zinc-500 mt-0.5">
+        <div className="text-xs text-stone-500 dark:text-stone-500 mt-0.5">
           You can read the mastery map above while it works.{' '}
           {seconds > 0 && `(${seconds}s elapsed)`}
         </div>
@@ -69,7 +69,7 @@ export default function PlanWaiting({ assessmentId }: Props) {
 function Spinner() {
   return (
     <svg
-      className="h-5 w-5 animate-spin text-stone-500 dark:text-zinc-500"
+      className="h-5 w-5 animate-spin text-stone-500 dark:text-stone-500"
       viewBox="0 0 24 24"
       fill="none"
       aria-hidden

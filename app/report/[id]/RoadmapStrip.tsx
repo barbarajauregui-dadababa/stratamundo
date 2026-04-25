@@ -11,7 +11,7 @@ const FOURTH_GRADE_DOMAINS: { code: string; name: string; status: 'in_progress' 
 export function FourthGradeOverviewStrip() {
   return (
     <section className="flex flex-col gap-2">
-      <div className="text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-zinc-400">
+      <div className="text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-stone-400">
         4th-grade math overview
       </div>
       <ol className="grid grid-cols-2 sm:grid-cols-5 gap-2">
@@ -22,14 +22,14 @@ export function FourthGradeOverviewStrip() {
               key={d.code}
               className={`rounded-lg border px-3 py-2.5 flex flex-col gap-0.5 ${
                 inProgress
-                  ? 'bg-white dark:bg-zinc-950 border-stone-300 dark:border-zinc-700 shadow-sm'
-                  : 'bg-stone-50 dark:bg-zinc-900/40 border-stone-200 dark:border-zinc-800 opacity-70'
+                  ? 'bg-white dark:bg-stone-950 border-stone-300 dark:border-stone-700 shadow-sm'
+                  : 'bg-stone-50 dark:bg-stone-900/40 border-stone-200 dark:border-stone-800 opacity-70'
               }`}
             >
               <div className="flex items-center gap-1.5">
                 <span
                   className={`text-xs font-mono ${
-                    inProgress ? 'text-stone-700 dark:text-zinc-300' : 'text-stone-500 dark:text-zinc-500'
+                    inProgress ? 'text-stone-700 dark:text-stone-300' : 'text-stone-500 dark:text-stone-500'
                   }`}
                 >
                   {d.code}
@@ -40,7 +40,7 @@ export function FourthGradeOverviewStrip() {
               </div>
               <div
                 className={`text-xs leading-tight ${
-                  inProgress ? 'text-stone-800 dark:text-zinc-200' : 'text-stone-500 dark:text-zinc-500'
+                  inProgress ? 'text-stone-800 dark:text-stone-200' : 'text-stone-500 dark:text-stone-500'
                 }`}
               >
                 {d.name}
@@ -49,7 +49,7 @@ export function FourthGradeOverviewStrip() {
                 className={`text-[10px] mt-0.5 ${
                   inProgress
                     ? 'text-emerald-700 dark:text-emerald-400 font-medium'
-                    : 'text-stone-400 dark:text-zinc-600 italic'
+                    : 'text-stone-400 dark:text-stone-600 italic'
                 }`}
               >
                 {inProgress ? 'In progress' : 'Coming in v1.5'}
@@ -71,10 +71,10 @@ export function FractionsSectionStrip({ learnerName, roadmap }: SectionStripProp
   return (
     <section className="flex flex-col gap-2">
       <div className="flex items-baseline justify-between gap-3 flex-wrap">
-        <div className="text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-zinc-400">
+        <div className="text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-stone-400">
           Fractions sections for {learnerName}
         </div>
-        <div className="text-[10px] text-stone-500 dark:text-zinc-500 italic">
+        <div className="text-[10px] text-stone-500 dark:text-stone-500 italic">
           Source: Illustrative Mathematics, Grade 3 Unit 5 and Grade 4 Unit 2
         </div>
       </div>
@@ -119,20 +119,20 @@ function StatusBadge({ status }: { status: SectionStatus }) {
       )
     case 'now':
       return (
-        <span className="ml-auto inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-stone-900 dark:text-zinc-50">
-          <span className="h-1.5 w-1.5 rounded-full bg-stone-900 dark:bg-zinc-50 animate-pulse" aria-hidden />
+        <span className="ml-auto inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-stone-900 dark:text-stone-50">
+          <span className="h-1.5 w-1.5 rounded-full bg-stone-900 dark:bg-stone-50 animate-pulse" aria-hidden />
           Now
         </span>
       )
     case 'later':
       return (
-        <span className="ml-auto text-[10px] font-medium uppercase tracking-wide text-stone-400 dark:text-zinc-600">
+        <span className="ml-auto text-[10px] font-medium uppercase tracking-wide text-stone-400 dark:text-stone-600">
           Later
         </span>
       )
     case 'not_yet_assessed':
       return (
-        <span className="ml-auto text-[10px] font-medium uppercase tracking-wide text-stone-400 dark:text-zinc-600">
+        <span className="ml-auto text-[10px] font-medium uppercase tracking-wide text-stone-400 dark:text-stone-600">
           Not yet probed
         </span>
       )
@@ -149,25 +149,25 @@ function tileClass(status: SectionStatus): {
       return {
         container: 'bg-emerald-50/60 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900',
         index: 'text-emerald-700 dark:text-emerald-400',
-        title: 'text-stone-700 dark:text-zinc-300',
+        title: 'text-stone-700 dark:text-stone-300',
       }
     case 'now':
       return {
-        container: 'bg-white dark:bg-zinc-950 border-stone-400 dark:border-zinc-500 shadow-sm ring-1 ring-stone-300 dark:ring-zinc-600',
-        index: 'text-stone-700 dark:text-zinc-300',
-        title: 'text-stone-900 dark:text-zinc-50',
+        container: 'bg-white dark:bg-stone-950 border-stone-400 dark:border-stone-500 shadow-sm ring-1 ring-stone-300 dark:ring-stone-600',
+        index: 'text-stone-700 dark:text-stone-300',
+        title: 'text-stone-900 dark:text-stone-50',
       }
     case 'later':
       return {
-        container: 'bg-stone-50 dark:bg-zinc-900/40 border-stone-200 dark:border-zinc-800 opacity-70',
-        index: 'text-stone-400 dark:text-zinc-600',
-        title: 'text-stone-500 dark:text-zinc-500',
+        container: 'bg-stone-50 dark:bg-stone-900/40 border-stone-200 dark:border-stone-800 opacity-70',
+        index: 'text-stone-400 dark:text-stone-600',
+        title: 'text-stone-500 dark:text-stone-500',
       }
     case 'not_yet_assessed':
       return {
-        container: 'bg-stone-50 dark:bg-zinc-900/40 border-stone-200 border-dashed dark:border-zinc-800 opacity-80',
-        index: 'text-stone-400 dark:text-zinc-600',
-        title: 'text-stone-500 dark:text-zinc-500',
+        container: 'bg-stone-50 dark:bg-stone-900/40 border-stone-200 border-dashed dark:border-stone-800 opacity-80',
+        index: 'text-stone-400 dark:text-stone-600',
+        title: 'text-stone-500 dark:text-stone-500',
       }
   }
 }

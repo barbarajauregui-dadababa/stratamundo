@@ -438,8 +438,11 @@ export default function FractionWorkspaceV2({
           </>
         )}
         {commitState === 'success' && (
-          <p className="inline-flex h-10 items-center justify-center rounded-md bg-emerald-100 dark:bg-emerald-950 px-6 text-sm font-medium text-emerald-900 dark:text-emerald-200">
-            Locked in ✓
+          <p className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-emerald-100 dark:bg-emerald-950 px-6 text-sm font-medium text-emerald-900 dark:text-emerald-200">
+            <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" stroke="currentColor" strokeWidth="3" aria-hidden>
+              <path d="M5 12.5l4.5 4.5L20 7" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Correct
           </p>
         )}
       </div>
@@ -495,6 +498,7 @@ export default function FractionWorkspaceV2({
         </p>
       </div>
 
+      {process.env.NODE_ENV !== 'production' && (
       <details className="w-full text-xs text-zinc-500 mt-2">
         <summary className="cursor-pointer">Debug</summary>
         <div className="mt-2 space-y-1">
@@ -507,6 +511,7 @@ export default function FractionWorkspaceV2({
           <div>Events: {telemetryLog.length}</div>
         </div>
       </details>
+      )}
 
       {drag && dragPos && (
         <div

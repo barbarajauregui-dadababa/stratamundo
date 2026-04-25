@@ -77,7 +77,7 @@ export default function SetupPage() {
     <main className="flex flex-1 w-full max-w-xl mx-auto flex-col gap-8 py-24 px-8">
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold tracking-tight">Set up a learner</h1>
-        <p className="text-zinc-600 dark:text-zinc-400">
+        <p className="text-stone-600 dark:text-stone-400">
           Create the learner, then a fractions assessment starts automatically.
         </p>
       </header>
@@ -90,7 +90,7 @@ export default function SetupPage() {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="h-10 rounded-md border border-zinc-300 dark:border-zinc-700 px-3 text-sm bg-white dark:bg-zinc-950"
+            className="h-10 rounded-md border border-stone-300 dark:border-stone-700 px-3 text-sm bg-white dark:bg-stone-950"
             placeholder="First name"
           />
         </label>
@@ -104,7 +104,7 @@ export default function SetupPage() {
               max={18}
               value={age}
               onChange={(e) => setAge(e.target.value)}
-              className="h-10 rounded-md border border-zinc-300 dark:border-zinc-700 px-3 text-sm bg-white dark:bg-zinc-950"
+              className="h-10 rounded-md border border-stone-300 dark:border-stone-700 px-3 text-sm bg-white dark:bg-stone-950"
             />
           </label>
           <label className="flex flex-col gap-1.5 flex-1">
@@ -115,12 +115,12 @@ export default function SetupPage() {
               max={12}
               value={gradeLevel}
               onChange={(e) => setGradeLevel(e.target.value)}
-              className="h-10 rounded-md border border-zinc-300 dark:border-zinc-700 px-3 text-sm bg-white dark:bg-zinc-950"
+              className="h-10 rounded-md border border-stone-300 dark:border-stone-700 px-3 text-sm bg-white dark:bg-stone-950"
             />
           </label>
         </div>
 
-        <div className="text-sm text-zinc-600 dark:text-zinc-400">
+        <div className="text-sm text-stone-600 dark:text-stone-400">
           Concept: <strong>Fractions</strong> (3rd–4th grade)
         </div>
 
@@ -133,7 +133,7 @@ export default function SetupPage() {
         <button
           type="submit"
           disabled={isSubmitting || !name.trim()}
-          className="inline-flex h-10 items-center justify-center rounded-md bg-zinc-900 px-4 text-sm font-medium text-white disabled:opacity-50 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 w-fit"
+          className="inline-flex h-10 items-center justify-center rounded-md bg-stone-900 px-4 text-sm font-medium text-white disabled:opacity-50 hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-200 w-fit"
         >
           {isSubmitting ? 'Starting assessment…' : 'Start assessment'}
         </button>

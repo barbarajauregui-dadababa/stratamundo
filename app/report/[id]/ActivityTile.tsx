@@ -85,16 +85,16 @@ export default function ActivityTile({
     <li
       className={`group rounded-xl border transition-colors ${
         isDone
-          ? 'bg-stone-50 dark:bg-zinc-900/40 border-stone-200 dark:border-zinc-800 opacity-75'
-          : 'bg-white dark:bg-zinc-950 border-stone-200 dark:border-zinc-800 hover:border-stone-300 dark:hover:border-zinc-700'
+          ? 'bg-stone-50 dark:bg-stone-900/40 border-stone-200 dark:border-stone-800 opacity-75'
+          : 'bg-white dark:bg-stone-950 border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700'
       }`}
     >
       <div className="flex items-start gap-4 p-4">
         <div
           className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg ${
             isDone
-              ? 'bg-stone-100 dark:bg-zinc-900 text-stone-400 dark:text-zinc-600'
-              : 'bg-stone-100 dark:bg-zinc-900 text-stone-700 dark:text-zinc-300'
+              ? 'bg-stone-100 dark:bg-stone-900 text-stone-400 dark:text-stone-600'
+              : 'bg-stone-100 dark:bg-stone-900 text-stone-700 dark:text-stone-300'
           }`}
         >
           <ModalityGlyph modality={modality} className="h-5 w-5" />
@@ -104,13 +104,13 @@ export default function ActivityTile({
           <div className="flex items-baseline gap-2 flex-wrap">
             <span
               className={`text-sm font-medium leading-snug ${
-                isDone ? 'line-through text-stone-500 dark:text-zinc-500' : 'text-stone-900 dark:text-zinc-100'
+                isDone ? 'line-through text-stone-500 dark:text-stone-500' : 'text-stone-900 dark:text-stone-100'
               }`}
             >
               {title}
             </span>
           </div>
-          <div className="flex items-center gap-2 text-xs text-stone-500 dark:text-zinc-400">
+          <div className="flex items-center gap-2 text-xs text-stone-500 dark:text-stone-400">
             {modality && <span>{modalityLabel(modality)}</span>}
             {typeof minutes === 'number' && (
               <>
@@ -133,7 +133,7 @@ export default function ActivityTile({
               href={resource.url}
               target="_blank"
               rel="noreferrer"
-              className="text-xs text-stone-600 dark:text-zinc-400 underline underline-offset-2 decoration-stone-300 hover:text-stone-900 dark:hover:text-zinc-100"
+              className="text-xs text-stone-600 dark:text-stone-400 underline underline-offset-2 decoration-stone-300 hover:text-stone-900 dark:hover:text-stone-100"
             >
               Open
             </a>
@@ -146,7 +146,7 @@ export default function ActivityTile({
             className={`inline-flex h-6 w-6 items-center justify-center rounded-md border transition-colors disabled:opacity-50 ${
               isDone
                 ? 'bg-emerald-600 border-emerald-600 text-white'
-                : 'bg-white dark:bg-zinc-950 border-stone-300 dark:border-zinc-700 hover:border-stone-400 dark:hover:border-zinc-500'
+                : 'bg-white dark:bg-stone-950 border-stone-300 dark:border-stone-700 hover:border-stone-400 dark:hover:border-stone-500'
             }`}
           >
             {isDone && (
@@ -162,7 +162,7 @@ export default function ActivityTile({
         <button
           type="button"
           onClick={() => setShowWhy((v) => !v)}
-          className="text-xs text-stone-500 dark:text-zinc-400 hover:text-stone-800 dark:hover:text-zinc-200 inline-flex items-center gap-1"
+          className="text-xs text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 inline-flex items-center gap-1"
         >
           <svg
             viewBox="0 0 24 24"
@@ -177,7 +177,7 @@ export default function ActivityTile({
           {showWhy ? 'Hide rationale' : 'Why this activity?'}
         </button>
         {showWhy && (
-          <p className="mt-2 text-sm text-stone-700 dark:text-zinc-300 leading-relaxed max-w-prose">
+          <p className="mt-2 text-sm text-stone-700 dark:text-stone-300 leading-relaxed max-w-prose">
             {rationale}
           </p>
         )}

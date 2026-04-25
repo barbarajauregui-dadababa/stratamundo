@@ -76,8 +76,8 @@ export default function PlanDisplay({ planId, plan }: { planId: string; plan: Pl
   return (
     <section className="flex flex-col gap-6">
       {plan.overall_notes && (
-        <div className="rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/40 p-4 text-sm leading-relaxed">
-          <div className="mb-1 text-xs font-medium uppercase tracking-wide text-zinc-500">
+        <div className="rounded-md border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-950/40 p-4 text-sm leading-relaxed">
+          <div className="mb-1 text-xs font-medium uppercase tracking-wide text-stone-500">
             Plan summary
           </div>
           {plan.overall_notes}
@@ -85,7 +85,7 @@ export default function PlanDisplay({ planId, plan }: { planId: string; plan: Pl
       )}
 
       {plan.priority_gaps.length === 0 && (
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="text-sm text-stone-600 dark:text-stone-400">
           No priority gaps — the Plan Architect did not identify any immediate action items.
         </p>
       )}
@@ -125,37 +125,37 @@ function GapCard({
   const stateClass =
     gap.current_state === 'misconception'
       ? 'border-red-300 dark:border-red-900 bg-red-50/60 dark:bg-red-950/20'
-      : 'border-yellow-300 dark:border-yellow-900 bg-yellow-50/60 dark:bg-yellow-950/20'
+      : 'border-amber-300 dark:border-amber-900 bg-amber-50/60 dark:bg-amber-950/20'
   const dotClass =
-    gap.current_state === 'misconception' ? 'bg-red-500' : 'bg-yellow-500'
+    gap.current_state === 'misconception' ? 'bg-red-500' : 'bg-amber-500'
   return (
     <div className={`rounded-md border px-4 py-3 ${stateClass}`}>
       <div className="flex items-baseline justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className={`inline-block h-2.5 w-2.5 rounded-full ${dotClass}`} />
           <span className="font-medium">{standardName(gap.standard_id)}</span>
-          <span className="text-xs font-mono text-zinc-500">{gap.standard_id}</span>
+          <span className="text-xs font-mono text-stone-500">{gap.standard_id}</span>
         </div>
-        <span className="text-xs font-medium uppercase tracking-wide text-zinc-600 dark:text-zinc-400">
+        <span className="text-xs font-medium uppercase tracking-wide text-stone-600 dark:text-stone-400">
           {gap.diagnosis === 'prerequisite-gap' ? 'Prerequisite gap' : 'Within-concept'}
         </span>
       </div>
 
       {gap.flagged_misconception_ids.length > 0 && (
-        <div className="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
+        <div className="mt-2 text-xs text-stone-600 dark:text-stone-400">
           Flagged:{' '}
           {gap.flagged_misconception_ids.map((m) => misconceptionName(m)).join(', ')}
         </div>
       )}
 
       {gap.prerequisite_flags.length > 0 && (
-        <div className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+        <div className="mt-1 text-xs text-stone-600 dark:text-stone-400">
           Prerequisite to address first:{' '}
           {gap.prerequisite_flags.map((sid) => standardName(sid)).join(', ')}
         </div>
       )}
 
-      <p className="mt-3 text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed">
+      <p className="mt-3 text-sm text-stone-800 dark:text-stone-200 leading-relaxed">
         {gap.rationale_for_this_gap}
       </p>
 

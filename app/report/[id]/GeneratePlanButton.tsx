@@ -36,7 +36,7 @@ export default function GeneratePlanButton({ assessmentId }: { assessmentId: str
         type="button"
         onClick={runPlan}
         disabled={isRunning}
-        className="inline-flex h-10 items-center justify-center rounded-md bg-zinc-900 px-4 text-sm font-medium text-white disabled:opacity-50 hover:bg-zinc-800 w-fit"
+        className="inline-flex h-10 items-center justify-center rounded-md bg-stone-900 px-4 text-sm font-medium text-white disabled:opacity-50 hover:bg-stone-800 w-fit"
       >
         {isRunning
           ? 'Plan Architect is thinking… this can take 1–3 minutes'

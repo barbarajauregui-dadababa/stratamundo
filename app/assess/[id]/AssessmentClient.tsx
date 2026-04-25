@@ -165,7 +165,7 @@ export default function AssessmentClient({
     return (
       <main className="flex flex-1 w-full max-w-2xl mx-auto flex-col gap-4 py-24 px-8">
         <h1 className="text-2xl font-semibold">No problems loaded</h1>
-        <p className="text-zinc-600 dark:text-zinc-400">
+        <p className="text-stone-600 dark:text-stone-400">
           This assessment has no problems. Create a new one from the dashboard.
         </p>
       </main>
@@ -175,23 +175,23 @@ export default function AssessmentClient({
   return (
     <>
       <main className="flex flex-1 w-full max-w-4xl mx-auto flex-col gap-5 py-6 px-6 pb-24">
-        <header className="flex items-baseline justify-between gap-4 text-sm text-zinc-600 dark:text-zinc-400">
+        <header className="flex items-baseline justify-between gap-4 text-sm text-stone-600 dark:text-stone-400">
           <span>
-            Assessment for <strong className="text-zinc-900 dark:text-zinc-100">{learnerName}</strong>
+            Assessment for <strong className="text-stone-900 dark:text-stone-100">{learnerName}</strong>
           </span>
           <span>
             Problem {index + 1} of {total}
           </span>
         </header>
 
-        <div className="h-1 w-full bg-zinc-200 dark:bg-zinc-800 rounded">
+        <div className="h-1 w-full bg-stone-200 dark:bg-stone-800 rounded">
           <div
-            className="h-full bg-zinc-900 dark:bg-zinc-100 rounded transition-all"
+            className="h-full bg-stone-900 dark:bg-stone-100 rounded transition-all"
             style={{ width: `${((index + 1) / total) * 100}%` }}
           />
         </div>
 
-        <section className="rounded-lg border border-zinc-200 dark:border-zinc-800 p-6 bg-white dark:bg-zinc-950/40">
+        <section className="rounded-lg border border-stone-200 dark:border-stone-800 p-6 bg-white dark:bg-stone-950/40">
           {current.problem_type === 'build_fraction' ? (
             <FractionWorkspaceV2
               key={current.id}
@@ -214,13 +214,13 @@ export default function AssessmentClient({
       </main>
 
       {/* Sticky footer so Back / Next are always visible regardless of scroll. */}
-      <footer className="sticky bottom-0 left-0 right-0 z-10 border-t border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-950/90 backdrop-blur">
+      <footer className="sticky bottom-0 left-0 right-0 z-10 border-t border-stone-200 dark:border-stone-800 bg-white/90 dark:bg-stone-950/90 backdrop-blur">
         <div className="flex items-center justify-between gap-4 max-w-4xl mx-auto py-3 px-6">
           <button
             type="button"
             onClick={goPrev}
             disabled={index === 0 || isSubmitting}
-            className="inline-flex h-10 items-center justify-center rounded-md border border-zinc-300 dark:border-zinc-700 px-4 text-sm font-medium disabled:opacity-50 bg-white dark:bg-zinc-900"
+            className="inline-flex h-10 items-center justify-center rounded-md border border-stone-300 dark:border-stone-700 px-4 text-sm font-medium disabled:opacity-50 bg-white dark:bg-stone-900"
           >
             Back
           </button>
@@ -228,7 +228,7 @@ export default function AssessmentClient({
             type="button"
             onClick={goNext}
             disabled={isSubmitting}
-            className="inline-flex h-10 items-center justify-center rounded-md bg-zinc-900 px-5 text-sm font-medium text-white disabled:opacity-50 hover:bg-zinc-800"
+            className="inline-flex h-10 items-center justify-center rounded-md bg-stone-900 px-5 text-sm font-medium text-white disabled:opacity-50 hover:bg-stone-800"
           >
             {submitStage === 'analyzing'
               ? 'Analyzing… ~15 sec'
@@ -267,9 +267,9 @@ function NotYetSupportedPlaceholder({
   const label = problemType.replace(/_/g, ' ')
   return (
     <div className="flex flex-col items-center gap-3 text-center py-10">
-      <div className="text-xs uppercase tracking-wide text-zinc-500">{label}</div>
-      {framing && <p className="max-w-lg text-zinc-700 dark:text-zinc-300">{framing}</p>}
-      <div className="rounded-md border border-dashed border-zinc-300 dark:border-zinc-700 px-6 py-8 text-sm text-zinc-500">
+      <div className="text-xs uppercase tracking-wide text-stone-500">{label}</div>
+      {framing && <p className="max-w-lg text-stone-700 dark:text-stone-300">{framing}</p>}
+      <div className="rounded-md border border-dashed border-stone-300 dark:border-stone-700 px-6 py-8 text-sm text-stone-500">
         This problem type doesn&apos;t have an interactive UI yet — it&apos;ll be built alongside the
         drag-and-build mechanic. For now, use <strong>Next</strong> to move on.
       </div>

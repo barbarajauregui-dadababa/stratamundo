@@ -165,32 +165,32 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
         })()}
 
       {masteryMap && focusLabel ? (
-        <section className="rounded-2xl bg-stone-100 dark:bg-zinc-900/60 px-7 py-6 flex flex-col gap-2">
-          <div className="flex items-baseline gap-2 flex-wrap text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-zinc-400">
+        <section className="rounded-2xl bg-stone-100 dark:bg-stone-900/60 px-7 py-6 flex flex-col gap-2">
+          <div className="flex items-baseline gap-2 flex-wrap text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-stone-400">
             <span>Current focus</span>
-            <span aria-hidden className="text-stone-300 dark:text-zinc-700">·</span>
-            <span className="normal-case tracking-normal text-stone-600 dark:text-zinc-300 font-normal">
+            <span aria-hidden className="text-stone-300 dark:text-stone-700">·</span>
+            <span className="normal-case tracking-normal text-stone-600 dark:text-stone-300 font-normal">
               {displayName}
             </span>
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-stone-900 dark:text-zinc-50">
+          <h1 className="text-2xl font-semibold tracking-tight text-stone-900 dark:text-stone-50">
             {focusLabel}
           </h1>
           {activityCount > 0 && (
-            <div className="mt-1 flex items-center gap-3 text-sm text-stone-600 dark:text-zinc-400">
+            <div className="mt-1 flex items-center gap-3 text-sm text-stone-600 dark:text-stone-400">
               <span>
-                <span className="font-medium text-stone-800 dark:text-zinc-200">{activityCount}</span>{' '}
+                <span className="font-medium text-stone-800 dark:text-stone-200">{activityCount}</span>{' '}
                 {activityCount === 1 ? 'activity' : 'activities'}
               </span>
               {totalMinutes > 0 && (
                 <>
-                  <span aria-hidden className="text-stone-300 dark:text-zinc-700">·</span>
+                  <span aria-hidden className="text-stone-300 dark:text-stone-700">·</span>
                   <span>~{totalMinutes} min total</span>
                 </>
               )}
               {handsOnCount > 0 && (
                 <>
-                  <span aria-hidden className="text-stone-300 dark:text-zinc-700">·</span>
+                  <span aria-hidden className="text-stone-300 dark:text-stone-700">·</span>
                   <span>
                     {handsOnCount} hands-on
                   </span>
@@ -202,7 +202,7 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
       ) : (
         <header className="flex flex-col gap-2">
           <h1 className="text-3xl font-semibold tracking-tight">Report</h1>
-          <p className="text-zinc-600 dark:text-zinc-400">
+          <p className="text-stone-600 dark:text-stone-400">
             Mastery map for <strong>{displayName}</strong>
             {isCompleted
               ? ` — completed ${new Date(assessment.completed_at!).toLocaleString()}`
@@ -218,9 +218,9 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
       )}
 
       {isCompleted && !masteryMap && (
-        <section className="flex flex-col gap-3 rounded-md border border-zinc-200 dark:border-zinc-800 p-6">
+        <section className="flex flex-col gap-3 rounded-md border border-stone-200 dark:border-stone-800 p-6">
           <h2 className="text-lg font-medium">Step 1 — Analyze the responses</h2>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm text-stone-600 dark:text-stone-400">
             Run analysis to produce the mastery map.
           </p>
           <AnalyzeButton assessmentId={id} parentAssessmentId={parentAssessmentId} />
@@ -232,7 +232,7 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
           <div className="flex items-center justify-end">
             <Link
               href={`/learner/${assessment.learner_id}`}
-              className="text-sm text-stone-700 dark:text-zinc-300 hover:text-stone-900 dark:hover:text-zinc-50 underline underline-offset-2 decoration-stone-300"
+              className="text-sm text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-stone-50 underline underline-offset-2 decoration-stone-300"
             >
               View {displayName}&apos;s mastery tree →
             </Link>
@@ -249,8 +249,8 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
           {/* Supplementary narrative from Plan Architect (if it ran) or from
               the analysis engine. Shown smaller, below the structured summary. */}
           {(planContent?.overall_notes ?? masteryMap.overall_notes) && (
-            <section className="rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/40 p-4 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
-              <div className="mb-1 text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+            <section className="rounded-md border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900/40 p-4 text-sm leading-relaxed text-stone-700 dark:text-stone-300">
+              <div className="mb-1 text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-stone-400">
                 Analyst&apos;s notes
               </div>
               {planContent?.overall_notes ?? masteryMap.overall_notes}
@@ -309,7 +309,7 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
           {!planContent && <PlanWaiting assessmentId={id} />}
           {planContent && planId && (
             <>
-              <div className="text-xs text-zinc-500">
+              <div className="text-xs text-stone-500">
                 Plan generated{' '}
                 {planGeneratedAt && new Date(planGeneratedAt).toLocaleString()}.
               </div>
@@ -349,8 +349,8 @@ function AtAGlanceSummary({
     .map(([sid]) => sid)
 
   return (
-    <section className="rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950/40 p-5">
-      <div className="text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400 mb-3">
+    <section className="rounded-md border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-950/40 p-5">
+      <div className="text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-stone-400 mb-3">
         At a glance
       </div>
       <ul className="flex flex-col gap-3 text-sm">
@@ -362,13 +362,13 @@ function AtAGlanceSummary({
               <div className="font-medium">
                 Needs attention ({byState.misconception.length})
               </div>
-              <div className="text-zinc-600 dark:text-zinc-400">
+              <div className="text-stone-600 dark:text-stone-400">
                 {byState.misconception.map((sid) => standardName(sid)).join('; ')}
               </div>
               {byState.misconception.some(
                 (sid) => masteryMap.standards[sid].flagged_misconception_ids.length > 0
               ) && (
-                <div className="text-xs text-zinc-500 mt-1">
+                <div className="text-xs text-stone-500 mt-1">
                   Flagged misconceptions:{' '}
                   {Array.from(
                     new Set(
@@ -393,7 +393,7 @@ function AtAGlanceSummary({
               <div className="font-medium">
                 Working on ({byState.working.length})
               </div>
-              <div className="text-zinc-600 dark:text-zinc-400">
+              <div className="text-stone-600 dark:text-stone-400">
                 {byState.working.map((sid) => standardName(sid)).join('; ')}
               </div>
             </div>
@@ -407,7 +407,7 @@ function AtAGlanceSummary({
             <div className="font-medium">
               Mastered ({byState.demonstrated.length})
             </div>
-            <div className="text-zinc-600 dark:text-zinc-400">
+            <div className="text-stone-600 dark:text-stone-400">
               {byState.demonstrated.length === 0
                 ? '—'
                 : byState.demonstrated.map((sid) => standardName(sid)).join('; ')}
@@ -423,7 +423,7 @@ function AtAGlanceSummary({
               <div className="font-medium">
                 Not yet probed ({notAssessed.length})
               </div>
-              <div className="text-zinc-600 dark:text-zinc-400">
+              <div className="text-stone-600 dark:text-stone-400">
                 {notAssessed.map((sid) => standardName(sid)).join('; ')}
               </div>
             </div>
@@ -468,8 +468,8 @@ function Bucket({
       <summary className="cursor-pointer px-4 py-3 flex items-center gap-3 list-none">
         <span className={`inline-block h-2.5 w-2.5 rounded-full ${dot}`} />
         <span className="font-medium">{title}</span>
-        <span className="text-xs text-zinc-600 dark:text-zinc-400">({standardIds.length})</span>
-        <span className="text-xs text-zinc-500 ml-2">{subtitle}</span>
+        <span className="text-xs text-stone-600 dark:text-stone-400">({standardIds.length})</span>
+        <span className="text-xs text-stone-500 ml-2">{subtitle}</span>
       </summary>
       <ul className="flex flex-col gap-3 px-4 pb-4">
         {standardIds.map((sid) => {
@@ -478,12 +478,12 @@ function Bucket({
           return (
             <li
               key={sid}
-              className="rounded-md bg-white dark:bg-zinc-950/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3"
+              className="rounded-md bg-white dark:bg-stone-950/50 border border-stone-200 dark:border-stone-800 px-4 py-3"
             >
               <div className="flex items-baseline justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{standardName(sid)}</span>
-                  <span className="text-xs font-mono text-zinc-500">{sid}</span>
+                  <span className="text-xs font-mono text-stone-500">{sid}</span>
                 </div>
                 {showProbeButton && (
                   <FocusedProbeButton
@@ -495,18 +495,18 @@ function Bucket({
                 )}
               </div>
               {report.reasoning && (
-                <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
+                <p className="mt-2 text-sm text-stone-700 dark:text-stone-300">
                   {report.reasoning}
                 </p>
               )}
               {report.flagged_misconception_ids.length > 0 && (
-                <div className="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
+                <div className="mt-2 text-xs text-stone-600 dark:text-stone-400">
                   <span className="font-medium">Flagged misconception:</span>{' '}
                   {report.flagged_misconception_ids.map((m) => misconceptionName(m)).join(', ')}
                 </div>
               )}
               {report.evidence_problem_ids.length > 0 && (
-                <details className="mt-1 text-xs text-zinc-500">
+                <details className="mt-1 text-xs text-stone-500">
                   <summary className="cursor-pointer select-none">
                     Audit — which problems informed this?
                   </summary>
@@ -516,8 +516,8 @@ function Bucket({
                 </details>
               )}
               {gap && planId && (
-                <div className="mt-3 pt-3 border-t border-zinc-200 dark:border-zinc-800">
-                  <div className="text-xs font-medium uppercase tracking-wide text-zinc-500 mb-2">
+                <div className="mt-3 pt-3 border-t border-stone-200 dark:border-stone-800">
+                  <div className="text-xs font-medium uppercase tracking-wide text-stone-500 mb-2">
                     Prescribed activities
                     {gap.diagnosis === 'prerequisite-gap' && (
                       <span className="ml-2 text-amber-700 dark:text-amber-400">
@@ -526,7 +526,7 @@ function Bucket({
                     )}
                   </div>
                   {gap.rationale_for_this_gap && (
-                    <p className="text-sm text-zinc-700 dark:text-zinc-300 mb-3">
+                    <p className="text-sm text-stone-700 dark:text-stone-300 mb-3">
                       {gap.rationale_for_this_gap}
                     </p>
                   )}

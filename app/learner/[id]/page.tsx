@@ -74,14 +74,14 @@ export default async function LearnerDashboardPage(
   return (
     <main className="flex flex-1 w-full max-w-3xl mx-auto flex-col gap-8 py-10 px-6">
       <header className="flex flex-col gap-1">
-        <div className="text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-zinc-400">
+        <div className="text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-stone-400">
           Mastery tree
         </div>
-        <h1 className="text-2xl font-semibold tracking-tight text-stone-900 dark:text-zinc-50">
+        <h1 className="text-2xl font-semibold tracking-tight text-stone-900 dark:text-stone-50">
           {learner.name}
         </h1>
         {latest?.completed_at && (
-          <p className="text-sm text-stone-600 dark:text-zinc-400">
+          <p className="text-sm text-stone-600 dark:text-stone-400">
             Snapshot from{' '}
             {new Date(latest.completed_at).toLocaleDateString(undefined, {
               year: 'numeric',
@@ -91,7 +91,7 @@ export default async function LearnerDashboardPage(
           </p>
         )}
         {!latest && (
-          <p className="text-sm text-stone-600 dark:text-zinc-400">
+          <p className="text-sm text-stone-600 dark:text-stone-400">
             No completed assessments yet — the tree shows every standard as
             not yet probed.
           </p>
@@ -99,14 +99,14 @@ export default async function LearnerDashboardPage(
       </header>
 
       {/* Counts strip */}
-      <section className="flex items-center justify-center gap-6 rounded-xl bg-stone-100 dark:bg-zinc-900/60 px-6 py-4 text-sm">
+      <section className="flex items-center justify-center gap-6 rounded-xl bg-stone-100 dark:bg-stone-900/60 px-6 py-4 text-sm">
         <Stat label="Mastered" value={counts.demonstrated} accent="text-emerald-700 dark:text-emerald-400" />
         <Divider />
         <Stat label="Working on" value={counts.working} accent="text-amber-700 dark:text-amber-400" />
         <Divider />
         <Stat label="Needs attention" value={counts.misconception} accent="text-red-700 dark:text-red-400" />
         <Divider />
-        <Stat label="Not yet probed" value={counts.not_assessed} accent="text-stone-500 dark:text-zinc-500" />
+        <Stat label="Not yet probed" value={counts.not_assessed} accent="text-stone-500 dark:text-stone-500" />
       </section>
 
       <MasteryTree
@@ -114,7 +114,7 @@ export default async function LearnerDashboardPage(
         completedByStandard={completedByStandard}
       />
 
-      <section className="flex flex-wrap gap-3 pt-4 border-t border-stone-200 dark:border-zinc-800">
+      <section className="flex flex-wrap gap-3 pt-4 border-t border-stone-200 dark:border-stone-800">
         {latest && (
           <Link
             href={`/report/${latest.id}`}
@@ -125,13 +125,13 @@ export default async function LearnerDashboardPage(
         )}
         <Link
           href="/setup"
-          className="inline-flex h-9 items-center justify-center rounded-md border border-stone-300 dark:border-zinc-700 px-4 text-sm font-medium text-stone-800 dark:text-zinc-200 hover:bg-stone-50 dark:hover:bg-zinc-900"
+          className="inline-flex h-9 items-center justify-center rounded-md border border-stone-300 dark:border-stone-700 px-4 text-sm font-medium text-stone-800 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-900"
         >
           Start a new assessment
         </Link>
       </section>
 
-      <footer className="text-[10px] text-stone-400 dark:text-zinc-600 italic">
+      <footer className="text-[10px] text-stone-400 dark:text-stone-600 italic">
         Section structure: Illustrative Mathematics, Grade 3 Unit 5 and Grade 4 Unit 2 (CC BY 4.0).
       </footer>
     </main>
@@ -142,7 +142,7 @@ function Stat({ label, value, accent }: { label: string; value: number; accent: 
   return (
     <div className="flex flex-col items-center gap-0.5">
       <span className={`text-2xl font-semibold ${accent}`}>{value}</span>
-      <span className="text-[11px] uppercase tracking-wide text-stone-500 dark:text-zinc-500">
+      <span className="text-[11px] uppercase tracking-wide text-stone-500 dark:text-stone-500">
         {label}
       </span>
     </div>
@@ -150,5 +150,5 @@ function Stat({ label, value, accent }: { label: string; value: number; accent: 
 }
 
 function Divider() {
-  return <span className="h-8 w-px bg-stone-200 dark:bg-zinc-800" aria-hidden />
+  return <span className="h-8 w-px bg-stone-200 dark:bg-stone-800" aria-hidden />
 }
