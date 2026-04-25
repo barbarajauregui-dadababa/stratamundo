@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import AnalyzeButton from './AnalyzeButton'
-import GeneratePlanButton from './GeneratePlanButton'
+import PlanWaiting from './PlanWaiting'
 import type { PlanContent } from './PlanDisplay'
 import FocusedProbeButton from './FocusedProbeButton'
 import ActivityTile, { type CompletedActivity } from './ActivityTile'
@@ -303,17 +303,10 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
             />
           </section>
 
-          {/* Plan generation action / status. */}
-          {!planContent && (
-            <section className="flex flex-col gap-3 rounded-md border border-zinc-200 dark:border-zinc-800 p-6">
-              <h2 className="text-lg font-medium">Step 2 — Generate plan</h2>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                The Plan Architect reads the mastery map above and prescribes 2–3
-                activities per priority gap. Takes 1–3 minutes.
-              </p>
-              <GeneratePlanButton assessmentId={id} />
-            </section>
-          )}
+          {/* No plan yet — Plan Architect is working in the background.
+              The waiting component polls and auto-refreshes when the plan
+              lands. After 4 min, falls back to a manual generate button. */}
+          {!planContent && <PlanWaiting assessmentId={id} />}
           {planContent && planId && (
             <>
               <div className="text-xs text-zinc-500">

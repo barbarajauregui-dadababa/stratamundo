@@ -102,6 +102,7 @@ export default function AssessmentClient({
       // analysis fails, we still redirect — the report page will show
       // the manual "Run analysis" button as a fallback.
       setSubmitStage('analyzing')
+      let analysisOk = false
       try {
         const res = await fetch('/api/analyze-assessment', {
           method: 'POST',
@@ -112,12 +113,29 @@ export default function AssessmentClient({
           }),
         })
         if (!res.ok) {
-          // Soft-fail: analysis didn't run, but the assessment is saved.
-          // Report page will offer the manual analyze button.
           console.warn('Auto-analysis failed; will retry from report page', await res.text())
+        } else {
+          analysisOk = true
         }
       } catch (analyzeErr) {
         console.warn('Auto-analysis error; will retry from report page', analyzeErr)
+      }
+
+      // Fire-and-forget plan generation so the user reads the mastery
+      // map while the Plan Architect works in the background. We don't
+      // await — the request continues even after navigation. The report
+      // page will detect the in-flight plan and auto-refresh when it lands.
+      // Skip for focused probes (the parent already has a plan).
+      if (analysisOk && !parentAssessmentId) {
+        const planAssessmentId = assessmentId
+        fetch('/api/generate-plan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ assessment_id: planAssessmentId }),
+          keepalive: true,
+        }).catch((err) => {
+          console.warn('Background plan generation kickoff error', err)
+        })
       }
 
       // If we ran a focused probe with auto-merge, the parent's report
