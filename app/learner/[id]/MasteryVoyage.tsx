@@ -1,475 +1,274 @@
 /**
- * Mastery Voyage — replaces the tree visualization.
+ * Mastery Voyage — vertical scene of cloud strata across the 4th-grade
+ * math Progressions.
  *
- * A vertical scene of cloud strata. Each stratum represents one IM Section
- * (the 7 published groupings — but with the bridge "Size and Location"
- * folded into its host). The airship floats at the section the learner is
- * currently working on. Earlier strata (mastered) shimmer brass-gold;
- * later strata (not yet reached) are faint and high in the sky.
+ * Five strata = the 5 CCSS-M Progressions for 4th grade. Below them,
+ * the LAUNCH FROM THE FOUNDATION (ground, where every voyage begins).
+ * The airship parks at the active Progression — currently Fractions
+ * (the only one Strata Mundo has content for in v1).
  *
- * Within each stratum, individual standards are pinned as small markers
- * with state-colored dots. Hover for the standard name.
+ * The cloudscape painting (Denis, 1786) becomes the full-bleed
+ * atmospheric backdrop. Strata float over it; the painting darkens
+ * toward the bottom, fades to bright atmosphere at the top.
  *
- * The visual narrative: a voyage upward through layers of mastery.
+ * Per Barbara: 5 strata, not 6. Strata = Progressions, not IM Sections.
+ * Sections live inside the Progression box on the report page.
  */
-import coherenceMapRaw from '@/content/coherence-map-fractions.json'
-import { Airship } from '@/app/CloudStrata'
+import Image from 'next/image'
 
 type StandardState = 'misconception' | 'working' | 'demonstrated' | 'not_assessed'
 
-interface CoherenceNode {
-  id: string
+interface ProgressionDef {
+  /** CCSS Domain code */
+  code: string
+  /** Display name */
   name: string
-}
-const coherenceMap = coherenceMapRaw as unknown as { nodes: CoherenceNode[] }
-function standardName(id: string): string {
-  return coherenceMap.nodes.find((n) => n.id === id)?.name ?? id
-}
-
-interface SectionDef {
-  id: number
-  shortName: string
-  fullName: string
-  standardIds: string[]
+  /** Status in v1 */
+  status: 'active' | 'v15'
+  /** Roman numeral position (top to bottom in the visual; low = foundation) */
+  index: number
 }
 
-/** The 7 IM Sections drawn from G3 U5 + G4 U2, ordered low → high. */
-const SECTIONS: SectionDef[] = [
-  {
-    id: 1,
-    shortName: 'Introduction to Fractions',
-    fullName: 'Introduction to Fractions',
-    standardIds: ['2.G.A.3', '3.G.A.2', '3.NF.A.1'],
-  },
-  {
-    id: 2,
-    shortName: 'Fractions on the Number Line',
-    fullName: 'Fractions on the Number Line',
-    standardIds: ['3.NF.A.2.a', '3.NF.A.2.b'],
-  },
-  {
-    id: 3,
-    shortName: 'Equivalent Fractions',
-    fullName: 'Equivalent Fractions',
-    standardIds: ['3.NF.A.3.a', '3.NF.A.3.b', '3.NF.A.3.c'],
-  },
-  {
-    id: 4,
-    shortName: 'Fraction Comparisons',
-    fullName: 'Fraction Comparisons',
-    standardIds: ['3.NF.A.3.d'],
-  },
-  {
-    id: 5,
-    shortName: 'Equivalent Fractions, 4th',
-    fullName: 'Equivalent Fractions (4th grade)',
-    standardIds: ['4.NF.A.1'],
-  },
-  {
-    id: 6,
-    shortName: 'Fraction Comparison, 4th',
-    fullName: 'Fraction Comparison (4th grade)',
-    standardIds: ['4.NF.A.2'],
-  },
+/** The 5 4th-grade math Progressions, ordered low → high (visual top = high). */
+const PROGRESSIONS: ProgressionDef[] = [
+  { code: '4.G',   name: 'Geometry',                    status: 'v15',    index: 5 },
+  { code: '4.MD',  name: 'Measurement & Data',          status: 'v15',    index: 4 },
+  { code: '4.NF',  name: 'Number & Operations — Fractions', status: 'active', index: 3 },
+  { code: '4.OA',  name: 'Operations & Algebraic Thinking', status: 'v15',    index: 2 },
+  { code: '4.NBT', name: 'Number & Operations in Base Ten', status: 'v15',    index: 1 },
 ]
 
 interface Props {
   masteryMap: { standards: Record<string, { state: StandardState }> } | null
-  /** Number of completed activities per standard (drives flower count). */
+  /** Number of completed activities per standard. */
   completedByStandard?: Record<string, number>
 }
 
-export default function MasteryVoyage({ masteryMap, completedByStandard }: Props) {
-  const stateOf = (sid: string): StandardState =>
-    masteryMap?.standards?.[sid]?.state ?? 'not_assessed'
-
-  // Section status — derived. A section is:
-  //   "mastered"        if all its standards are demonstrated
-  //   "current"         if it's the lowest section with any non-demonstrated standard
-  //   "later"           anything above the current
-  //   "not_yet_reached" same as later but visually distinct only if no standards probed
-  const sectionStatus: Record<number, 'mastered' | 'current' | 'later'> = {}
-  let currentFound = false
-  for (const s of SECTIONS) {
-    const allDemonstrated =
-      s.standardIds.length > 0 &&
-      s.standardIds.every((sid) => stateOf(sid) === 'demonstrated')
-    if (allDemonstrated) {
-      sectionStatus[s.id] = 'mastered'
-    } else if (!currentFound) {
-      sectionStatus[s.id] = 'current'
-      currentFound = true
-    } else {
-      sectionStatus[s.id] = 'later'
+export default function MasteryVoyage({ masteryMap }: Props) {
+  // Counts within the active (Fractions) Progression — the only one
+  // we have data for in v1.
+  const counts = { demonstrated: 0, working: 0, misconception: 0, not_assessed: 0 }
+  if (masteryMap?.standards) {
+    for (const entry of Object.values(masteryMap.standards)) {
+      counts[entry.state] = (counts[entry.state] ?? 0) + 1
     }
   }
-  // If everything is mastered, no current; treat the topmost as "current".
-  if (!currentFound) {
-    sectionStatus[SECTIONS[SECTIONS.length - 1].id] = 'current'
-  }
-
-  // Layout — vertical stack, top = highest section, bottom = foundation.
-  // SVG viewBox 600 wide × 1100 tall, sections distributed top-to-bottom with
-  // section 6 at the top (the apex of the voyage) and section 1 at the
-  // bottom (the foundation).
-  const VB_W = 600
-  const VB_H = 1100
-  const SECTIONS_TOP = 110
-  const SECTIONS_BOTTOM = 1010
-  const layerSpacing = (SECTIONS_BOTTOM - SECTIONS_TOP) / (SECTIONS.length - 1)
-  const orderedTopDown = [...SECTIONS].reverse() // visually: high section first
-  const yOf = (idx: number) => SECTIONS_TOP + idx * layerSpacing
-
-  // Find the current section's vertical position — that's where the airship
-  // floats.
-  const currentIndex = orderedTopDown.findIndex(
-    (s) => sectionStatus[s.id] === 'current',
-  )
-  const airshipY =
-    currentIndex >= 0 ? yOf(currentIndex) : yOf(orderedTopDown.length - 1)
+  const totalProbed =
+    counts.demonstrated + counts.working + counts.misconception
+  const totalStandards = totalProbed + counts.not_assessed
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      <svg
-        viewBox={`0 0 ${VB_W} ${VB_H}`}
-        className="w-full h-auto"
-        aria-label="Mastery voyage visualization"
+    <div className="w-full max-w-4xl mx-auto">
+      <section
+        className="relative overflow-hidden rounded-sm border-2 border-brass-deep/50 vignette"
+        style={{ minHeight: 720 }}
       >
-        <defs>
-          {/* Sky gradient — top of frame is upper atmosphere, bottom is warm haze */}
-          <linearGradient id="voyage-sky" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="oklch(0.86 0.04 235)" />
-            <stop offset="40%" stopColor="oklch(0.92 0.025 75)" />
-            <stop offset="100%" stopColor="oklch(0.85 0.06 55)" />
-          </linearGradient>
+        {/* Cloudscape painting full-bleed backdrop */}
+        <div className="absolute inset-0">
+          <Image
+            src="/images/cloudscape-denis.jpg"
+            alt=""
+            fill
+            sizes="(max-width: 768px) 100vw, 800px"
+            className="object-cover"
+            style={{ filter: 'sepia(0.15) brightness(1.05) contrast(1.05)' }}
+          />
+          {/* Atmospheric darken: bottom warm-dark, mid clear, top sky-light */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(180deg, oklch(0.30 0.04 230 / 0.45) 0%, oklch(0.40 0.06 220 / 0.30) 30%, oklch(0.45 0.05 75 / 0.20) 60%, oklch(0.20 0.05 50 / 0.55) 92%, oklch(0.13 0.014 50 / 0.85) 100%)',
+            }}
+          />
+        </div>
 
-          {/* Cloud fills, three states. Bumped opacity so clouds read
-           *  clearly against the warm sky background. */}
-          <radialGradient id="cloud-mastered" cx="0.5" cy="0.5" r="0.65">
-            <stop offset="0%" stopColor="oklch(0.96 0.04 78 / 1)" />
-            <stop offset="60%" stopColor="oklch(0.84 0.10 78 / 0.95)" />
-            <stop offset="100%" stopColor="oklch(0.68 0.13 78 / 0.7)" />
-          </radialGradient>
-          <radialGradient id="cloud-current" cx="0.5" cy="0.5" r="0.65">
-            <stop offset="0%" stopColor="oklch(0.99 0.012 75 / 1)" />
-            <stop offset="60%" stopColor="oklch(0.94 0.025 75 / 1)" />
-            <stop offset="100%" stopColor="oklch(0.78 0.06 70 / 0.85)" />
-          </radialGradient>
-          <radialGradient id="cloud-later" cx="0.5" cy="0.5" r="0.65">
-            <stop offset="0%" stopColor="oklch(0.97 0.014 75 / 0.95)" />
-            <stop offset="100%" stopColor="oklch(0.86 0.025 75 / 0.55)" />
-          </radialGradient>
-        </defs>
+        {/* Top of frame — APEX label */}
+        <div className="absolute top-4 left-0 right-0 text-center pointer-events-none">
+          <p
+            className="text-[10px] tracking-[0.4em] uppercase text-cream-soft"
+            style={{ fontFamily: 'var(--font-cinzel)' }}
+          >
+            Apex of the voyage
+          </p>
+        </div>
 
-        {/* Sky background */}
-        <rect x="0" y="0" width={VB_W} height={VB_H} fill="url(#voyage-sky)" />
+        {/* The 5 strata, stacked from index=5 (top) down to index=1 (bottom) */}
+        <ol className="relative z-10 flex flex-col gap-1 px-6 sm:px-12 py-16">
+          {PROGRESSIONS.map((p) => (
+            <ProgressionStratum
+              key={p.code}
+              progression={p}
+              counts={p.code === '4.NF' ? counts : null}
+              totalProbed={p.code === '4.NF' ? totalProbed : 0}
+              totalStandards={p.code === '4.NF' ? totalStandards : 0}
+            />
+          ))}
+        </ol>
 
-        {/* Foundation/ground glow at the bottom */}
-        <rect
-          x="0"
-          y={SECTIONS_BOTTOM + 20}
-          width={VB_W}
-          height={VB_H - SECTIONS_BOTTOM - 20}
-          fill="oklch(0.82 0.07 55 / 0.3)"
-        />
-        <line
-          x1="40"
-          y1={SECTIONS_BOTTOM + 30}
-          x2={VB_W - 40}
-          y2={SECTIONS_BOTTOM + 30}
-          stroke="oklch(0.45 0.10 65 / 0.45)"
-          strokeWidth="1"
-          strokeDasharray="3 4"
-        />
-        <text
-          x={VB_W / 2}
-          y={SECTIONS_BOTTOM + 56}
-          textAnchor="middle"
-          fontSize="10"
-          fontFamily="var(--font-cinzel)"
-          fill="oklch(0.45 0.10 65 / 0.85)"
-          letterSpacing="3"
-        >
-          FOUNDATION
-        </text>
+        {/* Ground / launch label */}
+        <div className="absolute bottom-3 left-0 right-0 text-center pointer-events-none">
+          <p
+            className="text-[10px] tracking-[0.4em] uppercase text-cream-faint"
+            style={{ fontFamily: 'var(--font-cinzel)' }}
+          >
+            ◇ Launch from the foundation ◇
+          </p>
+        </div>
 
-        {/* Cloud strata */}
-        {orderedTopDown.map((section, idx) => {
-          const y = yOf(idx)
-          const status = sectionStatus[section.id]
-          return (
-            <g key={section.id}>
-              {/* Cloud body — wide ellipse */}
-              <ellipse
-                cx={VB_W / 2}
-                cy={y}
-                rx={210}
-                ry={36}
-                fill={
-                  status === 'mastered'
-                    ? 'url(#cloud-mastered)'
-                    : status === 'current'
-                      ? 'url(#cloud-current)'
-                      : 'url(#cloud-later)'
-                }
-              />
-              {/* Bumpy cloud top + bottom — small ellipse clusters */}
-              {[-150, -100, -50, 0, 50, 100, 150].map((dx, i) => (
-                <ellipse
-                  key={`bump-${section.id}-${i}`}
-                  cx={VB_W / 2 + dx}
-                  cy={y - 14 + (i % 2) * 6}
-                  rx={26}
-                  ry={14}
-                  fill={
-                    status === 'mastered'
-                      ? 'oklch(0.94 0.06 78 / 0.95)'
-                      : status === 'current'
-                        ? 'oklch(0.98 0.018 75 / 0.95)'
-                        : 'oklch(0.96 0.018 75 / 0.7)'
-                  }
-                />
-              ))}
-
-              {/* Section label — left side, copperplate caps */}
-              <text
-                x={40}
-                y={y - 18}
-                fontSize="11"
-                fontFamily="var(--font-cinzel)"
-                fill={
-                  status === 'mastered'
-                    ? 'oklch(0.40 0.10 65)'
-                    : status === 'current'
-                      ? 'oklch(0.22 0.018 55)'
-                      : 'oklch(0.62 0.014 55)'
-                }
-                letterSpacing="1.5"
-                fontWeight={status === 'current' ? 700 : 500}
-              >
-                {`STRATUM ${toRoman(section.id)} · ${section.shortName.toUpperCase()}`}
-              </text>
-              {/* Status badge */}
-              <text
-                x={40}
-                y={y - 4}
-                fontSize="9"
-                fontFamily="var(--font-special-elite)"
-                fill={
-                  status === 'mastered'
-                    ? 'oklch(0.45 0.13 145)'
-                    : status === 'current'
-                      ? 'oklch(0.50 0.13 42)'
-                      : 'oklch(0.62 0.014 55)'
-                }
-              >
-                {status === 'mastered'
-                  ? '✓ mastered'
-                  : status === 'current'
-                    ? '◊ current voyage'
-                    : 'awaiting'}
-              </text>
-
-              {/* Standard markers — small dots clustered around the cloud */}
-              <g>
-                {section.standardIds.map((sid, i) => {
-                  const n = section.standardIds.length
-                  const dx = n === 1 ? 0 : (i - (n - 1) / 2) * 38
-                  const cx = VB_W / 2 + dx + 80
-                  const cy = y + 8
-                  const completed = completedByStandard?.[sid] ?? 0
-                  return (
-                    <StandardMarker
-                      key={sid}
-                      cx={cx}
-                      cy={cy}
-                      state={stateOf(sid)}
-                      label={standardName(sid)}
-                      completed={completed}
-                    />
-                  )
-                })}
-              </g>
-            </g>
-          )
-        })}
-
-        {/* Airship — positioned at the current section, gently floating */}
-        <g transform={`translate(${VB_W / 2 - 60} ${airshipY - 130})`}>
-          <foreignObject x="0" y="0" width="120" height="140">
-            <div className="animate-balloon-float w-full h-full flex items-center justify-center">
-              {/* Inline SVG inside foreignObject so the animation utility class works */}
-              <Airship className="h-full w-auto text-brass-deep" />
-            </div>
-          </foreignObject>
-        </g>
-
-        {/* Voyage axis label — right side */}
-        <text
-          x={VB_W - 30}
-          y={SECTIONS_TOP - 10}
-          fontSize="9"
-          fontFamily="var(--font-cinzel)"
-          fill="oklch(0.45 0.10 65 / 0.7)"
-          letterSpacing="3"
-          textAnchor="end"
-        >
-          ASCENT
-        </text>
-        <text
-          x={VB_W - 30}
-          y={SECTIONS_BOTTOM + 5}
-          fontSize="9"
-          fontFamily="var(--font-cinzel)"
-          fill="oklch(0.45 0.10 65 / 0.7)"
-          letterSpacing="3"
-          textAnchor="end"
-        >
-          DEPARTURE
-        </text>
-      </svg>
+        {/* Subtle foreground vignette helper from class */}
+      </section>
 
       <Legend />
     </div>
   )
 }
 
-/**
- * Per-standard marker on a cloud stratum. State-colored, with a small
- * pennant (flower analog) for each completed activity.
- */
-function StandardMarker({
-  cx,
-  cy,
-  state,
-  label,
-  completed,
+function ProgressionStratum({
+  progression,
+  counts,
+  totalProbed,
+  totalStandards,
 }: {
-  cx: number
-  cy: number
-  state: StandardState
-  label: string
-  completed: number
+  progression: ProgressionDef
+  counts: { demonstrated: number; working: number; misconception: number; not_assessed: number } | null
+  totalProbed: number
+  totalStandards: number
 }) {
-  const fill = markerFill(state)
-  const stroke = markerStroke(state)
+  const active = progression.status === 'active'
   return (
-    <g>
-      <title>{`${label} — ${stateLabel(state)}${completed > 0 ? ` · ${completed} activity completed` : ''}`}</title>
-      {/* Pennant pole */}
-      <line x1={cx} y1={cy} x2={cx} y2={cy - 18} stroke="oklch(0.30 0.04 50)" strokeWidth="0.9" />
-      {/* Flag */}
-      <path
-        d={`M ${cx} ${cy - 18} L ${cx + 10} ${cy - 14} L ${cx} ${cy - 10} Z`}
-        fill={fill}
-        stroke={stroke}
-        strokeWidth="0.8"
-      />
-      {/* Pole base dot */}
-      <circle cx={cx} cy={cy} r="2.6" fill={fill} stroke={stroke} strokeWidth="0.8" />
-      {/* Completed-activity pennants — small dots above the flag */}
-      {Array.from({ length: Math.min(completed, 3) }).map((_, i) => (
-        <circle
-          key={i}
-          cx={cx + 8 + i * 5}
-          cy={cy - 22 - i * 3}
-          r="1.6"
-          fill="oklch(0.65 0.13 78)"
-          stroke="oklch(0.40 0.10 65)"
-          strokeWidth="0.5"
-        />
-      ))}
-    </g>
+    <li
+      className={`relative flex items-center gap-4 px-4 py-5 sm:py-6 rounded-sm transition-colors ${
+        active
+          ? 'border-2 border-brass-glow bg-paper/85 backdrop-blur-sm shadow-[0_0_25px_oklch(0.74_0.14_80/0.45)]'
+          : 'border border-cream-faint/30 bg-background/40 backdrop-blur-sm opacity-70'
+      }`}
+    >
+      {/* Code chip */}
+      <div className="flex flex-col items-center justify-center min-w-[54px]">
+        <span
+          className={`text-xs ${active ? 'text-brass-deep' : 'text-cream-faint'}`}
+          style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.12em' }}
+        >
+          {progression.code}
+        </span>
+      </div>
+
+      {/* Title + body */}
+      <div className="flex-1 min-w-0">
+        <h3
+          className={`text-base sm:text-lg leading-snug ${
+            active ? 'text-ink' : 'text-cream-soft'
+          }`}
+          style={{ fontFamily: 'var(--font-fraunces)', fontWeight: 600 }}
+        >
+          {progression.name}
+        </h3>
+        {active && counts ? (
+          <div
+            className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs sm:text-sm text-ink-soft"
+            style={{ fontFamily: 'var(--font-fraunces)' }}
+          >
+            <CountChip label="Mastered" value={counts.demonstrated} colorClass="bg-emerald-600" />
+            <CountChip label="Working on" value={counts.working} colorClass="bg-amber-600" />
+            <CountChip label="Needs attention" value={counts.misconception} colorClass="bg-red-600" />
+            <CountChip label="Not yet probed" value={counts.not_assessed} colorClass="bg-stone-400" />
+          </div>
+        ) : (
+          <p
+            className="mt-1 text-[11px] italic text-cream-faint tracking-[0.15em] uppercase"
+            style={{ fontFamily: 'var(--font-cinzel)' }}
+          >
+            Coming in v1.5
+          </p>
+        )}
+        {active && totalProbed > 0 && (
+          <p
+            className="mt-1 text-[11px] text-ink-faint italic"
+            style={{ fontFamily: 'var(--font-special-elite)' }}
+          >
+            {totalProbed} of {totalStandards} standards probed so far.
+          </p>
+        )}
+      </div>
+
+      {/* Airship floats AT the active stratum (right side, animated) */}
+      {active && (
+        <div
+          className="absolute right-2 sm:right-6 -top-12 sm:-top-16 animate-balloon-float ember-glow pointer-events-none"
+          style={{ width: 88 }}
+        >
+          <Image
+            src="/images/balloon-versailles.jpg"
+            alt="Airship parked at the Fractions Progression"
+            width={300}
+            height={490}
+            className="w-full h-auto"
+            style={{ filter: 'sepia(0.4) brightness(1.05) contrast(1.05)', mixBlendMode: 'screen' }}
+          />
+          <p
+            className="text-center text-[8px] tracking-[0.2em] uppercase text-brass-deep mt-1"
+            style={{ fontFamily: 'var(--font-cinzel)' }}
+          >
+            ◊ You are here
+          </p>
+        </div>
+      )}
+
+      {/* Stratum number (Roman) on far left for the active one */}
+      {active && (
+        <div
+          className="absolute left-2 -top-2 text-brass-deep"
+          style={{ fontFamily: 'var(--font-cinzel)', fontSize: 14, letterSpacing: '0.15em' }}
+        >
+          STRATUM {romanFor(progression.index)}
+        </div>
+      )}
+    </li>
   )
 }
 
-function markerFill(state: StandardState): string {
-  switch (state) {
-    case 'demonstrated':
-      return 'oklch(0.55 0.13 145)'
-    case 'working':
-      return 'oklch(0.70 0.13 70)'
-    case 'misconception':
-      return 'oklch(0.55 0.18 25)'
-    case 'not_assessed':
-      return 'oklch(0.78 0.014 75)'
-  }
+function CountChip({
+  label,
+  value,
+  colorClass,
+}: {
+  label: string
+  value: number
+  colorClass: string
+}) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <span className={`inline-block h-2 w-2 rounded-full ${colorClass}`} aria-hidden />
+      <span className="text-ink-soft">
+        <strong className="text-ink">{value}</strong> {label.toLowerCase()}
+      </span>
+    </span>
+  )
 }
 
-function markerStroke(state: StandardState): string {
-  switch (state) {
-    case 'demonstrated':
-      return 'oklch(0.34 0.13 145)'
-    case 'working':
-      return 'oklch(0.42 0.13 70)'
-    case 'misconception':
-      return 'oklch(0.34 0.18 25)'
-    case 'not_assessed':
-      return 'oklch(0.55 0.014 75)'
-  }
-}
-
-function stateLabel(state: StandardState): string {
-  switch (state) {
-    case 'demonstrated':
-      return 'Mastered'
-    case 'working':
-      return 'Working on'
-    case 'misconception':
-      return 'Needs attention'
-    case 'not_assessed':
-      return 'Not yet probed'
-  }
-}
-
-function toRoman(n: number): string {
-  const map: [number, string][] = [
-    [10, 'X'],
-    [9, 'IX'],
-    [5, 'V'],
-    [4, 'IV'],
-    [1, 'I'],
-  ]
-  let result = ''
-  for (const [v, s] of map) {
-    while (n >= v) {
-      result += s
-      n -= v
-    }
-  }
-  return result
+function romanFor(n: number): string {
+  return ['', 'I', 'II', 'III', 'IV', 'V'][n] ?? String(n)
 }
 
 function Legend() {
-  const items: { state: StandardState; label: string }[] = [
-    { state: 'demonstrated', label: 'Mastered' },
-    { state: 'working', label: 'Working on' },
-    { state: 'misconception', label: 'Needs attention' },
-    { state: 'not_assessed', label: 'Not yet probed' },
+  const items: { color: string; label: string }[] = [
+    { color: 'bg-emerald-600', label: 'Mastered' },
+    { color: 'bg-amber-600', label: 'Working on' },
+    { color: 'bg-red-600', label: 'Needs attention' },
+    { color: 'bg-stone-400', label: 'Not yet probed' },
   ]
   return (
     <div
-      className="mt-6 flex items-center justify-center gap-5 flex-wrap text-[11px] text-ink-soft"
+      className="mt-6 flex items-center justify-center gap-5 flex-wrap text-[11px] text-cream-soft"
       style={{ fontFamily: 'var(--font-special-elite)' }}
     >
       {items.map((it) => (
-        <span key={it.state} className="flex items-center gap-1.5">
-          <span
-            className="inline-block h-2.5 w-2.5 rounded-full border"
-            style={{ backgroundColor: markerFill(it.state), borderColor: markerStroke(it.state) }}
-            aria-hidden
-          />
+        <span key={it.label} className="flex items-center gap-1.5">
+          <span className={`inline-block h-2.5 w-2.5 rounded-full ${it.color}`} aria-hidden />
           {it.label}
         </span>
       ))}
-      <span className="flex items-center gap-1.5">
-        <span
-          className="inline-block h-2.5 w-2.5 rounded-full"
-          style={{ backgroundColor: 'oklch(0.65 0.13 78)' }}
-          aria-hidden
-        />
-        Pennant = completed activity
-      </span>
     </div>
   )
 }
