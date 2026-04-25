@@ -113,11 +113,18 @@ const TRUNK_PATH =
 
 interface Props {
   masteryMap: { standards: Record<string, { state: StandardState }> } | null
+  /** Count of completed activities targeting each standard. Drives flower count. */
+  completedByStandard?: Record<string, number>
 }
 
-export default function MasteryTree({ masteryMap }: Props) {
+export default function MasteryTree({ masteryMap, completedByStandard }: Props) {
   const stateOf = (sid: string): StandardState =>
     masteryMap?.standards?.[sid]?.state ?? 'not_assessed'
+  const completedFor = (sid: string): number =>
+    completedByStandard?.[sid] ?? 0
+  const sectionMastered = (s: SectionDef): boolean =>
+    s.standardIds.length > 0 &&
+    s.standardIds.every((sid) => stateOf(sid) === 'demonstrated')
 
   return (
     <div className="w-full max-w-2xl mx-auto">
@@ -145,9 +152,49 @@ export default function MasteryTree({ masteryMap }: Props) {
             <stop offset="0%" stopColor="#fca5a5" />
             <stop offset="100%" stopColor="#ef4444" />
           </linearGradient>
+          {/* Flower gradient — soft pink-cream petals */}
+          <radialGradient id="flower-petal" cx="0.4" cy="0.4" r="0.6">
+            <stop offset="0%" stopColor="#fff1f2" />
+            <stop offset="100%" stopColor="#fda4af" />
+          </radialGradient>
+          {/* Fruit gradient — glossy emerald, slight highlight */}
+          <radialGradient id="fruit-skin" cx="0.35" cy="0.3" r="0.7">
+            <stop offset="0%" stopColor="#a7f3d0" />
+            <stop offset="50%" stopColor="#10b981" />
+            <stop offset="100%" stopColor="#047857" />
+          </radialGradient>
+          {/* Soft sky / atmosphere */}
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#fef9c3" stopOpacity="0.0" />
+            <stop offset="100%" stopColor="#fef9c3" stopOpacity="0.45" />
+          </linearGradient>
+          {/* Soft grass at the base */}
+          <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#a3e635" stopOpacity="0.7" />
+            <stop offset="100%" stopColor="#65a30d" stopOpacity="0.9" />
+          </linearGradient>
         </defs>
 
-        {/* Ground */}
+        {/* Soft sun-warm background wash */}
+        <rect x="0" y="0" width="600" height="720" fill="url(#sky)" />
+
+        {/* Grass at the base */}
+        {Array.from({ length: 14 }).map((_, i) => {
+          const x = 110 + i * 28 + ((i * 13) % 17)
+          const h = 6 + ((i * 7) % 5)
+          return (
+            <path
+              key={i}
+              d={`M ${x} 690 Q ${x + 2} ${690 - h - 2}, ${x + 4} ${690 - h}`}
+              stroke="url(#grass)"
+              strokeWidth="1.6"
+              fill="none"
+              strokeLinecap="round"
+            />
+          )
+        })}
+
+        {/* Ground shadow under the tree */}
         <ellipse cx="300" cy="690" rx="220" ry="14" fill="url(#ground-shadow)" />
 
         {/* Trunk */}
@@ -161,12 +208,18 @@ export default function MasteryTree({ masteryMap }: Props) {
           <Branch key={s.id} section={s} />
         ))}
 
+        {/* Fruits — drawn before leaves so leaves overlap them slightly */}
+        {SECTIONS.filter(sectionMastered).map((s) => (
+          <FruitCluster key={`fruit-${s.id}`} section={s} />
+        ))}
+
         {/* Leaves clustered at each branch tip */}
         {SECTIONS.map((s) => (
           <LeafCluster
             key={`leaves-${s.id}`}
             section={s}
             stateOf={stateOf}
+            completedFor={completedFor}
           />
         ))}
 
@@ -222,9 +275,11 @@ function Branch({ section }: { section: SectionDef }) {
 function LeafCluster({
   section,
   stateOf,
+  completedFor,
 }: {
   section: SectionDef
   stateOf: (sid: string) => StandardState
+  completedFor: (sid: string) => number
 }) {
   const n = section.standardIds.length
   // Arrange leaves around the tip in a small fan.
@@ -239,15 +294,30 @@ function LeafCluster({
             : -Math.PI / 2 + (i - (n - 1) / 2) * 0.55
         const cx = section.tipX + radius * Math.cos(angle)
         const cy = section.tipY + radius * Math.sin(angle)
+        const flowerCount = Math.min(completedFor(sid), 3) // cap at 3 to avoid clutter
         return (
-          <Leaf
-            key={sid}
-            cx={cx}
-            cy={cy}
-            angle={angle}
-            state={stateOf(sid)}
-            label={sid}
-          />
+          <g key={sid}>
+            <Leaf
+              cx={cx}
+              cy={cy}
+              angle={angle}
+              state={stateOf(sid)}
+              label={sid}
+            />
+            {Array.from({ length: flowerCount }).map((_, fi) => {
+              // Place flowers in a small arc to one side of the leaf.
+              const flowerAngle = angle + 0.6 + fi * 0.35
+              const fx = cx + 14 * Math.cos(flowerAngle)
+              const fy = cy + 14 * Math.sin(flowerAngle)
+              return (
+                <Flower
+                  key={`flower-${sid}-${fi}`}
+                  cx={fx}
+                  cy={fy}
+                />
+              )
+            })}
+          </g>
         )
       })}
     </g>
@@ -285,6 +355,70 @@ function Leaf({
       />
       {/* Subtle midrib */}
       <line x1="0" y1="-13" x2="0" y2="13" stroke="rgba(0,0,0,0.15)" strokeWidth="0.6" />
+    </g>
+  )
+}
+
+function Flower({ cx, cy }: { cx: number; cy: number }) {
+  // 5-petal flower with a yellow center, scaled small to fit alongside leaves.
+  return (
+    <g transform={`translate(${cx} ${cy})`}>
+      <title>Practice activity completed</title>
+      {[0, 72, 144, 216, 288].map((deg) => (
+        <ellipse
+          key={deg}
+          cx="0"
+          cy="-3.5"
+          rx="2.2"
+          ry="3.2"
+          fill="url(#flower-petal)"
+          stroke="#fb7185"
+          strokeWidth="0.4"
+          transform={`rotate(${deg})`}
+        />
+      ))}
+      <circle cx="0" cy="0" r="1.4" fill="#fbbf24" stroke="#d97706" strokeWidth="0.3" />
+    </g>
+  )
+}
+
+function FruitCluster({ section }: { section: SectionDef }) {
+  // 1–2 fruits hung along the branch curve, between baseX/Y and tipX/Y.
+  // Use a parametric point on the Bezier (t=0.55, t=0.75) for natural placement.
+  const fruitCount = section.standardIds.length >= 2 ? 2 : 1
+  const positions = fruitCount === 2 ? [0.55, 0.78] : [0.65]
+  return (
+    <g>
+      {positions.map((t, i) => {
+        const oneMinusT = 1 - t
+        const x =
+          oneMinusT * oneMinusT * section.baseX +
+          2 * oneMinusT * t * section.ctrlX +
+          t * t * section.tipX
+        const y =
+          oneMinusT * oneMinusT * section.baseY +
+          2 * oneMinusT * t * section.ctrlY +
+          t * t * section.tipY
+        // Hang fruits slightly below the curve.
+        const fruitY = y + 8
+        return <Fruit key={`fruit-${section.id}-${i}`} cx={x} cy={fruitY} />
+      })}
+    </g>
+  )
+}
+
+function Fruit({ cx, cy }: { cx: number; cy: number }) {
+  return (
+    <g transform={`translate(${cx} ${cy})`}>
+      <title>Section mastered</title>
+      {/* Stem */}
+      <line x1="0" y1="-7" x2="0" y2="-3" stroke="#5a3a22" strokeWidth="1.2" />
+      {/* Tiny leaf on stem */}
+      <ellipse cx="2" cy="-6" rx="2" ry="1.2" fill="#10b981" transform="rotate(35 2 -6)" />
+      {/* Fruit body */}
+      <circle cx="0" cy="0" r="6" fill="url(#fruit-skin)" stroke="#065f46" strokeWidth="0.6" />
+      {/* Highlight */}
+      <ellipse cx="-2" cy="-2" rx="1.5" ry="1" fill="rgba(255,255,255,0.5)" />
     </g>
   )
 }
@@ -359,11 +493,46 @@ function SectionLabel({ section }: { section: SectionDef }) {
 
 function Legend() {
   return (
-    <div className="mt-4 flex items-center justify-center gap-5 text-xs text-stone-600 dark:text-zinc-400">
-      <LegendItem state="demonstrated" />
-      <LegendItem state="working" />
-      <LegendItem state="misconception" />
-      <LegendItem state="not_assessed" />
+    <div className="mt-4 flex flex-col items-center gap-3 text-xs text-stone-600 dark:text-zinc-400">
+      <div className="flex items-center justify-center gap-5 flex-wrap">
+        <LegendItem state="demonstrated" />
+        <LegendItem state="working" />
+        <LegendItem state="misconception" />
+        <LegendItem state="not_assessed" />
+      </div>
+      <div className="flex items-center justify-center gap-5 flex-wrap text-stone-500 dark:text-zinc-500">
+        <div className="flex items-center gap-1.5">
+          <svg viewBox="-8 -8 16 16" className="h-4 w-4" aria-hidden>
+            <defs>
+              <radialGradient id="legend-flower" cx="0.4" cy="0.4" r="0.6">
+                <stop offset="0%" stopColor="#fff1f2" />
+                <stop offset="100%" stopColor="#fda4af" />
+              </radialGradient>
+            </defs>
+            {[0, 72, 144, 216, 288].map((deg) => (
+              <ellipse key={deg} cx="0" cy="-3.5" rx="2.2" ry="3.2"
+                fill="url(#legend-flower)" stroke="#fb7185" strokeWidth="0.4"
+                transform={`rotate(${deg})`} />
+            ))}
+            <circle cx="0" cy="0" r="1.4" fill="#fbbf24" stroke="#d97706" strokeWidth="0.3" />
+          </svg>
+          <span>Flower = practice activity completed</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <svg viewBox="-8 -8 16 16" className="h-4 w-4" aria-hidden>
+            <defs>
+              <radialGradient id="legend-fruit" cx="0.35" cy="0.3" r="0.7">
+                <stop offset="0%" stopColor="#a7f3d0" />
+                <stop offset="50%" stopColor="#10b981" />
+                <stop offset="100%" stopColor="#047857" />
+              </radialGradient>
+            </defs>
+            <circle cx="0" cy="0" r="6" fill="url(#legend-fruit)" stroke="#065f46" strokeWidth="0.6" />
+            <ellipse cx="-2" cy="-2" rx="1.5" ry="1" fill="rgba(255,255,255,0.5)" />
+          </svg>
+          <span>Fruit = whole section mastered</span>
+        </div>
+      </div>
     </div>
   )
 }

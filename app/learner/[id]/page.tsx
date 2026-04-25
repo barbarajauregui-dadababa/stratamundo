@@ -32,6 +32,35 @@ export default async function LearnerDashboardPage(
   const latest = assessments?.[0]
   const masteryMap = (latest?.mastery_map as MasteryMap | null) ?? null
 
+  // Count completed activities per standard (for flowers).
+  const completedByStandard: Record<string, number> = {}
+  if (latest) {
+    const { data: planRow } = await supabase
+      .from('plans')
+      .select('plan_content')
+      .eq('assessment_id', latest.id)
+      .eq('status', 'active')
+      .maybeSingle()
+    type PlanShape = {
+      priority_gaps?: { standard_id: string; activities: { resource_id: string }[] }[]
+      _completed_activities?: { resource_id: string }[]
+    }
+    const plan = (planRow?.plan_content as PlanShape | null) ?? null
+    if (plan) {
+      const completedIds = new Set(
+        (plan._completed_activities ?? []).map((c) => c.resource_id)
+      )
+      for (const gap of plan.priority_gaps ?? []) {
+        for (const act of gap.activities ?? []) {
+          if (completedIds.has(act.resource_id)) {
+            completedByStandard[gap.standard_id] =
+              (completedByStandard[gap.standard_id] ?? 0) + 1
+          }
+        }
+      }
+    }
+  }
+
   // Counts for the at-a-glance bar.
   const counts = { demonstrated: 0, working: 0, misconception: 0, not_assessed: 0, total: 11 }
   if (masteryMap?.standards) {
@@ -80,7 +109,10 @@ export default async function LearnerDashboardPage(
         <Stat label="Not yet probed" value={counts.not_assessed} accent="text-stone-500 dark:text-zinc-500" />
       </section>
 
-      <MasteryTree masteryMap={masteryMap} />
+      <MasteryTree
+        masteryMap={masteryMap}
+        completedByStandard={completedByStandard}
+      />
 
       <section className="flex flex-wrap gap-3 pt-4 border-t border-stone-200 dark:border-zinc-800">
         {latest && (
