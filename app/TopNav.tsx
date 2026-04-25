@@ -2,28 +2,26 @@ import Link from 'next/link'
 import { Gear } from './Ornament'
 
 /**
- * Global top navigation. Server component — no client state.
+ * Global top navigation. Server component.
  *
- * Steampunk: warm paper backdrop with a brass-deep bottom rule,
- * Cinzel brand wordmark with a small slowly-turning gear, ink-soft
- * nav links in Cinzel small caps with brass underline on hover.
+ * Bold steampunk: dark mahogany ground with brass-deep border, brass
+ * wordmark with a slowly-turning gear. Cinzel small caps everywhere.
  */
 export default function TopNav() {
   return (
-    <nav className="w-full border-b border-brass-deep/30 bg-paper/85 backdrop-blur sticky top-0 z-30">
+    <nav className="w-full border-b border-brass-deep/50 bg-background/90 backdrop-blur sticky top-0 z-30">
       <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between gap-6">
-        {/* Brand: tiny gear + Cinzel wordmark */}
         <Link
           href="/"
-          className="flex items-center gap-2 text-ink hover:text-ink-soft transition-colors"
+          className="flex items-center gap-2 text-cream hover:text-brass transition-colors"
         >
           <Gear
-            teeth={8}
-            className="h-4 w-4 text-brass-deep/65 animate-turn-slow"
+            teeth={10}
+            className="h-5 w-5 text-brass animate-turn-slow"
           />
           <span
-            className="text-base font-semibold uppercase"
-            style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.18em' }}
+            className="text-base font-bold uppercase"
+            style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.22em' }}
           >
             Strata Mundo
           </span>
@@ -31,7 +29,7 @@ export default function TopNav() {
 
         <ul
           className="flex items-center gap-1 text-[11px]"
-          style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.15em' }}
+          style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.18em' }}
         >
           <NavLink href="/" label="Home" />
           <NavLink href="/methodology" label="Methodology" />
@@ -41,7 +39,7 @@ export default function TopNav() {
               href="https://github.com/barbarajauregui-dadababa/fractions-mastery-tracker"
               target="_blank"
               rel="noreferrer"
-              className="px-3 py-1.5 uppercase text-ink-faint hover:text-ink transition-colors"
+              className="px-3 py-1.5 uppercase text-cream-faint hover:text-brass transition-colors"
             >
               GitHub
             </a>
@@ -57,7 +55,7 @@ function NavLink({ href, label }: { href: string; label: string }) {
     <li>
       <Link
         href={href}
-        className="px-3 py-1.5 uppercase text-ink-soft hover:text-ink hover:underline hover:decoration-brass-deep/60 hover:decoration-1 hover:underline-offset-4 transition-colors"
+        className="px-3 py-1.5 uppercase text-cream-soft hover:text-brass hover:underline hover:decoration-brass hover:decoration-1 hover:underline-offset-4 transition-colors"
       >
         {label}
       </Link>

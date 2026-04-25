@@ -1,10 +1,11 @@
 @import "tailwindcss";
 
 /* ========================================================================
- * Strata Mundo — steampunk palette
+ * Strata Mundo — bold steampunk palette
  *
- * Warm mahogany ink on parchment cream, with brass and copper accents.
- * Verdigris (oxidized copper) as a rare cool accent.
+ * Pinterest-poster steampunk: dark dominant, dense ornament, shimmer
+ * of light on bronze. Hugo-movie aesthetic — dim Parisian station with
+ * brass clockwork catching warm gas light.
  *
  * State colors (canonical, never repurposed):
  *   - emerald-600 = mastered
@@ -15,30 +16,36 @@
  * Brand colors are OKLCH for perceptual stability across hue.
  * ======================================================================== */
 :root {
-  /* Page surfaces */
-  --background:        oklch(0.95 0.018 75);   /* warm parchment */
-  --foreground:        oklch(0.22 0.018 55);   /* deep mahogany ink */
+  /* Page surfaces — dark dominant by default */
+  --background:        oklch(0.13 0.014 50);   /* deep mahogany ink-black */
+  --foreground:        oklch(0.92 0.020 75);   /* warm cream type */
 
   /* Brass family — primary brand accent */
-  --color-brass:       oklch(0.65 0.12 78);    /* polished brass */
-  --color-brass-deep:  oklch(0.46 0.10 65);    /* aged brass */
-  --color-brass-fg:    oklch(0.99 0 0);        /* on-brass text */
+  --color-brass:       oklch(0.74 0.14 80);    /* polished brass */
+  --color-brass-deep:  oklch(0.55 0.12 70);    /* aged brass */
+  --color-brass-glow:  oklch(0.86 0.16 88);    /* shimmer highlight */
+  --color-brass-fg:    oklch(0.13 0.014 50);   /* on-brass text (dark) */
 
   /* Copper family — warm secondary */
-  --color-copper:      oklch(0.55 0.14 42);    /* warm copper */
+  --color-copper:      oklch(0.62 0.16 42);    /* warm copper */
 
   /* Verdigris — rare cool accent (oxidized copper) */
-  --color-verdigris:   oklch(0.55 0.08 175);   /* oxidized copper green */
+  --color-verdigris:   oklch(0.55 0.08 175);
 
-  /* Paper variants */
-  --color-paper:       oklch(0.95 0.018 75);   /* same as background */
-  --color-paper-deep:  oklch(0.88 0.025 75);   /* aged parchment edge */
-  --color-paper-warm:  oklch(0.92 0.028 65);   /* warmer corner */
+  /* Paper — used inside cards / reading surfaces over the dark ground */
+  --color-paper:       oklch(0.93 0.020 75);
+  --color-paper-deep:  oklch(0.85 0.030 70);
+  --color-paper-warm:  oklch(0.90 0.030 65);
 
-  /* Ink variants */
-  --color-ink:         oklch(0.22 0.018 55);   /* primary ink */
-  --color-ink-soft:    oklch(0.42 0.018 55);   /* softer ink for body */
-  --color-ink-faint:   oklch(0.62 0.014 55);   /* faint ink for metadata */
+  /* Ink — for text on paper */
+  --color-ink:         oklch(0.18 0.018 55);
+  --color-ink-soft:    oklch(0.36 0.016 55);
+  --color-ink-faint:   oklch(0.52 0.014 55);
+
+  /* Cream — for text on dark ground */
+  --color-cream:       oklch(0.92 0.020 75);
+  --color-cream-soft:  oklch(0.78 0.022 70);
+  --color-cream-faint: oklch(0.62 0.018 65);
 }
 
 @theme inline {
@@ -46,6 +53,7 @@
   --color-foreground:          var(--foreground);
   --color-brass:               var(--color-brass);
   --color-brass-deep:          var(--color-brass-deep);
+  --color-brass-glow:          var(--color-brass-glow);
   --color-brass-fg:            var(--color-brass-fg);
   --color-copper:              var(--color-copper);
   --color-verdigris:           var(--color-verdigris);
@@ -55,6 +63,9 @@
   --color-ink:                 var(--color-ink);
   --color-ink-soft:            var(--color-ink-soft);
   --color-ink-faint:           var(--color-ink-faint);
+  --color-cream:               var(--color-cream);
+  --color-cream-soft:          var(--color-cream-soft);
+  --color-cream-faint:         var(--color-cream-faint);
 
   /* Fonts */
   --font-sans:    var(--font-geist-sans);
@@ -62,19 +73,6 @@
   --font-serif:   var(--font-fraunces);
   --font-display: var(--font-cinzel);
   --font-accent:  var(--font-special-elite);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background:        oklch(0.16 0.012 60);
-    --foreground:        oklch(0.92 0.014 75);
-    --color-paper:       oklch(0.16 0.012 60);
-    --color-paper-deep:  oklch(0.20 0.014 60);
-    --color-paper-warm:  oklch(0.22 0.018 55);
-    --color-ink:         oklch(0.92 0.014 75);
-    --color-ink-soft:    oklch(0.74 0.014 75);
-    --color-ink-faint:   oklch(0.55 0.012 75);
-  }
 }
 
 body {
@@ -123,8 +121,7 @@ body {
   animation: turn-slow 50s linear infinite reverse;
 }
 
-/* Gentle balloon float — slower, smaller amplitude. A period airship
- * carries weight; it shouldn't bounce. */
+/* Gentle balloon float — slow + subtle */
 @keyframes balloon-float {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-4px); }
@@ -132,4 +129,93 @@ body {
 
 .animate-balloon-float {
   animation: balloon-float 12s ease-in-out infinite;
+}
+
+/* Bronze shimmer — Hugo-movie aesthetic
+ * A warm glint sweeps slowly across a brass surface, like gaslight
+ * catching a polished mechanism. Apply via `.brass-shimmer` to any
+ * element on a dark background.
+ */
+@keyframes brass-shimmer {
+  0% {
+    background-position: -150% 0;
+  }
+  100% {
+    background-position: 250% 0;
+  }
+}
+
+.brass-shimmer {
+  position: relative;
+  background-image: linear-gradient(
+    100deg,
+    transparent 30%,
+    oklch(0.86 0.16 88 / 0.35) 45%,
+    oklch(0.95 0.10 88 / 0.55) 50%,
+    oklch(0.86 0.16 88 / 0.35) 55%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: brass-shimmer 6s ease-in-out infinite;
+}
+
+/* Ember-glow — a small warm pulse, like a gas flame.
+ * Apply via `.ember-glow` to any element you want to seem lit. */
+@keyframes ember-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px oklch(0.74 0.14 80 / 0.35));
+  }
+  50% {
+    filter: drop-shadow(0 0 14px oklch(0.86 0.16 88 / 0.55));
+  }
+}
+
+.ember-glow {
+  animation: ember-glow 4s ease-in-out infinite;
+}
+
+/* Lantern flicker — an irregular, slightly nervous warm glow.
+ * For corners of the page that should feel candlelit. */
+@keyframes lantern-flicker {
+  0%, 100% { opacity: 0.78; }
+  10% { opacity: 0.88; }
+  18% { opacity: 0.65; }
+  25% { opacity: 0.9; }
+  35% { opacity: 0.72; }
+  50% { opacity: 0.82; }
+  62% { opacity: 0.68; }
+  74% { opacity: 0.92; }
+  82% { opacity: 0.7; }
+  91% { opacity: 0.85; }
+}
+
+.animate-lantern {
+  animation: lantern-flicker 5s ease-in-out infinite;
+}
+
+/* Vignette — for full-bleed image backgrounds. Place an empty div with
+ * class `vignette` over the image. */
+.vignette::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 30%,
+    oklch(0.13 0.014 50 / 0.5) 70%,
+    oklch(0.10 0.014 50 / 0.85) 100%
+  );
+}
+
+/* Engraved-plate effect — for embedded engravings on dark backgrounds.
+ * Lightens the white background of period engravings via blend mode. */
+.engraving-plate {
+  mix-blend-mode: multiply;
+  filter: contrast(1.1) sepia(0.15);
+}
+
+.engraving-plate-dark {
+  filter: invert(1) sepia(0.5) saturate(1.5) hue-rotate(-15deg) contrast(0.9) brightness(0.95);
 }

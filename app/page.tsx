@@ -1,7 +1,6 @@
 import Link from 'next/link'
-import { CloudStrata, Airship } from './CloudStrata'
+import Image from 'next/image'
 import {
-  CartoucheFrame,
   CornerFlourish,
   Gear,
   OrnamentalRule,
@@ -10,87 +9,167 @@ import {
 
 export default function Home() {
   return (
-    <main className="flex flex-1 flex-col">
-      {/* HERO — cartouche-framed brand over cloud-strata sky with ascending airship */}
-      <section className="relative overflow-hidden border-b border-stone-300/60">
-        <CloudStrata />
-
-        {/* Slow-turning gear in upper-right corner */}
-        <div className="absolute top-6 right-6 sm:top-8 sm:right-12 text-brass-deep/60 pointer-events-none animate-turn-slow drop-shadow-sm">
-          <Gear className="h-20 w-20 sm:h-28 sm:w-28" teeth={14} />
+    <main className="flex flex-1 flex-col bg-background">
+      {/* HERO — bold asymmetric: dark cloudscape backdrop, clockwork globe
+          left, balloon ascending right, brand wordmark dominant. */}
+      <section className="relative overflow-hidden border-b border-brass-deep/40">
+        {/* Cloudscape painting backdrop, dimmed for legibility */}
+        <div className="absolute inset-0 vignette">
+          <Image
+            src="/images/cloudscape-denis.jpg"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover opacity-40"
+          />
+          {/* Warm dark wash to sink the painting into the page */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'linear-gradient(180deg, oklch(0.13 0.014 50 / 0.55) 0%, oklch(0.16 0.018 55 / 0.65) 60%, oklch(0.13 0.014 50 / 0.85) 100%)',
+            }}
+          />
         </div>
-        <div className="absolute top-20 right-32 hidden sm:block text-brass-deep/45 pointer-events-none animate-turn-slow-reverse">
+
+        {/* Slow-turning gears — top-right cluster, ember-glow */}
+        <div className="absolute top-6 right-6 sm:top-10 sm:right-16 text-brass animate-turn-slow ember-glow pointer-events-none">
+          <Gear className="h-24 w-24 sm:h-36 sm:w-36" teeth={16} />
+        </div>
+        <div className="absolute top-32 right-44 hidden sm:block text-brass-deep animate-turn-slow-reverse ember-glow pointer-events-none">
+          <Gear className="h-20 w-20" teeth={10} />
+        </div>
+        <div className="absolute top-44 right-24 hidden sm:block text-copper animate-turn-slow pointer-events-none">
+          <Gear className="h-12 w-12" teeth={8} />
+        </div>
+
+        {/* Bottom-left gear cluster */}
+        <div className="absolute bottom-8 left-8 hidden sm:block text-brass-deep animate-turn-slow-reverse ember-glow pointer-events-none">
+          <Gear className="h-28 w-28" teeth={12} />
+        </div>
+        <div className="absolute bottom-32 left-32 hidden sm:block text-copper animate-turn-slow pointer-events-none">
           <Gear className="h-14 w-14" teeth={10} />
         </div>
 
-        {/* Airship — gently floating */}
-        <div className="absolute bottom-6 left-4 sm:bottom-8 sm:left-12 animate-balloon-float pointer-events-none opacity-90">
-          <Airship className="h-36 sm:h-48 w-auto text-brass-deep" />
-        </div>
-
-        <div className="relative max-w-5xl mx-auto px-6 py-24 sm:py-32 flex flex-col items-center text-center gap-6">
-          <p
-            className="text-[11px] tracking-[0.3em] uppercase text-ink-faint"
-            style={{ fontFamily: 'var(--font-special-elite)' }}
-          >
-            Built with Opus 4.7 · A math mastery voyage
-          </p>
-
-          {/* Cartouche-framed brand */}
-          <div className="relative w-full max-w-2xl">
-            <CartoucheFrame className="absolute inset-0 w-full h-full text-brass-deep/70" />
-            <div className="relative px-12 py-10 flex flex-col gap-2 items-center">
-              <h1
-                className="text-5xl sm:text-7xl font-bold tracking-wide text-ink"
-                style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.05em' }}
-              >
-                Strata Mundo
-              </h1>
-              <p
-                className="text-base sm:text-lg italic text-ink-soft mt-1"
-                style={{ fontFamily: 'var(--font-fraunces)' }}
-              >
-                Your math mastery voyage.
-              </p>
+        <div className="relative max-w-6xl mx-auto px-6 py-20 sm:py-28 grid sm:grid-cols-[1fr_1.2fr] gap-8 sm:gap-12 items-center">
+          {/* LEFT: clockwork globe, framed as a museum plate */}
+          <div className="relative animate-lantern">
+            <div className="relative aspect-square max-w-md mx-auto">
+              <Image
+                src="/images/clockwork-globe.jpg"
+                alt="Celestial globe with clockwork — Gerhard Emmoser, 1579"
+                fill
+                priority
+                sizes="(max-width: 640px) 80vw, 480px"
+                className="object-contain drop-shadow-[0_8px_30px_oklch(0.74_0.14_80/0.4)]"
+                style={{ filter: 'sepia(0.2) contrast(1.1) brightness(1.05)' }}
+              />
+              {/* Bronze frame ring */}
+              <div className="absolute inset-0 rounded-full border-2 border-brass-deep/40 pointer-events-none" />
             </div>
+            <p
+              className="text-center text-[10px] tracking-[0.2em] uppercase text-cream-faint mt-4 italic"
+              style={{ fontFamily: 'var(--font-special-elite)' }}
+            >
+              Celestial globe with clockwork — Emmoser, Vienna 1579
+            </p>
           </div>
 
-          <OrnamentalRule className="h-6 text-brass-deep/60 mt-2" width={320} />
-
-          <div className="flex flex-col gap-3 max-w-2xl">
+          {/* RIGHT: brand wordmark + tagline + balloon ascending */}
+          <div className="relative flex flex-col gap-6 items-start text-left">
             <p
-              className="text-base sm:text-lg italic text-ink-soft leading-relaxed"
+              className="text-[10px] tracking-[0.4em] uppercase text-brass"
+              style={{ fontFamily: 'var(--font-cinzel)' }}
+            >
+              Built with Opus 4.7 · A math mastery voyage
+            </p>
+
+            <h1
+              className="text-5xl sm:text-7xl lg:text-8xl font-bold text-cream brass-shimmer bg-clip-text"
+              style={{
+                fontFamily: 'var(--font-cinzel)',
+                letterSpacing: '0.04em',
+                lineHeight: 1.05,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                color: 'transparent',
+                background:
+                  'linear-gradient(120deg, oklch(0.74 0.14 80) 0%, oklch(0.92 0.10 88) 50%, oklch(0.62 0.16 42) 100%)',
+                WebkitBackgroundSize: '200% 100%',
+                backgroundSize: '200% 100%',
+                animation: 'brass-shimmer 8s ease-in-out infinite',
+              }}
+            >
+              Strata
+              <br />
+              Mundo
+            </h1>
+
+            <p
+              className="text-xl sm:text-2xl italic text-cream-soft"
+              style={{ fontFamily: 'var(--font-fraunces)' }}
+            >
+              Your math mastery voyage.
+            </p>
+
+            <OrnamentalRule className="h-6 text-brass-deep w-72" width={320} />
+
+            <p
+              className="text-base sm:text-lg text-cream-soft leading-relaxed max-w-xl"
               style={{ fontFamily: 'var(--font-fraunces)' }}
             >
               A diagnostic that reads <em>how</em> a learner reasons, a plan that prescribes the next steps in pedagogically sound order, and a probe loop that verifies mastery as the voyage unfolds.
             </p>
-          </div>
 
-          <div className="flex flex-wrap gap-3 mt-4 justify-center">
-            <Link
-              href="/setup"
-              className="inline-flex h-12 items-center justify-center rounded-md bg-ink px-6 text-sm font-semibold uppercase text-paper hover:bg-ink-soft transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass-deep focus-visible:ring-offset-2"
-              style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.12em' }}
-            >
-              Begin the voyage
-            </Link>
-            <Link
-              href="/methodology"
-              className="inline-flex h-12 items-center justify-center rounded-md border-2 border-brass-deep/60 bg-paper/70 backdrop-blur px-6 text-sm font-semibold uppercase text-ink hover:bg-paper-deep transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass-deep focus-visible:ring-offset-2"
-              style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.12em' }}
-            >
-              Methodology
-            </Link>
+            <div className="flex flex-wrap gap-3 mt-2">
+              <Link
+                href="/setup"
+                className="inline-flex h-12 items-center justify-center rounded-sm bg-brass-deep px-7 text-sm font-bold uppercase text-cream hover:bg-brass transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass-glow focus-visible:ring-offset-2 focus-visible:ring-offset-background border border-brass shadow-[0_0_20px_oklch(0.74_0.14_80/0.4)]"
+                style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.18em' }}
+              >
+                Begin the voyage
+              </Link>
+              <Link
+                href="/methodology"
+                className="inline-flex h-12 items-center justify-center rounded-sm border-2 border-brass-deep bg-transparent px-7 text-sm font-bold uppercase text-cream hover:bg-brass-deep/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass-glow focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.18em' }}
+              >
+                Methodology
+              </Link>
+            </div>
+
+            {/* Balloon — small, rising in the upper-right of this column */}
+            <div className="absolute -top-12 -right-4 sm:-right-12 w-32 sm:w-44 animate-balloon-float pointer-events-none ember-glow">
+              <Image
+                src="/images/balloon-versailles.jpg"
+                alt="Hot air balloon ascent at Versailles, 1783"
+                width={300}
+                height={490}
+                className="w-full h-auto"
+                style={{ filter: 'sepia(0.4) contrast(1.05) brightness(1.05)', mixBlendMode: 'screen' }}
+              />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* THREE-QUESTION SECTIONS — diagram plates */}
-      <section className="bg-paper py-16 sm:py-20 px-6">
-        <div className="max-w-5xl mx-auto flex flex-col gap-16">
+      {/* THREE-QUESTION SECTIONS — diagram plates on warm paper */}
+      <section className="bg-paper py-20 px-6 relative">
+        {/* Subtle paper texture via radial dot pattern */}
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none opacity-[0.06]"
+          style={{
+            backgroundImage:
+              'radial-gradient(oklch(0.18 0.018 55) 1px, transparent 1px)',
+            backgroundSize: '14px 14px',
+          }}
+        />
+        <div className="relative max-w-5xl mx-auto flex flex-col gap-16">
           <div className="flex flex-col items-center gap-3 text-center">
             <p
-              className="text-[10px] tracking-[0.3em] uppercase text-ink-faint"
+              className="text-[10px] tracking-[0.4em] uppercase text-brass-deep"
               style={{ fontFamily: 'var(--font-cinzel)' }}
             >
               Three questions · the math mastery voyage
@@ -101,7 +180,7 @@ export default function Home() {
             >
               Three questions every guide and parent needs answered
             </h2>
-            <OrnamentalRule className="h-5 text-brass-deep/50 mt-2" width={280} />
+            <OrnamentalRule className="h-5 text-brass-deep mt-2" width={320} />
           </div>
 
           <DiagramPlate
@@ -165,14 +244,20 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FOOTER ATTRIBUTION */}
-      <footer className="bg-paper py-10 px-6 text-center border-t border-stone-300/40">
-        <OrnamentalRule className="h-4 text-brass-deep/40 mx-auto mb-4" width={220} />
+      {/* FOOTER ATTRIBUTION — dark, signed */}
+      <footer className="bg-background py-10 px-6 text-center border-t border-brass-deep/40">
+        <OrnamentalRule className="h-4 text-brass-deep mx-auto mb-4" width={220} />
         <p
-          className="text-[11px] text-ink-faint italic max-w-3xl mx-auto leading-relaxed"
+          className="text-[11px] text-cream-faint italic max-w-3xl mx-auto leading-relaxed"
           style={{ fontFamily: 'var(--font-fraunces)' }}
         >
-          Sections from Illustrative Mathematics K-5 (CC BY 4.0). Standards from CCSS-M and the Achievethecore Coherence Map. Progressions from the Institute for Mathematics and Education, University of Arizona. MIT licensed.
+          Imagery: cloudscape by Simon Alexandre-Clément Denis (1786, Getty Museum, public domain). Celestial globe by Gerhard Emmoser (1579, Met Museum, CC0). Balloon ascent at Versailles (1783, Library of Congress, public domain).
+        </p>
+        <p
+          className="text-[11px] text-cream-faint italic max-w-3xl mx-auto leading-relaxed mt-2"
+          style={{ fontFamily: 'var(--font-fraunces)' }}
+        >
+          Sections from Illustrative Mathematics K-5 (CC BY 4.0). Standards from CCSS-M and the Coherence Map. Progressions from Bill McCallum, hosted at mathematicalmusings.org. MIT licensed.
         </p>
       </footer>
     </main>
@@ -180,9 +265,9 @@ export default function Home() {
 }
 
 /**
- * "Diagram plate" — a problem-and-remedy pair styled as a Victorian
- * scientific plate. Roman numeral chapter mark on the left, two paneled
- * cards on the right with corner flourishes.
+ * "Diagram plate" — problem-and-remedy pair styled as a Victorian
+ * scientific plate. Roman numeral chapter mark + drop-cap on each
+ * solution, asymmetric layout — engraving margins on the brass remedy.
  */
 function DiagramPlate({
   index,
@@ -201,31 +286,29 @@ function DiagramPlate({
 }) {
   return (
     <article className="grid sm:grid-cols-[120px_1fr] gap-6 sm:gap-10">
-      {/* Roman numeral + kicker */}
       <div className="flex flex-col gap-1 sm:gap-2 items-center sm:items-end sm:text-right">
         <RomanNumeral
           n={index}
-          className="text-6xl sm:text-7xl text-brass-deep leading-none"
+          className="text-7xl sm:text-8xl text-brass-deep leading-none"
         />
         <p
-          className="text-[10px] tracking-[0.25em] uppercase text-ink-faint mt-1 italic"
+          className="text-[10px] tracking-[0.25em] uppercase text-brass-deep mt-1 italic"
           style={{ fontFamily: 'var(--font-fraunces)' }}
         >
           {kicker}
         </p>
       </div>
 
-      {/* Problem & remedy panels */}
       <div className="grid sm:grid-cols-2 gap-5">
         <PanelCard
           ribbonLabel="The condition observed"
-          ribbonClass="bg-paper-deep border-stone-400/60 text-ink-soft"
+          ribbonClass="bg-paper-deep border-stone-400 text-ink-soft"
           title={problemTitle}
           bullets={problemBullets}
         />
         <PanelCard
           ribbonLabel="Strata Mundo · the remedy"
-          ribbonClass="bg-brass/15 border-brass-deep/60 text-brass-deep"
+          ribbonClass="bg-brass/20 border-brass-deep text-brass-deep"
           title={solutionTitle}
           bullets={solutionBullets}
           accent
@@ -250,19 +333,19 @@ function PanelCard({
 }) {
   return (
     <div
-      className={`relative bg-paper border ${
+      className={`relative bg-paper border-2 ${
         accent
-          ? 'border-brass-deep/60 shadow-[inset_0_0_0_1px_oklch(0.65_0.12_78/0.18)]'
-          : 'border-stone-300/80'
+          ? 'border-brass-deep shadow-[0_0_20px_oklch(0.74_0.14_80/0.15)]'
+          : 'border-stone-300'
       } p-5 sm:p-6 flex flex-col gap-3 rounded-sm`}
     >
-      <CornerFlourish corner="tl" className={`absolute top-1.5 left-1.5 h-5 w-5 ${accent ? 'text-brass-deep/70' : 'text-stone-400'}`} />
-      <CornerFlourish corner="tr" className={`absolute top-1.5 right-1.5 h-5 w-5 ${accent ? 'text-brass-deep/70' : 'text-stone-400'}`} />
-      <CornerFlourish corner="bl" className={`absolute bottom-1.5 left-1.5 h-5 w-5 ${accent ? 'text-brass-deep/70' : 'text-stone-400'}`} />
-      <CornerFlourish corner="br" className={`absolute bottom-1.5 right-1.5 h-5 w-5 ${accent ? 'text-brass-deep/70' : 'text-stone-400'}`} />
+      <CornerFlourish corner="tl" className={`absolute top-1.5 left-1.5 h-5 w-5 ${accent ? 'text-brass-deep' : 'text-stone-400'}`} />
+      <CornerFlourish corner="tr" className={`absolute top-1.5 right-1.5 h-5 w-5 ${accent ? 'text-brass-deep' : 'text-stone-400'}`} />
+      <CornerFlourish corner="bl" className={`absolute bottom-1.5 left-1.5 h-5 w-5 ${accent ? 'text-brass-deep' : 'text-stone-400'}`} />
+      <CornerFlourish corner="br" className={`absolute bottom-1.5 right-1.5 h-5 w-5 ${accent ? 'text-brass-deep' : 'text-stone-400'}`} />
 
       <span
-        className={`inline-flex w-fit text-[9px] tracking-[0.2em] uppercase border px-2 py-1 rounded-sm ${ribbonClass}`}
+        className={`inline-flex w-fit text-[9px] tracking-[0.2em] uppercase border-2 px-2 py-1 rounded-sm ${ribbonClass}`}
         style={{ fontFamily: 'var(--font-cinzel)' }}
       >
         {ribbonLabel}
