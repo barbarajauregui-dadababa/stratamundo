@@ -498,9 +498,9 @@ function Bucket({
                     )}
                   </div>
                   {gap.rationale_for_this_gap && (
-                    <p className="text-sm text-stone-700 dark:text-stone-300 mb-3">
-                      {gap.rationale_for_this_gap}
-                    </p>
+                    <div className="text-sm text-stone-700 dark:text-stone-300 mb-3">
+                      <BulletedSentences text={gap.rationale_for_this_gap} />
+                    </div>
                   )}
                   <ol className="flex flex-col gap-2">
                     {gap.activities

@@ -177,9 +177,9 @@ export default function ActivityTile({
           {showWhy ? 'Hide rationale' : 'Why this activity?'}
         </button>
         {showWhy && (
-          <p className="mt-2 text-sm text-stone-700 dark:text-stone-300 leading-relaxed max-w-prose">
-            {rationale}
-          </p>
+          <div className="mt-2 text-sm text-stone-700 dark:text-stone-300 leading-relaxed max-w-prose">
+            <BulletedSentences text={rationale} />
+          </div>
         )}
         {isDone && completedAt && (
           <div className="mt-1 text-xs text-emerald-700 dark:text-emerald-400">
@@ -194,5 +194,24 @@ export default function ActivityTile({
         {error && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{error}</p>}
       </div>
     </li>
+  )
+}
+
+function BulletedSentences({ text }: { text: string }) {
+  const trimmed = text.trim()
+  if (!trimmed) return null
+  const sentences = trimmed
+    .split(/(?<=[.!?])\s+/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0)
+  if (sentences.length <= 1) {
+    return <p className="leading-relaxed">{trimmed}</p>
+  }
+  return (
+    <ul className="list-disc ml-5 space-y-1.5 leading-relaxed">
+      {sentences.map((s, i) => (
+        <li key={i}>{s}</li>
+      ))}
+    </ul>
   )
 }
