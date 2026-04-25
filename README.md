@@ -1,8 +1,8 @@
 # Strata Mundo
 
-*Mastery, layer by layer.*
+*Your math mastery voyage.*
 
-A misconception-targeted diagnostic and learning-plan system for grade 3–4 math. Currently scoped to fractions; designed to extend to all of 4th-grade math (and beyond) without changing the engine. Built solo in 4 days for the Cerebral Valley **Built with Opus 4.7** hackathon.
+A diagnostic, a plan, and a probe loop — together, the voyage through math mastery. v1 covers grade 3–4 fractions; designed to extend to all of K-8 math (and beyond) without changing the engine. Built solo in 4 days for the Cerebral Valley **Built with Opus 4.7** hackathon.
 
 🌐 **Live:** [stratamundo.com](https://stratamundo.com) *(Vercel deployment at fractions-mastery-tracker.vercel.app while DNS propagates)*
 

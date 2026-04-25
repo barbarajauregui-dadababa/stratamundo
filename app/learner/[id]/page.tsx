@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import MasteryTree from './MasteryTree'
+import MasteryVoyage from './MasteryVoyage'
+import { OrnamentalRule } from '@/app/Ornament'
 
 interface MasteryMap {
   standards: Record<string, { state: 'misconception' | 'working' | 'demonstrated' | 'not_assessed' }>
@@ -20,7 +21,6 @@ export default async function LearnerDashboardPage(
     .single()
   if (learnerErr || !learner) notFound()
 
-  // Most recent completed assessment becomes the current mastery snapshot.
   const { data: assessments } = await supabase
     .from('assessments')
     .select('id, completed_at, mastery_map, type')
@@ -32,7 +32,7 @@ export default async function LearnerDashboardPage(
   const latest = assessments?.[0]
   const masteryMap = (latest?.mastery_map as MasteryMap | null) ?? null
 
-  // Count completed activities per standard (for flowers).
+  // Count completed activities per standard (drives pennant count).
   const completedByStandard: Record<string, number> = {}
   if (latest) {
     const { data: planRow } = await supabase
@@ -61,7 +61,6 @@ export default async function LearnerDashboardPage(
     }
   }
 
-  // Counts for the at-a-glance bar.
   const counts = { demonstrated: 0, working: 0, misconception: 0, not_assessed: 0, total: 11 }
   if (masteryMap?.standards) {
     for (const entry of Object.values(masteryMap.standards)) {
@@ -72,16 +71,25 @@ export default async function LearnerDashboardPage(
   }
 
   return (
-    <main className="flex flex-1 w-full max-w-3xl mx-auto flex-col gap-8 py-10 px-6">
-      <header className="flex flex-col gap-1">
-        <div className="text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-stone-400">
-          Mastery tree
-        </div>
-        <h1 className="font-serif text-3xl font-semibold tracking-tight text-stone-900 dark:text-stone-50">
+    <main className="flex flex-1 w-full max-w-4xl mx-auto flex-col gap-8 py-10 px-6">
+      <header className="flex flex-col gap-2 items-center text-center">
+        <p
+          className="text-[10px] tracking-[0.3em] uppercase text-ink-faint"
+          style={{ fontFamily: 'var(--font-cinzel)' }}
+        >
+          Mastery voyage of
+        </p>
+        <h1
+          className="text-3xl sm:text-4xl tracking-tight text-ink"
+          style={{ fontFamily: 'var(--font-fraunces)', fontWeight: 600 }}
+        >
           {learner.name}
         </h1>
         {latest?.completed_at && (
-          <p className="text-sm text-stone-600 dark:text-stone-400">
+          <p
+            className="text-[11px] text-ink-faint italic mt-1"
+            style={{ fontFamily: 'var(--font-special-elite)' }}
+          >
             Snapshot from{' '}
             {new Date(latest.completed_at).toLocaleDateString(undefined, {
               year: 'numeric',
@@ -91,48 +99,53 @@ export default async function LearnerDashboardPage(
           </p>
         )}
         {!latest && (
-          <p className="text-sm text-stone-600 dark:text-stone-400">
-            No completed assessments yet — the tree shows every standard as
-            not yet probed.
+          <p className="text-sm text-ink-soft">
+            No completed assessments yet — every stratum awaits your first probe.
           </p>
         )}
+        <OrnamentalRule className="h-4 text-brass-deep/50 mt-3" width={240} />
       </header>
 
-      {/* Counts strip */}
-      <section className="flex items-center justify-center gap-6 rounded-xl bg-stone-100 dark:bg-stone-900/60 px-6 py-4 text-sm">
-        <Stat label="Mastered" value={counts.demonstrated} accent="text-emerald-700 dark:text-emerald-400" />
+      {/* Counts strip — now in a brass-bordered ledger style */}
+      <section className="flex items-center justify-center gap-4 sm:gap-8 rounded-md border-2 border-brass-deep/40 bg-paper-deep/50 px-6 py-5 text-sm">
+        <Stat label="Mastered" value={counts.demonstrated} accent="text-emerald-700" />
         <Divider />
-        <Stat label="Working on" value={counts.working} accent="text-amber-700 dark:text-amber-400" />
+        <Stat label="Working on" value={counts.working} accent="text-amber-700" />
         <Divider />
-        <Stat label="Needs attention" value={counts.misconception} accent="text-red-700 dark:text-red-400" />
+        <Stat label="Needs attention" value={counts.misconception} accent="text-red-700" />
         <Divider />
-        <Stat label="Not yet probed" value={counts.not_assessed} accent="text-stone-500 dark:text-stone-500" />
+        <Stat label="Not yet probed" value={counts.not_assessed} accent="text-stone-500" />
       </section>
 
-      <MasteryTree
+      <MasteryVoyage
         masteryMap={masteryMap}
         completedByStandard={completedByStandard}
       />
 
-      <section className="flex flex-wrap gap-3 pt-4 border-t border-stone-200 dark:border-stone-800">
+      <section className="flex flex-wrap gap-3 pt-4 border-t border-stone-300/60 justify-center">
         {latest && (
           <Link
             href={`/report/${latest.id}`}
-            className="inline-flex h-9 items-center justify-center rounded-md bg-stone-900 px-4 text-sm font-medium text-white hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900"
+            className="inline-flex h-10 items-center justify-center rounded-md bg-ink px-5 text-sm font-semibold tracking-wider uppercase text-paper hover:bg-ink-soft"
+            style={{ fontFamily: 'var(--font-cinzel)' }}
           >
             View latest report
           </Link>
         )}
         <Link
           href="/setup"
-          className="inline-flex h-9 items-center justify-center rounded-md border border-stone-300 dark:border-stone-700 px-4 text-sm font-medium text-stone-800 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-900"
+          className="inline-flex h-10 items-center justify-center rounded-md border-2 border-brass-deep/60 px-5 text-sm font-semibold tracking-wider uppercase text-ink hover:bg-paper-deep"
+          style={{ fontFamily: 'var(--font-cinzel)' }}
         >
-          Start a new assessment
+          Begin a new voyage
         </Link>
       </section>
 
-      <footer className="text-[10px] text-stone-400 dark:text-stone-600 italic">
-        Section structure: Illustrative Mathematics, Grade 3 Unit 5 and Grade 4 Unit 2 (CC BY 4.0).
+      <footer
+        className="text-[10px] text-ink-faint italic text-center"
+        style={{ fontFamily: 'var(--font-special-elite)' }}
+      >
+        Strata structure from Illustrative Mathematics, Grade 3 Unit 5 and Grade 4 Unit 2 (CC BY 4.0).
       </footer>
     </main>
   )
@@ -141,8 +154,16 @@ export default async function LearnerDashboardPage(
 function Stat({ label, value, accent }: { label: string; value: number; accent: string }) {
   return (
     <div className="flex flex-col items-center gap-0.5">
-      <span className={`text-2xl font-semibold ${accent}`}>{value}</span>
-      <span className="text-[11px] uppercase tracking-wide text-stone-500 dark:text-stone-500">
+      <span
+        className={`text-3xl ${accent}`}
+        style={{ fontFamily: 'var(--font-cinzel)', fontWeight: 700 }}
+      >
+        {value}
+      </span>
+      <span
+        className="text-[10px] uppercase tracking-[0.18em] text-ink-faint mt-1"
+        style={{ fontFamily: 'var(--font-cinzel)' }}
+      >
         {label}
       </span>
     </div>
@@ -150,5 +171,5 @@ function Stat({ label, value, accent }: { label: string; value: number; accent: 
 }
 
 function Divider() {
-  return <span className="h-8 w-px bg-stone-200 dark:bg-stone-800" aria-hidden />
+  return <span className="h-9 w-px bg-brass-deep/30" aria-hidden />
 }

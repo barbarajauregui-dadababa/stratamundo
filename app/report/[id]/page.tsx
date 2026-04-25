@@ -457,14 +457,6 @@ function Bucket({
                   <span className="font-medium">{standardName(sid)}</span>
                   <span className="text-xs font-mono text-stone-500">{sid}</span>
                 </div>
-                {showProbeButton && (
-                  <FocusedProbeButton
-                    learnerId={learnerId}
-                    standardId={sid}
-                    standardName={standardName(sid)}
-                    parentAssessmentId={parentAssessmentId}
-                  />
-                )}
               </div>
               {report.reasoning && (
                 <div className="mt-2 text-sm text-stone-700 dark:text-stone-300">
@@ -523,6 +515,27 @@ function Bucket({
                         )
                       })}
                   </ol>
+
+                  {/* Verify-mastery affordance — only shown when the bucket
+                      allows probing (red / amber). After activities are done,
+                      run a focused probe to confirm the misconception
+                      resolved. */}
+                  {showProbeButton && (
+                    <div className="mt-4 pt-3 border-t border-dashed border-stone-300 dark:border-stone-700 flex flex-col gap-2">
+                      <div className="text-xs font-medium uppercase tracking-wide text-stone-500">
+                        Verify mastery
+                      </div>
+                      <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
+                        Once the activities above are complete, run a focused probe — a short re-test of just this standard, ~10 minutes — to confirm the misconception has resolved.
+                      </p>
+                      <FocusedProbeButton
+                        learnerId={learnerId}
+                        standardId={sid}
+                        standardName={standardName(sid)}
+                        parentAssessmentId={parentAssessmentId}
+                      />
+                    </div>
+                  )}
                 </div>
               )}
             </li>
