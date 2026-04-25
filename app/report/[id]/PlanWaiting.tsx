@@ -36,13 +36,18 @@ export default function PlanWaiting({ assessmentId }: Props) {
 
   if (timedOut) {
     return (
-      <section className="flex flex-col gap-3 rounded-md border border-amber-300 dark:border-amber-900 bg-amber-50/60 dark:bg-amber-950/30 p-5">
-        <div className="text-sm font-medium text-amber-900 dark:text-amber-200">
-          Plan Architect didn&apos;t complete in time
+      <section className="flex flex-col gap-3 rounded-sm border-2 border-amber-700/40 bg-paper-deep p-5">
+        <div
+          className="text-[10px] tracking-[0.25em] uppercase text-amber-800"
+          style={{ fontFamily: 'var(--font-cinzel)' }}
+        >
+          The Plan Architect did not return in time
         </div>
-        <p className="text-sm text-amber-900/80 dark:text-amber-200/80">
-          This sometimes happens on the first plan after a deploy. Click below to
-          run it now.
+        <p
+          className="text-sm text-ink-soft"
+          style={{ fontFamily: 'var(--font-fraunces)' }}
+        >
+          This sometimes happens on the first plan after a deploy. Click below to run it now.
         </p>
         <GeneratePlanButton assessmentId={assessmentId} />
       </section>
@@ -51,37 +56,56 @@ export default function PlanWaiting({ assessmentId }: Props) {
 
   const seconds = Math.floor(elapsedMs / 1000)
   return (
-    <section className="flex items-center gap-3 rounded-md border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900/40 px-5 py-4">
-      <Spinner />
+    <section className="flex items-center gap-4 rounded-sm border-2 border-brass-deep/40 bg-paper-deep/40 px-5 py-4">
+      <SteampunkSpinner />
       <div className="flex-1">
-        <div className="text-sm font-medium text-stone-800 dark:text-stone-200">
-          Plan Architect is working on your plan… ~1–3 minutes
+        <div
+          className="text-[10px] tracking-[0.25em] uppercase text-brass-deep"
+          style={{ fontFamily: 'var(--font-cinzel)' }}
+        >
+          The Plan Architect is at work
         </div>
-        <div className="text-xs text-stone-500 dark:text-stone-500 mt-0.5">
-          You can read the mastery map above while it works.{' '}
-          {seconds > 0 && `(${seconds}s elapsed)`}
+        <div
+          className="text-base italic text-ink mt-0.5"
+          style={{ fontFamily: 'var(--font-fraunces)' }}
+        >
+          Drafting your plan… ~1–3 minutes.
+        </div>
+        <div
+          className="text-xs text-ink-faint mt-1"
+          style={{ fontFamily: 'var(--font-special-elite)' }}
+        >
+          Read the mastery map above while it works.
+          {seconds > 0 && ` (${seconds}s elapsed)`}
         </div>
       </div>
     </section>
   )
 }
 
-function Spinner() {
+function SteampunkSpinner() {
+  // Slow-turning gear instead of a generic spinner — period-appropriate.
   return (
     <svg
-      className="h-5 w-5 animate-spin text-stone-500 dark:text-stone-500"
-      viewBox="0 0 24 24"
+      viewBox="0 0 100 100"
+      className="h-9 w-9 text-brass-deep animate-turn-slow"
       fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
       aria-hidden
     >
-      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeOpacity="0.2" strokeWidth="3" />
-      <path
-        d="M12 2 a 10 10 0 0 1 10 10"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeLinecap="round"
-        fill="none"
-      />
+      {Array.from({ length: 12 }).map((_, i) => {
+        const a = (i / 12) * Math.PI * 2
+        const x1 = 50 + 38 * Math.cos(a)
+        const y1 = 50 + 38 * Math.sin(a)
+        const x2 = 50 + 46 * Math.cos(a)
+        const y2 = 50 + 46 * Math.sin(a)
+        return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} strokeLinecap="round" />
+      })}
+      <circle cx="50" cy="50" r="34" />
+      <circle cx="50" cy="50" r="14" />
+      <circle cx="50" cy="50" r="5" fill="currentColor" stroke="none" />
     </svg>
   )
 }
+

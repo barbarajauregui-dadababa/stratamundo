@@ -1,4 +1,5 @@
 import type { SectionRoadmapEntry, SectionStatus } from './PlanDisplay'
+import { RomanNumeral } from '@/app/Ornament'
 
 const FOURTH_GRADE_DOMAINS: { code: string; name: string; status: 'in_progress' | 'v15' }[] = [
   { code: '4.OA', name: 'Operations & Algebraic Thinking', status: 'v15' },
@@ -11,7 +12,10 @@ const FOURTH_GRADE_DOMAINS: { code: string; name: string; status: 'in_progress' 
 export function FourthGradeOverviewStrip() {
   return (
     <section className="flex flex-col gap-2">
-      <div className="text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-stone-400">
+      <div
+        className="text-[10px] tracking-[0.25em] uppercase text-ink-faint"
+        style={{ fontFamily: 'var(--font-cinzel)' }}
+      >
         4th-grade math overview
       </div>
       <ol className="grid grid-cols-2 sm:grid-cols-5 gap-2">
@@ -20,34 +24,42 @@ export function FourthGradeOverviewStrip() {
           return (
             <li
               key={d.code}
-              className={`rounded-lg border-2 px-3 py-2.5 flex flex-col gap-0.5 ${
+              className={`rounded-sm border-2 px-3 py-2.5 flex flex-col gap-0.5 ${
                 inProgress
-                  ? 'bg-white dark:bg-stone-950 border-blue-500 dark:border-blue-400 shadow-sm'
-                  : 'bg-stone-50 dark:bg-stone-900/40 border-stone-200 dark:border-stone-800 opacity-70'
+                  ? 'bg-paper border-brass-deep shadow-sm'
+                  : 'bg-paper-deep/40 border-stone-300 opacity-70'
               }`}
             >
               <div className="flex items-center gap-1.5">
                 <span
-                  className={`text-xs font-mono ${
-                    inProgress ? 'text-blue-700 dark:text-blue-300' : 'text-stone-500 dark:text-stone-500'
+                  className={`text-[10px] tracking-[0.15em] ${
+                    inProgress ? 'text-brass-deep' : 'text-ink-faint'
                   }`}
+                  style={{ fontFamily: 'var(--font-cinzel)' }}
                 >
                   {d.code}
                 </span>
               </div>
               <div
                 className={`text-xs leading-tight ${
-                  inProgress ? 'text-stone-800 dark:text-stone-200' : 'text-stone-500 dark:text-stone-500'
+                  inProgress ? 'text-ink' : 'text-ink-faint'
                 }`}
+                style={{ fontFamily: 'var(--font-fraunces)' }}
               >
                 {d.name}
               </div>
               <div
                 className={`mt-1 ${
                   inProgress
-                    ? 'text-base font-semibold text-blue-700 dark:text-blue-300'
-                    : 'text-[10px] text-stone-400 dark:text-stone-600 italic'
+                    ? 'text-base text-brass-deep'
+                    : 'text-[10px] text-ink-faint italic'
                 }`}
+                style={{
+                  fontFamily: inProgress
+                    ? 'var(--font-cinzel)'
+                    : 'var(--font-fraunces)',
+                  fontWeight: inProgress ? 700 : undefined,
+                }}
               >
                 {inProgress ? 'In progress' : 'Coming in v1.5'}
               </div>
@@ -66,12 +78,18 @@ interface SectionStripProps {
 
 export function FractionsSectionStrip({ learnerName, roadmap }: SectionStripProps) {
   return (
-    <section className="flex flex-col gap-2 pl-4 border-l-2 border-blue-500 dark:border-blue-400">
+    <section className="flex flex-col gap-2 pl-4 border-l-2 border-brass-deep">
       <div className="flex items-baseline justify-between gap-3 flex-wrap">
-        <div className="text-xs font-medium uppercase tracking-wide text-stone-500 dark:text-stone-400">
+        <div
+          className="text-[10px] tracking-[0.25em] uppercase text-ink-faint"
+          style={{ fontFamily: 'var(--font-cinzel)' }}
+        >
           Inside 4.NF — fractions sections for {learnerName}
         </div>
-        <div className="text-[10px] text-stone-500 dark:text-stone-500 italic">
+        <div
+          className="text-[10px] text-ink-faint italic"
+          style={{ fontFamily: 'var(--font-special-elite)' }}
+        >
           Source: Illustrative Mathematics, Grade 3 Unit 5 and Grade 4 Unit 2
         </div>
       </div>
@@ -93,12 +111,20 @@ function SectionTile({
 }) {
   const cls = tileClass(entry.status)
   return (
-    <li className={`rounded-lg border px-3 py-2.5 flex flex-col gap-1 min-h-[5.5rem] ${cls.container}`}>
+    <li className={`rounded-sm border-2 px-3 py-2.5 flex flex-col gap-1 min-h-[5.5rem] ${cls.container}`}>
       <div className="flex items-center gap-1.5">
-        <span className={`text-[10px] font-mono ${cls.index}`}>{index}</span>
+        <RomanNumeral
+          n={index}
+          className={`text-[11px] ${cls.index}`}
+        />
         <StatusBadge status={entry.status} />
       </div>
-      <div className={`text-sm leading-snug font-medium ${cls.title}`}>{entry.name}</div>
+      <div
+        className={`text-sm leading-snug ${cls.title}`}
+        style={{ fontFamily: 'var(--font-fraunces)', fontWeight: 600 }}
+      >
+        {entry.name}
+      </div>
     </li>
   )
 }
@@ -107,7 +133,10 @@ function StatusBadge({ status }: { status: SectionStatus }) {
   switch (status) {
     case 'mastered':
       return (
-        <span className="ml-auto inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+        <span
+          className="ml-auto inline-flex items-center gap-1 text-[9px] tracking-[0.15em] uppercase text-emerald-700"
+          style={{ fontFamily: 'var(--font-cinzel)' }}
+        >
           <svg viewBox="0 0 24 24" fill="none" className="h-3 w-3" stroke="currentColor" strokeWidth="3" aria-hidden>
             <path d="M5 12.5l4.5 4.5L20 7" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -116,20 +145,29 @@ function StatusBadge({ status }: { status: SectionStatus }) {
       )
     case 'now':
       return (
-        <span className="ml-auto inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-stone-900 dark:text-stone-50">
-          <span className="h-1.5 w-1.5 rounded-full bg-stone-900 dark:bg-stone-50 animate-pulse" aria-hidden />
+        <span
+          className="ml-auto inline-flex items-center gap-1 text-[9px] tracking-[0.15em] uppercase text-brass-deep"
+          style={{ fontFamily: 'var(--font-cinzel)' }}
+        >
+          <span className="h-1.5 w-1.5 rounded-full bg-brass-deep animate-pulse" aria-hidden />
           Now
         </span>
       )
     case 'later':
       return (
-        <span className="ml-auto text-[10px] font-medium uppercase tracking-wide text-stone-400 dark:text-stone-600">
+        <span
+          className="ml-auto text-[9px] tracking-[0.15em] uppercase text-ink-faint"
+          style={{ fontFamily: 'var(--font-cinzel)' }}
+        >
           Later
         </span>
       )
     case 'not_yet_assessed':
       return (
-        <span className="ml-auto text-[10px] font-medium uppercase tracking-wide text-stone-400 dark:text-stone-600">
+        <span
+          className="ml-auto text-[9px] tracking-[0.15em] uppercase text-ink-faint italic"
+          style={{ fontFamily: 'var(--font-cinzel)' }}
+        >
           Not yet probed
         </span>
       )
@@ -144,27 +182,27 @@ function tileClass(status: SectionStatus): {
   switch (status) {
     case 'mastered':
       return {
-        container: 'bg-emerald-50/60 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900',
-        index: 'text-emerald-700 dark:text-emerald-400',
-        title: 'text-stone-700 dark:text-stone-300',
+        container: 'bg-emerald-50 border-emerald-700/40',
+        index: 'text-emerald-700',
+        title: 'text-ink-soft',
       }
     case 'now':
       return {
-        container: 'bg-white dark:bg-stone-950 border-stone-400 dark:border-stone-500 shadow-sm ring-1 ring-stone-300 dark:ring-stone-600',
-        index: 'text-stone-700 dark:text-stone-300',
-        title: 'text-stone-900 dark:text-stone-50',
+        container: 'bg-paper border-brass-deep shadow-sm',
+        index: 'text-brass-deep',
+        title: 'text-ink',
       }
     case 'later':
       return {
-        container: 'bg-stone-50 dark:bg-stone-900/40 border-stone-200 dark:border-stone-800 opacity-70',
-        index: 'text-stone-400 dark:text-stone-600',
-        title: 'text-stone-500 dark:text-stone-500',
+        container: 'bg-paper-deep/40 border-stone-300 opacity-75',
+        index: 'text-ink-faint',
+        title: 'text-ink-faint',
       }
     case 'not_yet_assessed':
       return {
-        container: 'bg-stone-50 dark:bg-stone-900/40 border-stone-200 border-dashed dark:border-stone-800 opacity-80',
-        index: 'text-stone-400 dark:text-stone-600',
-        title: 'text-stone-500 dark:text-stone-500',
+        container: 'bg-paper-deep/40 border-stone-300 border-dashed opacity-75',
+        index: 'text-ink-faint',
+        title: 'text-ink-faint',
       }
   }
 }

@@ -350,26 +350,32 @@ function AtAGlanceSummary({
     .map(([sid]) => sid)
 
   return (
-    <section className="rounded-md border border-stone-200 bg-white p-5">
-      <div className="text-xs font-medium uppercase tracking-wide text-stone-500 mb-3">
-        At a glance
+    <section className="rounded-sm border-2 border-brass-deep/40 bg-paper p-5">
+      <div
+        className="text-[10px] tracking-[0.25em] uppercase text-brass-deep mb-3"
+        style={{ fontFamily: 'var(--font-cinzel)' }}
+      >
+        At a glance · Legend
       </div>
-      <ul className="flex flex-col gap-3 text-sm">
+      <ul className="flex flex-col gap-3 text-sm" style={{ fontFamily: 'var(--font-fraunces)' }}>
         {/* Needs attention (red/misconception) */}
         {byState.misconception.length > 0 && (
-          <li className="flex items-start gap-2">
-            <span className="mt-1.5 h-2 w-2 rounded-full bg-red-500 shrink-0" />
+          <li className="flex items-start gap-3">
+            <span className="mt-1.5 h-2.5 w-2.5 rounded-full bg-red-600 shrink-0" />
             <div>
-              <div className="font-medium">
-                Needs attention ({byState.misconception.length})
+              <div className="text-ink">
+                <span className="font-semibold">Needs attention</span>
+                <span className="text-ink-faint ml-1.5" style={{ fontFamily: 'var(--font-cinzel)' }}>
+                  ({byState.misconception.length})
+                </span>
               </div>
-              <div className="text-stone-600">
+              <div className="text-ink-soft italic">
                 {byState.misconception.map((sid) => standardName(sid)).join('; ')}
               </div>
               {byState.misconception.some(
                 (sid) => masteryMap.standards[sid].flagged_misconception_ids.length > 0
               ) && (
-                <div className="text-xs text-stone-500 mt-1">
+                <div className="text-xs text-ink-faint mt-1">
                   Flagged misconceptions:{' '}
                   {Array.from(
                     new Set(
@@ -386,29 +392,35 @@ function AtAGlanceSummary({
           </li>
         )}
 
-        {/* Working on (yellow) */}
+        {/* Working on (amber) */}
         {byState.working.length > 0 && (
-          <li className="flex items-start gap-2">
-            <span className="mt-1.5 h-2 w-2 rounded-full bg-amber-500 shrink-0" />
+          <li className="flex items-start gap-3">
+            <span className="mt-1.5 h-2.5 w-2.5 rounded-full bg-amber-600 shrink-0" />
             <div>
-              <div className="font-medium">
-                Working on ({byState.working.length})
+              <div className="text-ink">
+                <span className="font-semibold">Working on</span>
+                <span className="text-ink-faint ml-1.5" style={{ fontFamily: 'var(--font-cinzel)' }}>
+                  ({byState.working.length})
+                </span>
               </div>
-              <div className="text-stone-600">
+              <div className="text-ink-soft italic">
                 {byState.working.map((sid) => standardName(sid)).join('; ')}
               </div>
             </div>
           </li>
         )}
 
-        {/* Mastered (green/demonstrated) */}
-        <li className="flex items-start gap-2">
-          <span className="mt-1.5 h-2 w-2 rounded-full bg-emerald-600 shrink-0" />
+        {/* Mastered (emerald) */}
+        <li className="flex items-start gap-3">
+          <span className="mt-1.5 h-2.5 w-2.5 rounded-full bg-emerald-600 shrink-0" />
           <div>
-            <div className="font-medium">
-              Mastered ({byState.demonstrated.length})
+            <div className="text-ink">
+              <span className="font-semibold">Mastered</span>
+              <span className="text-ink-faint ml-1.5" style={{ fontFamily: 'var(--font-cinzel)' }}>
+                ({byState.demonstrated.length})
+              </span>
             </div>
-            <div className="text-stone-600">
+            <div className="text-ink-soft italic">
               {byState.demonstrated.length === 0
                 ? '—'
                 : byState.demonstrated.map((sid) => standardName(sid)).join('; ')}
@@ -418,13 +430,16 @@ function AtAGlanceSummary({
 
         {/* Not yet probed (not_assessed) */}
         {notAssessed.length > 0 && (
-          <li className="flex items-start gap-2">
-            <span className="mt-1.5 h-2 w-2 rounded-full bg-stone-400 shrink-0" />
+          <li className="flex items-start gap-3">
+            <span className="mt-1.5 h-2.5 w-2.5 rounded-full bg-stone-400 shrink-0" />
             <div>
-              <div className="font-medium">
-                Not yet probed ({notAssessed.length})
+              <div className="text-ink">
+                <span className="font-semibold">Not yet probed</span>
+                <span className="text-ink-faint ml-1.5" style={{ fontFamily: 'var(--font-cinzel)' }}>
+                  ({notAssessed.length})
+                </span>
               </div>
-              <div className="text-stone-600">
+              <div className="text-ink-soft italic">
                 {notAssessed.map((sid) => standardName(sid)).join('; ')}
               </div>
             </div>

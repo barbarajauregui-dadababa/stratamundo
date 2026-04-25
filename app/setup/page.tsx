@@ -74,70 +74,114 @@ export default function SetupPage() {
   }
 
   return (
-    <main className="flex flex-1 w-full max-w-xl mx-auto flex-col gap-8 py-24 px-8">
-      <header className="flex flex-col gap-2">
-        <h1 className="font-serif text-3xl font-semibold tracking-tight">Set up a learner</h1>
-        <p className="text-stone-600 dark:text-stone-400">
-          Create the learner, then a fractions assessment starts automatically.
-        </p>
-      </header>
+    <main className="bg-paper min-h-screen">
+      <div className="max-w-xl mx-auto px-6 py-16 flex flex-col gap-8">
+        <header className="flex flex-col gap-2 items-center text-center">
+          <p
+            className="text-[10px] tracking-[0.3em] uppercase text-ink-faint"
+            style={{ fontFamily: 'var(--font-cinzel)' }}
+          >
+            Begin a voyage
+          </p>
+          <h1
+            className="text-3xl tracking-tight text-ink"
+            style={{ fontFamily: 'var(--font-fraunces)', fontWeight: 600 }}
+          >
+            Set up a learner
+          </h1>
+          <p
+            className="text-sm italic text-ink-soft max-w-md"
+            style={{ fontFamily: 'var(--font-fraunces)' }}
+          >
+            Create the learner. The fractions assessment starts automatically.
+          </p>
+        </header>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-        <label className="flex flex-col gap-1.5">
-          <span className="text-sm font-medium">Name</span>
-          <input
-            type="text"
-            required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="h-10 rounded-md border border-stone-300 dark:border-stone-700 px-3 text-sm bg-white dark:bg-stone-950"
-            placeholder="First name"
-          />
-        </label>
-
-        <div className="flex gap-4">
-          <label className="flex flex-col gap-1.5 flex-1">
-            <span className="text-sm font-medium">Age</span>
-            <input
-              type="number"
-              min={5}
-              max={18}
-              value={age}
-              onChange={(e) => setAge(e.target.value)}
-              className="h-10 rounded-md border border-stone-300 dark:border-stone-700 px-3 text-sm bg-white dark:bg-stone-950"
-            />
-          </label>
-          <label className="flex flex-col gap-1.5 flex-1">
-            <span className="text-sm font-medium">Grade level</span>
-            <input
-              type="number"
-              min={1}
-              max={12}
-              value={gradeLevel}
-              onChange={(e) => setGradeLevel(e.target.value)}
-              className="h-10 rounded-md border border-stone-300 dark:border-stone-700 px-3 text-sm bg-white dark:bg-stone-950"
-            />
-          </label>
-        </div>
-
-        <div className="text-sm text-stone-600 dark:text-stone-400">
-          Concept: <strong>Fractions</strong> (3rd–4th grade)
-        </div>
-
-        {error && (
-          <div className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200">
-            {error}
-          </div>
-        )}
-
-        <button
-          type="submit"
-          disabled={isSubmitting || !name.trim()}
-          className="inline-flex h-10 items-center justify-center rounded-md bg-stone-900 px-4 text-sm font-medium text-white disabled:opacity-50 hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-200 w-fit"
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-5 rounded-sm border-2 border-brass-deep/40 bg-paper-deep/30 p-6"
         >
-          {isSubmitting ? 'Starting assessment…' : 'Start assessment'}
-        </button>
-      </form>
+          <label className="flex flex-col gap-1.5">
+            <span
+              className="text-[10px] tracking-[0.2em] uppercase text-ink-faint"
+              style={{ fontFamily: 'var(--font-cinzel)' }}
+            >
+              Name
+            </span>
+            <input
+              type="text"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="h-10 rounded-sm border-2 border-stone-300 bg-paper px-3 text-sm focus:border-brass-deep focus:outline-none focus:ring-2 focus:ring-brass-deep/30"
+              style={{ fontFamily: 'var(--font-fraunces)' }}
+              placeholder="First name"
+            />
+          </label>
+
+          <div className="flex gap-4">
+            <label className="flex flex-col gap-1.5 flex-1">
+              <span
+                className="text-[10px] tracking-[0.2em] uppercase text-ink-faint"
+                style={{ fontFamily: 'var(--font-cinzel)' }}
+              >
+                Age
+              </span>
+              <input
+                type="number"
+                min={5}
+                max={18}
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                className="h-10 rounded-sm border-2 border-stone-300 bg-paper px-3 text-sm focus:border-brass-deep focus:outline-none focus:ring-2 focus:ring-brass-deep/30"
+                style={{ fontFamily: 'var(--font-fraunces)' }}
+              />
+            </label>
+            <label className="flex flex-col gap-1.5 flex-1">
+              <span
+                className="text-[10px] tracking-[0.2em] uppercase text-ink-faint"
+                style={{ fontFamily: 'var(--font-cinzel)' }}
+              >
+                Grade level
+              </span>
+              <input
+                type="number"
+                min={1}
+                max={12}
+                value={gradeLevel}
+                onChange={(e) => setGradeLevel(e.target.value)}
+                className="h-10 rounded-sm border-2 border-stone-300 bg-paper px-3 text-sm focus:border-brass-deep focus:outline-none focus:ring-2 focus:ring-brass-deep/30"
+                style={{ fontFamily: 'var(--font-fraunces)' }}
+              />
+            </label>
+          </div>
+
+          <div
+            className="text-sm text-ink-soft italic"
+            style={{ fontFamily: 'var(--font-fraunces)' }}
+          >
+            Concept: <strong className="text-ink not-italic">Fractions</strong> (3rd–4th grade)
+          </div>
+
+          {error && (
+            <div
+              className="rounded-sm border-2 border-red-600/40 bg-paper-deep px-3 py-2 text-sm text-red-700"
+              style={{ fontFamily: 'var(--font-fraunces)' }}
+            >
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={isSubmitting || !name.trim()}
+            className="inline-flex h-11 items-center justify-center rounded-md bg-ink px-5 text-sm font-semibold uppercase text-paper hover:bg-ink-soft disabled:opacity-50 transition-colors w-fit"
+            style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.12em' }}
+          >
+            {isSubmitting ? 'Beginning the voyage…' : 'Begin the voyage'}
+          </button>
+        </form>
+      </div>
     </main>
   )
 }
