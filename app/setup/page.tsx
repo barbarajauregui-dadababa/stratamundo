@@ -115,6 +115,18 @@ export default function SetupPage() {
           >
             Set up the profile — for a learner you guide, or for yourself if you&apos;re an older learner. The fractions assessment starts automatically.
           </p>
+          <p
+            className="text-xs text-cream-faint italic mt-1"
+            style={{ fontFamily: 'var(--font-fraunces)' }}
+          >
+            Returning?{' '}
+            <a
+              href="/resume"
+              className="text-brass hover:text-brass-glow underline underline-offset-2 not-italic"
+            >
+              Resume an existing voyage →
+            </a>
+          </p>
         </header>
 
         <form

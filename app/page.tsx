@@ -133,6 +133,19 @@ export default function Home() {
               </Link>
             </div>
 
+            <p
+              className="text-sm text-cream-soft italic mt-2"
+              style={{ fontFamily: 'var(--font-fraunces)' }}
+            >
+              Already have a voyage?{' '}
+              <Link
+                href="/resume"
+                className="text-brass hover:text-brass-glow underline underline-offset-2 not-italic"
+              >
+                Resume by email →
+              </Link>
+            </p>
+
             {/* Balloon — small, rising in the upper-right of this column */}
             <div className="absolute -top-12 -right-4 sm:-right-12 w-32 sm:w-44 animate-balloon-float pointer-events-none ember-glow">
               <Image
