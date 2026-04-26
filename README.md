@@ -4,7 +4,7 @@
 
 A diagnostic, a plan, and a probe loop — together, the voyage through math mastery. v1 covers grade 3–4 fractions; designed to extend to all of K-8 math (and beyond) without changing the engine. Built solo in 4 days for the Cerebral Valley **Built with Opus 4.7** hackathon.
 
-🌐 **Live:** [stratamundo.com](https://stratamundo.com) *(Vercel deployment at fractions-mastery-tracker.vercel.app while DNS propagates)*
+🌐 **Live:** [stratamundo.com](https://stratamundo.com)
 
 ---
 
@@ -107,8 +107,8 @@ CCSS standard structure and prerequisites come from the Achievethecore Coherence
 ## How to run locally
 
 ```bash
-git clone https://github.com/barbarajauregui-dadababa/fractions-mastery-tracker.git
-cd fractions-mastery-tracker
+git clone https://github.com/barbarajauregui-dadababa/stratamundo.git
+cd stratamundo
 npm install
 cp .env.local.example .env.local  # fill in Supabase + Anthropic keys
 npm run dev

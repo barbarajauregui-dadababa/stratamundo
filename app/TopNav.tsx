@@ -42,7 +42,7 @@ export default function TopNav() {
           <NavLink href="/setup" label="New learner" />
           <li>
             <a
-              href="https://github.com/barbarajauregui-dadababa/fractions-mastery-tracker"
+              href="https://github.com/barbarajauregui-dadababa/stratamundo"
               target="_blank"
               rel="noreferrer"
               className="px-3 py-1.5 uppercase text-cream-soft hover:text-brass-glow transition-colors"
