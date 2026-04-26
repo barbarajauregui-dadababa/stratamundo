@@ -34,7 +34,7 @@ export default function MethodologyPage() {
         </header>
 
         <Section id="three-questions">
-          <H2>Three questions every learner needs answered</H2>
+          <H2>Three questions Strata Mundo answers</H2>
           <ThreeQuestions
             questions={[
               {
@@ -82,7 +82,7 @@ export default function MethodologyPage() {
               description="Cross-grade developmental arc through one mathematical domain (e.g., Fractions, K-5)."
               sourceName="Progressions for the Common Core State Standards in Mathematics"
               authors="Bill McCallum, Hung-Hsi Wu, Phil Daro et al. (University of Arizona, Institute for Mathematics and Education)"
-              url="https://ime.math.arizona.edu/progressions"
+              url="https://mathematicalmusings.org/"
             />
             <SourceRow
               label="Section"
@@ -120,8 +120,8 @@ export default function MethodologyPage() {
           <Bullets>
             <li><strong>Mastery map</strong> — the structured output of analysis. Every standard gets one of four states.</li>
             <li><strong>Mastered</strong> (green, emerald-600) — reliably understood with clear reasoning across multiple problems. Meets analysis rule R10.</li>
-            <li><strong>Working on</strong> (amber, amber-700 for text) — partial understanding. Some right, some wrong, OR right only after multiple attempts without clear reasoning.</li>
-            <li><strong>Needs attention</strong> (red-600) — a specific named misconception detected with evidence in the telemetry.</li>
+            <li><strong>Building the skill</strong> (amber) — reasoning is on the right track but not yet reliable. Some right, some wrong, OR right only after multiple attempts. More varied practice needed.</li>
+            <li><strong>Misconception detected</strong> (red, with brass warning cartouche) — a specific named wrong mental model is firing. Targeted intervention required.</li>
             <li><strong>Not yet probed</strong> (stone-400) — this standard hasn&apos;t been touched in any completed assessment yet. Neither known nor unknown.</li>
             <li><strong>Telemetry</strong> — every interaction during an assessment recorded as a timestamped event: placement, removal, commit_attempt, reset.</li>
             <li><strong>Focused probe</strong> — a narrow re-assessment of one standard (4–6 problems, ~10 min). Run after the recommended activities to verify a misconception has resolved.</li>
@@ -135,7 +135,7 @@ export default function MethodologyPage() {
         <Section id="assessment">
           <H2>How the assessment works</H2>
           <Bullets>
-            <li>~10 minutes, ~9 problems. Drag-and-build mechanic: the learner drags unit fraction pieces (1/2, 1/3, 1/4, 1/6, 1/8) onto a target bar to construct the requested fraction.</li>
+            <li>~10 minutes, ~7-8 problems. Drag-and-build mechanic: the learner drags unit fraction pieces (1/2, 1/3, 1/4, 1/6, 1/8) onto a target bar to construct the requested fraction.</li>
             <li>Some problems force equivalence reasoning by restricting the palette (e.g., &quot;build 2/3 using only sixths&quot;).</li>
             <li>No typed answers. No multiple choice. The mechanic asks the learner to <em>show</em>, not <em>tell</em>.</li>
             <li>Every interaction is recorded as process telemetry — drags, removals, commits, resets, timing.</li>
