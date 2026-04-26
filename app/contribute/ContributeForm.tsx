@@ -106,13 +106,19 @@ export default function ContributeForm({ initialStandardId }: Props) {
     }} />
   }
 
-  const canSubmit =
-    title.trim().length >= 3 &&
-    description.trim().length >= 20 &&
-    standardIds.length > 0 &&
-    contributorName.trim().length >= 2 &&
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contributorEmail.trim()) &&
-    !isSubmitting
+  const missing: string[] = []
+  if (title.trim().length < 3) missing.push('Activity title (at least 3 characters)')
+  if (standardIds.length === 0) missing.push('Pick at least one standard')
+  if (description.trim().length < 20) {
+    missing.push(
+      `"Why does this work?" needs at least 20 characters (you have ${description.trim().length})`,
+    )
+  }
+  if (contributorName.trim().length < 2) missing.push('Your name')
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contributorEmail.trim())) {
+    missing.push('A valid email')
+  }
+  const canSubmit = missing.length === 0 && !isSubmitting
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -278,21 +284,41 @@ export default function ContributeForm({ initialStandardId }: Props) {
         </div>
       )}
 
-      <div className="flex items-center gap-3 flex-wrap">
-        <button
-          type="submit"
-          disabled={!canSubmit}
-          className="inline-flex h-11 items-center justify-center rounded-sm bg-brass-deep px-7 text-xs font-bold uppercase text-cream hover:bg-brass disabled:opacity-50 transition-colors border border-brass shadow-[0_0_15px_oklch(0.74_0.14_80/0.4)]"
-          style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.18em' }}
-        >
-          {isSubmitting ? 'Vetting… ~10 sec' : 'Submit for vetting ◇'}
-        </button>
-        <p
-          className="text-xs text-ink-faint italic"
-          style={{ fontFamily: 'var(--font-fraunces)' }}
-        >
-          Your submission is reviewed by Claude Opus 4.7 first, then by a human.
-        </p>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-3 flex-wrap">
+          <button
+            type="submit"
+            disabled={!canSubmit}
+            className="inline-flex h-11 items-center justify-center rounded-sm bg-brass-deep px-7 text-xs font-bold uppercase text-cream hover:bg-brass disabled:opacity-50 transition-colors border border-brass shadow-[0_0_15px_oklch(0.74_0.14_80/0.4)]"
+            style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.18em' }}
+          >
+            {isSubmitting ? 'Vetting… ~10 sec' : 'Submit for vetting ◇'}
+          </button>
+          <p
+            className="text-xs text-ink-faint italic"
+            style={{ fontFamily: 'var(--font-fraunces)' }}
+          >
+            Reviewed by Claude Opus 4.7 first, then by a human.
+          </p>
+        </div>
+        {missing.length > 0 && !isSubmitting && (
+          <div
+            className="rounded-sm border border-brass-deep/40 bg-paper-deep/60 px-4 py-3 text-sm text-ink-soft"
+            style={{ fontFamily: 'var(--font-fraunces)' }}
+          >
+            <div
+              className="text-[10px] tracking-[0.2em] uppercase text-brass-deep mb-1"
+              style={{ fontFamily: 'var(--font-cinzel)' }}
+            >
+              Before you can submit
+            </div>
+            <ul className="list-disc ml-5 space-y-0.5">
+              {missing.map((m, i) => (
+                <li key={i}>{m}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </form>
   )
