@@ -8,6 +8,7 @@ const MODALITIES: { value: string; label: string; hint: string }[] = [
   { value: 'manipulative', label: 'Hands-on / manipulative', hint: 'A physical material the learner touches and arranges.' },
   { value: 'game_or_interactive', label: 'Game or interactive', hint: 'A digital simulation, game, or interactive applet.' },
   { value: 'worksheet', label: 'Worksheet', hint: 'A printable or PDF practice set.' },
+  { value: 'other', label: 'Other', hint: 'Something that doesn’t fit the categories above.' },
 ]
 
 interface Props {
@@ -17,13 +18,15 @@ interface Props {
 }
 
 export default function ContributeForm({ initialStandardId }: Props) {
+  // The form collapses what was "description + rationale" into a single
+  // "Why does this work?" field. It's stored as `description` in state and
+  // in the database (rationale stays null). Per Barbara, 2026-04-26.
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [modality, setModality] = useState('manipulative')
   const [url, setUrl] = useState('')
   const [sourceSite, setSourceSite] = useState('')
   const [duration, setDuration] = useState('')
-  const [rationale, setRationale] = useState('')
   const [standardIds, setStandardIds] = useState<string[]>(
     initialStandardId ? [initialStandardId] : [],
   )
@@ -54,7 +57,6 @@ export default function ContributeForm({ initialStandardId }: Props) {
         url: url.trim() || null,
         source_site: sourceSite.trim() || null,
         duration_minutes: duration ? Number(duration) : null,
-        rationale: rationale.trim() || null,
         standard_ids: standardIds,
         contributor_name: contributorName.trim(),
         contributor_email: contributorEmail.trim(),
@@ -100,7 +102,6 @@ export default function ContributeForm({ initialStandardId }: Props) {
       setUrl('')
       setSourceSite('')
       setDuration('')
-      setRationale('')
       setStandardIds(initialStandardId ? [initialStandardId] : [])
     }} />
   }
@@ -115,6 +116,7 @@ export default function ContributeForm({ initialStandardId }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      {/* 1. Activity title */}
       <FormField label="Activity title" required>
         <input
           type="text"
@@ -128,15 +130,29 @@ export default function ContributeForm({ initialStandardId }: Props) {
         />
       </FormField>
 
+      {/* 2. Math concepts or standards applied */}
       <FormField
-        label="What does the learner do?"
+        label="Math concepts or standards applied"
         required
-        hint="Describe the activity from the learner's perspective. What action do they take, and what concept does it teach? (At least 20 characters.)"
+        hint="Search by name or by CCSS-M code. Select at least one."
+      >
+        <StandardSearchPicker
+          selected={standardIds}
+          onChange={setStandardIds}
+          lockedToStandard={initialStandardId}
+        />
+      </FormField>
+
+      {/* 3. Why does this work? — primary descriptive field */}
+      <FormField
+        label="Why does this work?"
+        required
+        hint="Describe what the learner does and why it teaches the concepts above. (At least 20 characters.)"
       >
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="The learner drags fraction pieces onto a target bar and tries to build a target fraction using equivalent piece sizes. Teaches that 1/2 = 2/4 = 4/8 by physical equivalence."
+          placeholder="Direct manipulation lets the learner discover equivalence by size-matching pieces — they see 1/2 = 2/4 before they have the language for it."
           rows={4}
           className={`${inputCls} resize-y min-h-[88px]`}
           style={{ fontFamily: 'var(--font-fraunces)' }}
@@ -145,6 +161,7 @@ export default function ContributeForm({ initialStandardId }: Props) {
         />
       </FormField>
 
+      {/* 4. Modality (now with "Other") */}
       <FormField label="Modality" required>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {MODALITIES.map((m) => (
@@ -181,18 +198,7 @@ export default function ContributeForm({ initialStandardId }: Props) {
         </div>
       </FormField>
 
-      <FormField
-        label="Standard(s) it teaches"
-        required
-        hint="Search by name or by CCSS-M code. Select at least one."
-      >
-        <StandardSearchPicker
-          selected={standardIds}
-          onChange={setStandardIds}
-          lockedToStandard={initialStandardId}
-        />
-      </FormField>
-
+      {/* 5. Link 6. Source 7. Minutes */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FormField label="Link" hint="Optional. URL to the activity if it lives online.">
           <input
@@ -228,20 +234,7 @@ export default function ContributeForm({ initialStandardId }: Props) {
         />
       </FormField>
 
-      <FormField
-        label="Why does this work?"
-        hint="Optional, but valued. The pedagogical insight — what makes this activity effective for the standards above?"
-      >
-        <textarea
-          value={rationale}
-          onChange={(e) => setRationale(e.target.value)}
-          placeholder="Direct manipulation lets the learner discover equivalence through size-matching, before they have the language for it."
-          rows={3}
-          className={`${inputCls} resize-y min-h-[64px]`}
-          style={{ fontFamily: 'var(--font-fraunces)' }}
-        />
-      </FormField>
-
+      {/* 8. Your details */}
       <div className="border-t-2 border-brass-deep/30 pt-5 flex flex-col gap-4">
         <p
           className="text-[10px] tracking-[0.25em] uppercase text-brass-deep"
@@ -341,6 +334,32 @@ function FormField({
   )
 }
 
+/**
+ * Splits the AI reasoning into bullets. The vet prompt now instructs the
+ * model to return short bullet lines (one fact per line). If a single
+ * paragraph slips through, we split on sentence boundaries as a fallback.
+ */
+function reasoningBullets(reasoning: string): string[] {
+  const trimmed = reasoning.trim()
+  if (!trimmed) return []
+  // If the model returned bulleted lines (with `-`, `*`, or `•`), split on those.
+  const bulletPattern = /(?:^|\n)\s*[-*•]\s+/
+  if (bulletPattern.test(trimmed)) {
+    return trimmed
+      .split(bulletPattern)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0)
+  }
+  // Newline-separated lines.
+  const newlineLines = trimmed.split(/\n+/).map((s) => s.trim()).filter((s) => s.length > 0)
+  if (newlineLines.length > 1) return newlineLines
+  // Fallback: split on sentence boundaries.
+  return trimmed
+    .split(/(?<=[.!?])\s+/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0)
+}
+
 function ResultPanel({
   result,
   onReset,
@@ -349,22 +368,25 @@ function ResultPanel({
   onReset: () => void
 }) {
   const verdict = result.verdict
-  const headline =
+  // All verdicts get the same warm thank-you opener — Barbara, 2026-04-26.
+  const headline = 'Thank you for contributing a learning activity to our community.'
+  const next =
     verdict === 'pass'
-      ? '✓ Submission received and AI-vetted: PASS'
+      ? 'Your submission passed automated review. You’ll receive an email when a human reviewer approves it (and it goes live on the platform), or if there’s a reason it can’t be accepted.'
       : verdict === 'borderline'
-        ? '◇ Submission received and AI-vetted: BORDERLINE'
+        ? 'Our automated reviewer flagged a few things for closer human review. You’ll receive an email when a human reviewer reaches a decision.'
         : verdict === 'reject'
-          ? '⚠ Submission received and AI-vetted: REJECT'
-          : '◇ Submission received'
-  const subtext =
+          ? 'Our automated reviewer found issues a human will look at next. You’ll receive an email with either an approval or an explanation of why it was rejected.'
+          : 'A human reviewer will take it from here. You’ll receive an email with the outcome.'
+
+  const verdictLabel =
     verdict === 'pass'
-      ? 'Your activity passed automated review. A human reviewer will look at it next.'
+      ? 'AI vet · PASS'
       : verdict === 'borderline'
-        ? 'Our automated review flagged some concerns. A human reviewer will take a closer look.'
+        ? 'AI vet · BORDERLINE'
         : verdict === 'reject'
-          ? "Our automated review found issues. A human will still see it. If you'd like to revise and resubmit, the issues are listed below."
-          : 'A human reviewer will take it from here.'
+          ? 'AI vet · REJECT'
+          : 'Submission received'
 
   const verdictColor =
     verdict === 'pass'
@@ -375,8 +397,16 @@ function ResultPanel({
           ? 'border-red-700 bg-red-50'
           : 'border-brass-deep/50 bg-paper-deep/30'
 
+  const bullets = result.reasoning ? reasoningBullets(result.reasoning) : []
+
   return (
     <div className={`relative rounded-sm border-2 ${verdictColor} p-6 flex flex-col gap-3 shadow-[0_0_20px_oklch(0.74_0.14_80/0.18)]`}>
+      <span
+        className="text-[10px] tracking-[0.25em] uppercase text-brass-deep"
+        style={{ fontFamily: 'var(--font-cinzel)' }}
+      >
+        {verdictLabel}
+      </span>
       <h2
         className="text-2xl text-ink"
         style={{ fontFamily: 'var(--font-fraunces)', fontWeight: 600 }}
@@ -384,19 +414,23 @@ function ResultPanel({
         {headline}
       </h2>
       <p className="text-sm text-ink-soft" style={{ fontFamily: 'var(--font-fraunces)' }}>
-        {subtext}
+        {next}
       </p>
-      {result.reasoning && (
+
+      {bullets.length > 0 && (
         <div className="rounded-sm bg-paper px-4 py-3 border border-brass-deep/30">
           <div
-            className="text-[10px] tracking-[0.2em] uppercase text-brass-deep mb-1"
+            className="text-[10px] tracking-[0.2em] uppercase text-brass-deep mb-1.5"
             style={{ fontFamily: 'var(--font-cinzel)' }}
           >
             AI reviewer notes
           </div>
-          <p className="text-sm text-ink-soft italic" style={{ fontFamily: 'var(--font-fraunces)' }}>
-            {result.reasoning}
-          </p>
+          <ul
+            className="list-disc ml-5 space-y-1 text-sm text-ink-soft italic"
+            style={{ fontFamily: 'var(--font-fraunces)' }}
+          >
+            {bullets.map((b, i) => <li key={i}>{b}</li>)}
+          </ul>
           {result.flags.length > 0 && (
             <div className="mt-2 text-xs text-ink-faint" style={{ fontFamily: 'var(--font-special-elite)' }}>
               Flags: {result.flags.join(', ')}{' '}
@@ -407,6 +441,7 @@ function ResultPanel({
           )}
         </div>
       )}
+
       <p className="text-xs text-ink-faint italic" style={{ fontFamily: 'var(--font-fraunces)' }}>
         Submission ID: <span style={{ fontFamily: 'var(--font-special-elite)' }}>{result.submission_id}</span>
       </p>

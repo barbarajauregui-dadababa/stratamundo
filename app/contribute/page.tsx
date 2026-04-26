@@ -50,15 +50,17 @@ export default async function ContributePage({ searchParams }: SearchParamsShape
             className="text-3xl sm:text-4xl tracking-tight text-ink"
             style={{ fontFamily: 'var(--font-fraunces)', fontWeight: 600 }}
           >
-            Propose a new activity
+            Contribute a new learning activity
           </h1>
           <OrnamentalRule className="h-5 text-brass-deep mt-1" width={300} />
-          <p
-            className="text-base text-ink-soft italic max-w-xl"
+          <ul
+            className="text-base text-ink-soft italic max-w-xl space-y-1.5 text-left list-disc pl-5"
             style={{ fontFamily: 'var(--font-fraunces)' }}
           >
-            Anyone can contribute. Strata Mundo is built on the conviction that the best learning activities come from many practitioners — guides, teachers, parents, learners themselves. Submit something that worked, and we&apos;ll review it.
-          </p>
+            <li>Anyone can contribute — guides, teachers, parents, learners, and other users.</li>
+            <li>Strata Mundo&apos;s library grows from what works in real practice, not what&apos;s easy to publish.</li>
+            <li>Every submission is AI-vetted, then human-approved.</li>
+          </ul>
         </header>
 
         <section className="relative rounded-sm border-2 border-brass-deep/60 bg-[oklch(0.98_0.012_78)] p-6 sm:p-8 shadow-[0_0_25px_oklch(0.74_0.14_80/0.18)]">

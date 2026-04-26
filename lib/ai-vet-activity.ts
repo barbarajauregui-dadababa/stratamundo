@@ -96,7 +96,7 @@ import Anthropic from '@anthropic-ai/sdk'
 export interface ActivitySubmissionInput {
   title: string
   description: string
-  modality: 'video' | 'manipulative' | 'game_or_interactive' | 'worksheet'
+  modality: 'video' | 'manipulative' | 'game_or_interactive' | 'worksheet' | 'other'
   url?: string | null
   source_site?: string | null
   duration_minutes?: number | null
@@ -165,10 +165,12 @@ You apply the criteria in order. Every criterion has an ID like "1.1" or "2.3". 
 \`\`\`json
 {
   "verdict": "pass" | "borderline" | "reject",
-  "reasoning": "1-3 sentences explaining the verdict, citing criterion IDs.",
+  "reasoning": "- Bullet 1.\\n- Bullet 2.\\n- Bullet 3.",
   "flags": ["1.1", "2.2"]
 }
 \`\`\`
+
+The "reasoning" field MUST be formatted as bullet points (one per line, each starting with "- "). Aim for 2–4 short bullets. Each bullet should be a single fact or observation; cite the relevant criterion ID inline (e.g. "- Title is specific and informative (1.1)."). NEVER write paragraphs in this field — Strata Mundo's design rule is no prose anywhere user-facing.
 
 If verdict is "pass", flags is empty. If "borderline" or "reject", flags lists the criterion IDs that triggered the decision.`
 

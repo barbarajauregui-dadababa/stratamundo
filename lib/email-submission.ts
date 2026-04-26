@@ -127,31 +127,82 @@ function contributorEmailHtml({
   submission: ActivitySubmissionInput
   vet: ActivityVetResult
 }): string {
-  const verdictMessage =
+  const nextStepsBullets =
     vet.verdict === 'pass'
-      ? 'Your submission passed our automated review and is now in the queue for human approval.'
+      ? [
+          'Your submission passed our automated review.',
+          'A human reviewer will look at it next.',
+          'You’ll receive an email when it’s approved (and live on the platform), or with an explanation if it can’t be accepted.',
+        ]
       : vet.verdict === 'borderline'
-        ? 'Our automated review flagged your submission for closer human review. The human reviewer will look at it soon and may reach out.'
-        : "Our automated review found some issues. A human reviewer will still look at your submission, but if you'd like to revise and resubmit, the issues are listed below."
+        ? [
+            'Our automated reviewer flagged a few things for closer human review.',
+            'A human reviewer will look at it next.',
+            'You’ll receive a follow-up email with the decision.',
+          ]
+        : [
+            'Our automated reviewer found issues. A human reviewer will still look at it.',
+            'You’ll receive a follow-up email with either an approval or an explanation of why it was rejected.',
+          ]
+
+  const reasoningBullets = vet.reasoning
+    ? vet.reasoning
+        .split(/\n+|(?:^|\s)[-*•]\s+/)
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0)
+    : []
+
   const flagsBlock =
     vet.flags.length > 0
-      ? `<p><strong>Flags:</strong> ${vet.flags.join(', ')}</p>
-         <p style="color: #78716c; font-style: italic;">See the criteria documentation at /methodology for what each flag means.</p>`
+      ? `<p style="margin: 0 0 4px;"><strong>Criteria flagged:</strong> ${vet.flags.join(', ')}</p>
+         <p style="margin: 0; color: #78716c; font-style: italic; font-size: 13px;">See the criteria documentation in the Methodology page for what each flag means.</p>`
       : ''
+
   return `
-    <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-      <h1 style="color: #92400e; font-family: 'Cinzel', Georgia, serif;">Thank you for contributing</h1>
+    <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #292524;">
+      <h1 style="color: #92400e; font-family: 'Cinzel', Georgia, serif; margin-top: 0;">
+        Thank you for contributing a learning activity to our community
+      </h1>
 
       <p>Hi ${escapeHtml(submission.contributor_name)},</p>
 
-      <p>Thank you for submitting <strong>${escapeHtml(submission.title)}</strong> to Strata Mundo.</p>
+      <ul style="padding-left: 20px;">
+        ${nextStepsBullets.map((b) => `<li>${escapeHtml(b)}</li>`).join('')}
+      </ul>
 
-      <p>${verdictMessage}</p>
+      <hr style="margin: 24px 0; border: none; border-top: 1px solid #c2864a;">
 
-      ${flagsBlock}
+      <h2 style="color: #92400e; font-size: 16px; font-family: 'Cinzel', Georgia, serif; letter-spacing: 0.18em; text-transform: uppercase; margin: 0 0 12px;">
+        Your submission
+      </h2>
 
-      <p style="color: #78716c; font-style: italic; margin-top: 30px;">
-        Strata Mundo is built on the belief that the best learning resources come from many practitioners. The library grows because of contributions like yours.
+      <p style="margin: 0 0 4px;"><strong>Title:</strong> ${escapeHtml(submission.title)}</p>
+      <p style="margin: 0 0 4px;"><strong>Modality:</strong> ${escapeHtml(submission.modality)}</p>
+      <p style="margin: 0 0 4px;"><strong>Standards:</strong> ${submission.standard_ids.map((s) => escapeHtml(s)).join(', ')}</p>
+      ${submission.url ? `<p style="margin: 0 0 4px;"><strong>Link:</strong> <a href="${escapeHtml(submission.url)}">${escapeHtml(submission.url)}</a></p>` : ''}
+      ${submission.source_site ? `<p style="margin: 0 0 4px;"><strong>Source:</strong> ${escapeHtml(submission.source_site)}</p>` : ''}
+      ${typeof submission.duration_minutes === 'number' ? `<p style="margin: 0 0 4px;"><strong>Duration:</strong> ${submission.duration_minutes} minutes</p>` : ''}
+
+      <p style="margin: 12px 0 4px;"><strong>Why does this work?</strong></p>
+      <blockquote style="margin: 0; border-left: 3px solid #c2864a; padding-left: 12px; color: #44403c;">
+        ${escapeHtml(submission.description)}
+      </blockquote>
+
+      ${
+        reasoningBullets.length > 0
+          ? `<hr style="margin: 24px 0; border: none; border-top: 1px solid #c2864a;">
+             <h2 style="color: #92400e; font-size: 16px; font-family: 'Cinzel', Georgia, serif; letter-spacing: 0.18em; text-transform: uppercase; margin: 0 0 12px;">
+               AI reviewer notes · ${vet.verdict.toUpperCase()}
+             </h2>
+             <ul style="padding-left: 20px; font-style: italic; color: #44403c;">
+               ${reasoningBullets.map((b) => `<li>${escapeHtml(b)}</li>`).join('')}
+             </ul>
+             ${flagsBlock}`
+          : ''
+      }
+
+      <p style="color: #78716c; font-style: italic; margin-top: 30px; font-size: 13px;">
+        Strata Mundo&apos;s library grows from contributions like yours.
       </p>
     </div>
   `

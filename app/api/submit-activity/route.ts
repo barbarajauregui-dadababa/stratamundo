@@ -18,6 +18,7 @@ const VALID_MODALITIES = new Set([
   'manipulative',
   'game_or_interactive',
   'worksheet',
+  'other',
 ])
 
 interface SubmitBody {
