@@ -34,7 +34,7 @@ export default function MethodologyPage() {
         </header>
 
         <Section id="three-questions">
-          <H2>Three questions every guide and parent needs answered</H2>
+          <H2>Three questions every learner needs answered</H2>
           <ThreeQuestions
             questions={[
               {
@@ -159,7 +159,7 @@ export default function MethodologyPage() {
             <li><strong>R6</strong> — Rapid commits AND wrong = guessing (Wise 2017). Speed alone is not a guessing signal.</li>
             <li><strong>R7</strong> — Specific wrong-commit content maps to specific named misconceptions, declared in each problem&apos;s response map.</li>
             <li><strong>R8</strong> — No commit attempt → not_assessed.</li>
-            <li><strong>R9</strong> — Evidence in data, not narrative. Use plain language for guides; problem IDs go in audit fields, not in prose.</li>
+            <li><strong>R9</strong> — Evidence in data, not narrative. Use plain language; problem IDs go in audit fields, not in prose.</li>
             <li><strong>R10</strong> — &quot;Mastered&quot; requires success across multiple problems for a standard, with clear reasoning.</li>
           </Bullets>
         </Section>
@@ -169,7 +169,7 @@ export default function MethodologyPage() {
         <Section id="plan">
           <H2>How the plan is generated</H2>
           <p className="text-ink-soft" style={{ fontFamily: 'var(--font-fraunces)' }}>
-            The Plan Architect is an Anthropic Managed Agent running on Claude Opus 4.7. It reads the mastery map and writes a guide-facing plan in 1–3 minutes.
+            The Plan Architect is an Anthropic Managed Agent running on Claude Opus 4.7. It reads the mastery map and writes a tailored plan in 1–3 minutes.
           </p>
           <Bullets>
             <li><strong>Differential diagnosis.</strong> For each priority gap, the agent decides whether the issue is within-concept or whether it&apos;s actually a prerequisite gap from an earlier standard.</li>
@@ -188,8 +188,8 @@ export default function MethodologyPage() {
           <Bullets>
             <li>The general assessment maps the broad mastery picture across many standards.</li>
             <li>The plan prescribes activities for the flagged standards.</li>
-            <li>After the learner does the activities, the guide runs a <strong>focused probe</strong> on one standard — ~4–6 problems, ~10 minutes — to verify the misconception has resolved.</li>
-            <li>If resolved → the standard moves to <em>Mastered</em> in the parent mastery map.</li>
+            <li>After the learner does the activities, a <strong>focused probe</strong> runs on one standard — ~4–6 problems, ~10 minutes — to verify the misconception has resolved.</li>
+            <li>If resolved → the standard moves to <em>Mastered</em> in the overall mastery map.</li>
             <li>If not resolved → the Plan Architect re-plans with options: same activities + more time, different modality, or escalate to a prerequisite.</li>
             <li>This <em>loop</em> is what distinguishes a diagnostic of current misconception from proof of mastery. Mastery is earned through the loop over time, not claimed from a single assessment.</li>
           </Bullets>
@@ -289,7 +289,7 @@ export default function MethodologyPage() {
             <li><strong>No learner-facing chatbot.</strong> All learner-facing interactions are structured: forms, problems, visual feedback. The LLM does cognitive work behind the scenes, never as a chat with a child.</li>
             <li><strong>No percentage scores.</strong> Categorical states only. Percentages collapse different mastery realities (fluent guessing, slow reasoning, partial understanding) into one number that hides the diagnosis.</li>
             <li><strong>No gamification.</strong> No XP, streaks, leaderboards, badges, or extrinsic rewards. Mastery-based settings reject these mechanics; we honor that.</li>
-            <li><strong>No gated progression.</strong> The system suggests; the guide decides. Mastery is declared by the guide, supported by the evidence we surface.</li>
+            <li><strong>No gated progression.</strong> The system suggests; the human decides. Mastery is declared by a human reviewer, supported by the evidence we surface.</li>
             <li><strong>No selling of learner data.</strong> Ever.</li>
           </Bullets>
         </Section>
