@@ -168,12 +168,6 @@ export default function Home() {
         />
         <div className="relative max-w-5xl mx-auto flex flex-col gap-16">
           <div className="flex flex-col items-center gap-3 text-center">
-            <p
-              className="text-xs tracking-[0.4em] uppercase text-brass-deep"
-              style={{ fontFamily: 'var(--font-cinzel)' }}
-            >
-              ◇ The three questions ◇
-            </p>
             <h2
               className="text-3xl sm:text-4xl tracking-tight text-ink max-w-3xl"
               style={{ fontFamily: 'var(--font-fraunces)', fontWeight: 600 }}
