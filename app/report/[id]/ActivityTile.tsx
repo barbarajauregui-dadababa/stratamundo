@@ -128,7 +128,7 @@ export default function ActivityTile({
             style={{ fontFamily: 'var(--font-special-elite)' }}
           >
             {typeof minutes === 'number' && <span>~{minutes} min</span>}
-            {resource?.source_site && !resource?.url && (
+            {resource?.source_site && !isLiveUrl(resource?.url) && (
               <>
                 {typeof minutes === 'number' && <span aria-hidden>·</span>}
                 <span>{resource.source_site}</span>
@@ -138,9 +138,9 @@ export default function ActivityTile({
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
-          {resource?.url && (
+          {isLiveUrl(resource?.url) && (
             <a
-              href={resource.url}
+              href={resource!.url!}
               target="_blank"
               rel="noreferrer"
               className="text-xs text-copper hover:text-brass-deep underline underline-offset-2"
@@ -240,4 +240,12 @@ function BulletedSentences({ text }: { text: string }) {
       ))}
     </ul>
   )
+}
+
+/** A URL is "live" only if it actually starts with http(s). The curated
+ *  resources file uses null or "[TO VERIFY ...]" placeholder strings for
+ *  unverified entries — those should NOT render as clickable links. */
+function isLiveUrl(url: string | null | undefined): boolean {
+  if (!url) return false
+  return /^https?:\/\//i.test(url.trim())
 }

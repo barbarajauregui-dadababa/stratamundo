@@ -66,19 +66,24 @@ export async function sendSubmissionEmails({
             })
           ).data?.id
 
-    const contributorRes = await resend.emails.send({
-      from: FROM_ADDRESS,
-      to: submission.contributor_email,
-      subject:
-        vet.verdict === 'reject'
-          ? "Your Strata Mundo submission needs revision"
-          : 'Thank you for contributing to Strata Mundo',
-      html: contributorEmailHtml({ submission, vet }),
-    })
+    // AI-rejected submissions skip the contributor email too — the result
+    // panel on the contribute page already shows the rationale immediately,
+    // so emailing the same content adds noise.
+    const contributorEmailId =
+      vet.verdict === 'reject'
+        ? undefined
+        : (
+            await resend.emails.send({
+              from: FROM_ADDRESS,
+              to: submission.contributor_email,
+              subject: 'Thank you for contributing to Strata Mundo',
+              html: contributorEmailHtml({ submission, vet }),
+            })
+          ).data?.id
 
     return {
       adminEmailId,
-      contributorEmailId: contributorRes.data?.id,
+      contributorEmailId,
     }
   } catch (err) {
     return {

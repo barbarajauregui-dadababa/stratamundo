@@ -41,7 +41,7 @@ export default async function ContributePage({ searchParams }: SearchParamsShape
       <div className="relative max-w-3xl mx-auto px-6 py-12 flex flex-col gap-8">
         <header className="flex flex-col gap-3 items-center text-center">
           <p
-            className="text-[10px] tracking-[0.4em] uppercase text-brass-deep"
+            className="text-base sm:text-lg tracking-[0.3em] uppercase text-brass-deep font-bold"
             style={{ fontFamily: 'var(--font-cinzel)' }}
           >
             ◇ The library grows ◇

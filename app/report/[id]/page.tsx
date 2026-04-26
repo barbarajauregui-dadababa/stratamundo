@@ -27,6 +27,34 @@ function resourceById(id: string): ResourceRow | undefined {
 }
 import coherenceMapRaw from '@/content/coherence-map-fractions.json'
 import misconceptionsRaw from '@/content/fractions-misconceptions.json'
+import problemBankRaw from '@/content/fractions-problem-bank.json'
+
+interface BankProblem {
+  id: string
+  problem_type: string
+  goal: unknown
+  real_world_context?: { framing_text?: string }
+}
+const problemBank = problemBankRaw as unknown as { problems: BankProblem[] }
+function problemById(id: string): BankProblem | undefined {
+  return problemBank.problems.find((p) => p.id === id)
+}
+function describeProblem(p: BankProblem): string {
+  const framing = p.real_world_context?.framing_text
+  if (framing) {
+    const trimmed = framing.length > 80 ? framing.slice(0, 77) + '…' : framing
+    return trimmed
+  }
+  // Fallbacks based on problem_type
+  const goal = p.goal as { numerator?: number; denominator?: number; then_shade?: { numerator: number; denominator: number } } | undefined
+  if (goal?.numerator !== undefined && goal?.denominator !== undefined) {
+    return `${p.problem_type.replace(/_/g, ' ')} ${goal.numerator}/${goal.denominator}`
+  }
+  if (goal?.then_shade) {
+    return `${p.problem_type.replace(/_/g, ' ')} → ${goal.then_shade.numerator}/${goal.then_shade.denominator}`
+  }
+  return p.problem_type.replace(/_/g, ' ')
+}
 
 type StandardState = 'misconception' | 'working' | 'demonstrated' | 'not_assessed'
 
@@ -600,12 +628,24 @@ function Bucket({
                   >
                     Audit — which problems informed this?
                   </summary>
-                  <div
-                    className="mt-1"
-                    style={{ fontFamily: 'var(--font-special-elite)' }}
+                  <ul
+                    className="mt-2 list-disc ml-5 space-y-0.5 text-ink-soft"
+                    style={{ fontFamily: 'var(--font-fraunces)' }}
                   >
-                    {report.evidence_problem_ids.join(', ')}
-                  </div>
+                    {report.evidence_problem_ids.map((pid) => {
+                      const p = problemById(pid)
+                      return (
+                        <li key={pid}>
+                          <span style={{ fontFamily: 'var(--font-special-elite)' }}>{pid}</span>
+                          {p ? (
+                            <> — {describeProblem(p)}</>
+                          ) : (
+                            <span className="text-red-700 italic"> — unknown problem id (the AI may have hallucinated this)</span>
+                          )}
+                        </li>
+                      )
+                    })}
+                  </ul>
                 </details>
               )}
               {gap && planId && (

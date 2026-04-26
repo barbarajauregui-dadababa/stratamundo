@@ -153,7 +153,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
             className="text-3xl sm:text-4xl tracking-tight text-ink"
             style={{ fontFamily: 'var(--font-fraunces)', fontWeight: 600 }}
           >
-            Find activities, standards, contributors
+            Find activities, progressions, standards, and contributors
           </h1>
           <OrnamentalRule className="h-5 text-brass-deep mt-1" width={300} />
         </header>
@@ -178,7 +178,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
               What you can search
             </p>
             <ul className="list-disc ml-5 space-y-1">
-              <li>Math standards by CCSS-M code (e.g., <span style={{ fontFamily: 'var(--font-special-elite)' }}>3.NF.A.1</span>) or by name (e.g., <em>unit fractions</em>).</li>
+              <li>Math standards or progressions by CCSS-M code (e.g., <span style={{ fontFamily: 'var(--font-special-elite)' }}>3.NF.A.1</span>) or by name (e.g., <em>unit fractions</em>, <em>fractions progression</em>).</li>
               <li>Activities by title, source site, or modality (e.g., <em>video</em>, <em>hands-on</em>).</li>
               <li>Community contributors by name.</li>
             </ul>
@@ -200,7 +200,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
             </p>
 
             {standards.length > 0 && (
-              <ResultsSection title={`Math standards (${standards.length})`}>
+              <ResultsSection title={`Progressions, standards & concepts (${standards.length})`}>
                 <ul className="flex flex-col gap-2">
                   {standards.map((s) => (
                     <li
@@ -282,9 +282,9 @@ export default async function SearchPage({ searchParams }: PageProps) {
                           .filter(Boolean)
                           .join(' · ')}
                       </p>
-                      {r.url && r.url.startsWith('http') && (
+                      {isLiveUrl(r.url) && (
                         <a
-                          href={r.url}
+                          href={r.url!}
                           target="_blank"
                           rel="noreferrer"
                           className="text-xs text-copper hover:text-brass-deep underline underline-offset-2"
@@ -333,9 +333,9 @@ export default async function SearchPage({ searchParams }: PageProps) {
                         Standards: {c.standard_ids.join(', ')}
                         {c.duration_minutes ? ` · ~${c.duration_minutes} min` : ''}
                       </p>
-                      {c.url && (
+                      {isLiveUrl(c.url) && (
                         <a
-                          href={c.url}
+                          href={c.url!}
                           target="_blank"
                           rel="noreferrer"
                           className="text-xs text-copper hover:text-brass-deep underline underline-offset-2"
@@ -380,6 +380,11 @@ export default async function SearchPage({ searchParams }: PageProps) {
       </div>
     </main>
   )
+}
+
+function isLiveUrl(url: string | null | undefined): boolean {
+  if (!url) return false
+  return /^https?:\/\//i.test(url.trim())
 }
 
 function ResultsSection({

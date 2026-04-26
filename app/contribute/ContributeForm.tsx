@@ -120,7 +120,7 @@ export default function ContributeForm({ initialStandardId }: Props) {
   if (standardIds.length === 0) missing.push('Pick at least one standard')
   if (description.trim().length < 20) {
     missing.push(
-      `"Why does this work?" needs at least 20 characters (you have ${description.trim().length})`,
+      `"What does the learner do" needs at least 20 characters (you have ${description.trim().length})`,
     )
   }
   if (contributorName.trim().length < 2) missing.push('Your name')
@@ -145,11 +145,11 @@ export default function ContributeForm({ initialStandardId }: Props) {
         />
       </FormField>
 
-      {/* 2. Math concepts or standards applied */}
+      {/* 2. Math progressions, concepts, or standards applied */}
       <FormField
-        label="Math concepts or standards applied"
+        label="Math progressions, concepts, or standards applied"
         required
-        hint="Search by name or by CCSS-M code. Select at least one."
+        hint="Search by name or by CCSS-M code. Select at least one. Standards roll up into Progressions per the McCallum framework."
       >
         <StandardSearchPicker
           selected={standardIds}
@@ -158,16 +158,16 @@ export default function ContributeForm({ initialStandardId }: Props) {
         />
       </FormField>
 
-      {/* 3. Why does this work? — primary descriptive field */}
+      {/* 3. What does the learner do — primary descriptive field */}
       <FormField
-        label="Why does this work?"
+        label="What does the learner do, and what concepts does it teach?"
         required
-        hint="Describe what the learner does and why it teaches the concepts above. (At least 20 characters.)"
+        hint="Describe the action and the concept together. (At least 20 characters.)"
       >
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Direct manipulation lets the learner discover equivalence by size-matching pieces — they see 1/2 = 2/4 before they have the language for it."
+          placeholder="The learner drags fraction pieces of different sizes onto a target bar to discover equivalence — they see 1/2 = 2/4 = 4/8 by physical size-matching."
           rows={4}
           className={`${inputCls} resize-y min-h-[88px]`}
           style={{ fontFamily: 'var(--font-fraunces)' }}
@@ -252,7 +252,7 @@ export default function ContributeForm({ initialStandardId }: Props) {
       {/* 8. Your details */}
       <div className="border-t-2 border-brass-deep/30 pt-5 flex flex-col gap-4">
         <p
-          className="text-[10px] tracking-[0.25em] uppercase text-brass-deep"
+          className="text-base tracking-[0.2em] uppercase text-brass-deep font-bold"
           style={{ fontFamily: 'var(--font-cinzel)' }}
         >
           ◇ Your details ◇
@@ -350,7 +350,7 @@ function FormField({
   return (
     <label className="flex flex-col gap-1.5">
       <span
-        className="text-[10px] tracking-[0.2em] uppercase text-brass-deep"
+        className="text-sm tracking-[0.18em] uppercase text-brass-deep font-bold"
         style={{ fontFamily: 'var(--font-cinzel)' }}
       >
         {label}
