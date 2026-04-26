@@ -124,20 +124,14 @@ export default function Home() {
               >
                 Begin the voyage
               </Link>
-            </div>
-
-            <p
-              className="text-sm text-cream-soft italic mt-2"
-              style={{ fontFamily: 'var(--font-fraunces)' }}
-            >
-              Already have a voyage?{' '}
               <Link
                 href="/resume"
-                className="text-brass hover:text-brass-glow underline underline-offset-2 not-italic"
+                className="inline-flex h-12 items-center justify-center rounded-sm border-2 border-brass-deep bg-transparent px-7 text-sm font-bold uppercase text-cream hover:bg-brass-deep/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass-glow focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.18em' }}
               >
-                Resume by email →
+                Continue your voyage
               </Link>
-            </p>
+            </div>
 
             {/* Balloon — small, rising in the upper-right of this column */}
             <div className="absolute -top-12 -right-4 sm:-right-12 w-32 sm:w-44 animate-balloon-float pointer-events-none ember-glow">

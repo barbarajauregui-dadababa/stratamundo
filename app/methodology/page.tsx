@@ -135,7 +135,7 @@ export default function MethodologyPage() {
         <Section id="assessment">
           <H2>How the assessment works</H2>
           <Bullets>
-            <li>~10 minutes, ~7-8 problems. Drag-and-build mechanic: the learner drags unit fraction pieces (1/2, 1/3, 1/4, 1/6, 1/8) onto a target bar to construct the requested fraction.</li>
+            <li>~10 minutes, 7 problems. Drag-and-build mechanic: the learner drags unit fraction pieces (1/2, 1/3, 1/4, 1/6, 1/8) onto a target bar to construct the requested fraction.</li>
             <li>Some problems force equivalence reasoning by restricting the palette (e.g., &quot;build 2/3 using only sixths&quot;).</li>
             <li>No typed answers. No multiple choice. The mechanic asks the learner to <em>show</em>, not <em>tell</em>.</li>
             <li>Every interaction is recorded as process telemetry — drags, removals, commits, resets, timing.</li>
