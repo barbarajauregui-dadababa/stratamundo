@@ -33,9 +33,12 @@ interface Props {
   compact?: boolean
   /** Show the balloon at the active stratum. Defaults true. */
   showBalloon?: boolean
+  /** Optional child rendered at the bottom-right inside the panel — used by
+   *  the report to embed the "Open mastery voyage →" link as a brass cartouche. */
+  bottomRightSlot?: React.ReactNode
 }
 
-export default function StrataCloudscape({ masteryMap, compact = false, showBalloon = true }: Props) {
+export default function StrataCloudscape({ masteryMap, compact = false, showBalloon = true, bottomRightSlot }: Props) {
   const counts = { demonstrated: 0, working: 0, misconception: 0, not_assessed: 0 }
   if (masteryMap?.standards) {
     for (const entry of Object.values(masteryMap.standards)) {
@@ -99,10 +102,10 @@ export default function StrataCloudscape({ masteryMap, compact = false, showBall
           style={{ width: compact ? 70 : 110, top: '46%' }}
         >
           <Image
-            src="/images/balloon-versailles.jpg"
+            src="/images/balloon-flying.jpg"
             alt="Airship at the active stratum"
-            width={300}
-            height={490}
+            width={253}
+            height={373}
             className="w-full h-auto"
             style={{ filter: 'sepia(0.4) brightness(1.05) contrast(1.05)', mixBlendMode: 'screen' }}
           />
@@ -118,6 +121,10 @@ export default function StrataCloudscape({ masteryMap, compact = false, showBall
             ◇ Foundation ◇
           </p>
         </div>
+      )}
+
+      {bottomRightSlot && (
+        <div className="absolute bottom-3 right-3 z-30">{bottomRightSlot}</div>
       )}
     </section>
   )

@@ -136,10 +136,10 @@ export default function Home() {
             {/* Balloon — small, rising in the upper-right of this column */}
             <div className="absolute -top-12 -right-4 sm:-right-12 w-32 sm:w-44 animate-balloon-float pointer-events-none ember-glow">
               <Image
-                src="/images/balloon-versailles.jpg"
-                alt="Hot air balloon ascent at Versailles, 1783"
-                width={300}
-                height={490}
+                src="/images/balloon-flying.jpg"
+                alt="Aerostat of the Marquis de Brantes, 1784"
+                width={253}
+                height={373}
                 className="w-full h-auto"
                 style={{ filter: 'sepia(0.4) contrast(1.05) brightness(1.05)', mixBlendMode: 'screen' }}
               />
@@ -245,7 +245,7 @@ export default function Home() {
           className="text-[11px] text-cream-faint italic max-w-3xl mx-auto leading-relaxed"
           style={{ fontFamily: 'var(--font-fraunces)' }}
         >
-          Imagery: cloudscape by Simon Alexandre-Clément Denis (1786, Getty Museum, public domain). Celestial globe by Gerhard Emmoser (1579, Met Museum, CC0). Balloon ascent at Versailles (1783, Library of Congress, public domain).
+          Imagery: cloudscape by Simon Alexandre-Clément Denis (1786, Getty Museum, public domain). Celestial globe by Gerhard Emmoser (1579, Met Museum, CC0). Aerostat of the Marquis de Brantes, J. B. Guibert sculp. (1784, Bibliothèque nationale de France / Gallica, public domain).
         </p>
         <p
           className="text-[11px] text-cream-faint italic max-w-3xl mx-auto leading-relaxed mt-2"

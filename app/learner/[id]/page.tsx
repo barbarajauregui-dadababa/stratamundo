@@ -112,8 +112,8 @@ export default async function LearnerDashboardPage(
           completedByStandard={completedByStandard}
         />
 
-        <section className="flex flex-wrap gap-3 pt-4 border-t border-brass-deep/40 justify-center">
-          {latest && (
+        {latest && (
+          <section className="flex flex-wrap gap-3 pt-4 border-t border-brass-deep/40 justify-center">
             <Link
               href={`/report/${latest.id}`}
               className="inline-flex h-10 items-center justify-center rounded-sm bg-brass-deep px-5 text-sm font-bold uppercase text-cream hover:bg-brass border border-brass shadow-[0_0_15px_oklch(0.74_0.14_80/0.35)]"
@@ -121,15 +121,8 @@ export default async function LearnerDashboardPage(
             >
               View latest report
             </Link>
-          )}
-          <Link
-            href="/setup"
-            className="inline-flex h-10 items-center justify-center rounded-sm border-2 border-brass-deep px-5 text-sm font-bold uppercase text-cream hover:bg-brass-deep/20"
-            style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.18em' }}
-          >
-            Begin a new voyage
-          </Link>
-        </section>
+          </section>
+        )}
 
         <footer
           className="text-[10px] text-cream-faint italic text-center"

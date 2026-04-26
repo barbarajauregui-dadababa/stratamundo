@@ -157,22 +157,24 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
       {masteryMap && (
         <>
           <div className="flex flex-col gap-3">
-            <StrataCloudscape masteryMap={masteryMap} compact />
+            <StrataCloudscape
+              masteryMap={masteryMap}
+              compact
+              bottomRightSlot={
+                <Link
+                  href={`/learner/${assessment.learner_id}`}
+                  className="inline-flex items-center gap-1.5 rounded-sm border border-brass bg-brass-deep/85 backdrop-blur px-3 py-1.5 text-[10px] tracking-[0.18em] uppercase text-cream hover:bg-brass transition-colors shadow-[0_0_12px_oklch(0.74_0.14_80/0.45)]"
+                  style={{ fontFamily: 'var(--font-cinzel)' }}
+                >
+                  Open the voyage →
+                </Link>
+              }
+            />
             {(() => {
               const roadmap = planContent?.section_roadmap ?? planContent?.progression_roadmap
               if (!roadmap || roadmap.length === 0) return null
               return <FractionsSectionStrip learnerName={displayName} roadmap={roadmap} />
             })()}
-          </div>
-          {/* Mastery voyage link — directly under the 5-progression strip, per Barbara */}
-          <div className="flex items-center justify-end -mt-2">
-            <Link
-              href={`/learner/${assessment.learner_id}`}
-              className="inline-flex items-center gap-1.5 text-sm text-copper hover:text-brass-deep underline underline-offset-2 decoration-brass-deep/40 hover:decoration-brass-deep"
-              style={{ fontFamily: 'var(--font-fraunces)' }}
-            >
-              Open {displayName}&apos;s mastery voyage →
-            </Link>
           </div>
         </>
       )}
@@ -301,15 +303,30 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
               </div>
               {planContent.prerequisite_check_recommendations &&
                 planContent.prerequisite_check_recommendations.length > 0 && (
-                  <div className="rounded-md border border-amber-300 bg-amber-50 p-4 text-sm leading-relaxed">
-                    <div className="mb-1 text-xs font-medium uppercase tracking-wide text-amber-700">
-                      Next assessment — consider probing
+                  <div className="relative rounded-sm border-2 border-brass-deep/50 bg-[oklch(0.98_0.012_78)] px-5 py-4 text-sm leading-relaxed shadow-[0_0_20px_oklch(0.74_0.14_80/0.12)]">
+                    <CornerFlourish corner="tl" className="absolute top-1.5 left-1.5 h-5 w-5 text-brass-deep" />
+                    <CornerFlourish corner="tr" className="absolute top-1.5 right-1.5 h-5 w-5 text-brass-deep" />
+                    <CornerFlourish corner="bl" className="absolute bottom-1.5 left-1.5 h-5 w-5 text-brass-deep" />
+                    <CornerFlourish corner="br" className="absolute bottom-1.5 right-1.5 h-5 w-5 text-brass-deep" />
+                    <div
+                      className="mb-2 text-[10px] tracking-[0.25em] uppercase text-brass-deep"
+                      style={{ fontFamily: 'var(--font-cinzel)' }}
+                    >
+                      Next assessment · consider probing
                     </div>
-                    <ul className="list-disc ml-5 space-y-1">
+                    <ul
+                      className="list-disc ml-5 space-y-1 text-ink-soft"
+                      style={{ fontFamily: 'var(--font-fraunces)' }}
+                    >
                       {planContent.prerequisite_check_recommendations.map((sid) => (
                         <li key={sid}>
-                          {standardName(sid)}{' '}
-                          <span className="font-mono text-xs text-amber-700/80">({sid})</span>
+                          <span className="italic">{standardName(sid)}</span>{' '}
+                          <span
+                            className="not-italic text-ink-faint text-xs"
+                            style={{ fontFamily: 'var(--font-special-elite)' }}
+                          >
+                            ({sid})
+                          </span>
                         </li>
                       ))}
                     </ul>

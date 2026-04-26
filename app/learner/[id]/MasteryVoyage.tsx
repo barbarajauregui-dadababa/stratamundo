@@ -39,7 +39,9 @@ export default function MasteryVoyage({ masteryMap }: Props) {
   return (
     <div className="w-full max-w-6xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <StrataCloudscape masteryMap={masteryMap} />
+        {/* Left: strata without the balloon — the balloon lives big on the
+            right panel, so on the voyage we leave the strata text uncovered. */}
+        <StrataCloudscape masteryMap={masteryMap} showBalloon={false} />
         <ExpandedBalloonPanel masteryMap={masteryMap} />
       </div>
 
@@ -136,10 +138,10 @@ function ExpandedBalloonPanel({ masteryMap }: Props) {
         style={{ width: '62%', top: '8%' }}
       >
         <Image
-          src="/images/balloon-versailles.jpg"
+          src="/images/balloon-flying.jpg"
           alt="Airship with eleven weights for the eleven 4.NF standards"
-          width={300}
-          height={490}
+          width={253}
+          height={373}
           className="w-full h-auto"
           style={{ filter: 'sepia(0.4) brightness(1.05) contrast(1.05)', mixBlendMode: 'screen' }}
         />
@@ -221,8 +223,11 @@ function Sandbag({
   state: StandardState
   title: string
 }) {
+  // Period-engraving palette: dark sepia ink for outlines and hatching,
+  // muted earth-tone fill that signals state without screaming "cartoon".
+  const ink = 'oklch(0.22 0.04 55)'
+  const inkSoft = 'oklch(0.32 0.045 55)'
   const fill = sandbagFill(state)
-  const stroke = 'oklch(0.30 0.04 50)'
   return (
     <div
       className="absolute pointer-events-auto"
@@ -232,29 +237,44 @@ function Sandbag({
       aria-label={title}
     >
       <svg
-        width="26"
-        height="36"
-        viewBox="0 0 26 36"
-        className="drop-shadow-[0_2px_3px_oklch(0_0_0/0.45)] hover:scale-110 transition-transform cursor-help"
+        width="28"
+        height="42"
+        viewBox="0 0 28 42"
+        className="drop-shadow-[0_2px_3px_oklch(0_0_0/0.5)] hover:scale-110 transition-transform cursor-help"
       >
-        {/* Hanging rope */}
-        <line x1="13" y1="0" x2="13" y2="8" stroke="oklch(0.55 0.12 70)" strokeWidth="1.2" />
-        {/* Brass clasp */}
-        <ellipse cx="13" cy="9.5" rx="3" ry="1.6" fill="oklch(0.74 0.14 80)" stroke={stroke} strokeWidth="0.4" />
-        {/* Bag body */}
+        {/* Hanging rope — dark ink, slight twist */}
+        <line x1="14" y1="0" x2="14" y2="8" stroke={ink} strokeWidth="1.2" />
+        <line x1="13.5" y1="2" x2="14.5" y2="6" stroke={ink} strokeWidth="0.4" opacity="0.7" />
+        {/* Brass clasp at top of bag */}
+        <ellipse cx="14" cy="9.5" rx="3.2" ry="1.6" fill="oklch(0.74 0.14 80)" stroke={ink} strokeWidth="0.5" />
+        {/* Bag body — muted state-color fill */}
         <path
-          d="M5.5 11 Q 5 9.5 13 9.5 Q 21 9.5 20.5 11 L 22 30 Q 22 34 13 34 Q 4 34 4 30 Z"
+          d="M 6 12 Q 5 10.5 14 10.5 Q 23 10.5 22 12 L 23.5 33 Q 23.5 38 14 38 Q 4.5 38 4.5 33 Z"
           fill={fill}
-          stroke={stroke}
-          strokeWidth="0.7"
+          fillOpacity="0.78"
         />
-        {/* Tie ridge */}
+        {/* Vertical fold strokes — three soft curves down the bag */}
+        <path d="M 9 14 Q 9 26 10.5 36" fill="none" stroke={ink} strokeWidth="0.5" opacity="0.6" />
+        <path d="M 14 14 Q 14 26 14 37.5" fill="none" stroke={ink} strokeWidth="0.5" opacity="0.6" />
+        <path d="M 19 14 Q 19 26 17.5 36" fill="none" stroke={ink} strokeWidth="0.5" opacity="0.6" />
+        {/* Cross-hatch shadow strokes on the right (engraving shading) */}
+        <line x1="19.5" y1="20" x2="22" y2="26" stroke={inkSoft} strokeWidth="0.4" />
+        <line x1="19.5" y1="24" x2="22.5" y2="30" stroke={inkSoft} strokeWidth="0.4" />
+        <line x1="19" y1="28" x2="22" y2="34" stroke={inkSoft} strokeWidth="0.4" />
+        <line x1="18.5" y1="32" x2="21" y2="36" stroke={inkSoft} strokeWidth="0.4" />
+        {/* Counter-hatch (cross-direction) for deeper shadow */}
+        <line x1="20" y1="22" x2="20.5" y2="34" stroke={inkSoft} strokeWidth="0.3" opacity="0.7" />
+        <line x1="21.5" y1="24" x2="22" y2="34" stroke={inkSoft} strokeWidth="0.3" opacity="0.7" />
+        {/* Tie ridge — sash near top of bag */}
+        <path d="M 5 14 Q 14 16.5 23 14" fill="none" stroke={ink} strokeWidth="0.8" />
+        <path d="M 5.5 14.8 Q 14 17 22.5 14.8" fill="none" stroke={ink} strokeWidth="0.4" opacity="0.6" />
+        {/* Bag outline — heaviest ink stroke, drawn last */}
         <path
-          d="M 5 14 Q 13 16 21 14"
+          d="M 6 12 Q 5 10.5 14 10.5 Q 23 10.5 22 12 L 23.5 33 Q 23.5 38 14 38 Q 4.5 38 4.5 33 Z"
           fill="none"
-          stroke={stroke}
-          strokeWidth="0.7"
-          opacity="0.7"
+          stroke={ink}
+          strokeWidth="0.85"
+          strokeLinejoin="round"
         />
       </svg>
     </div>
@@ -262,15 +282,17 @@ function Sandbag({
 }
 
 function sandbagFill(state: StandardState): string {
+  // Earth-tone state palette so colors blend with the sepia engraving
+  // line work rather than fighting it.
   switch (state) {
     case 'misconception':
-      return 'oklch(0.55 0.20 25)' // red
+      return 'oklch(0.48 0.16 25)' // muted iron-oxide red
     case 'working':
-      return 'oklch(0.65 0.16 65)' // amber
+      return 'oklch(0.60 0.13 65)' // antique amber
     case 'demonstrated':
-      return 'oklch(0.55 0.15 150)' // emerald
+      return 'oklch(0.50 0.12 150)' // verdigris green
     case 'not_assessed':
-      return 'oklch(0.60 0.020 70)' // warm stone
+      return 'oklch(0.62 0.025 75)' // faded parchment
   }
 }
 
