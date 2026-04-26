@@ -36,6 +36,15 @@ export default function TopNav() {
           className="flex items-center gap-1 text-[11px]"
           style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.18em' }}
         >
+          <li>
+            <Link
+              href="/search"
+              aria-label="Search activities, standards, and contributors"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-sm border border-brass-deep/60 text-cream hover:text-brass-glow hover:border-brass transition-colors mr-1"
+            >
+              <SearchGlyph className="h-4 w-4" />
+            </Link>
+          </li>
           <NavLink href="/" label="Home" />
           <NavLink href="/methodology" label="Methodology" />
           <NavLink href="/contribute" label="Contribute" />
@@ -66,5 +75,23 @@ function NavLink({ href, label }: { href: string; label: string }) {
         {label}
       </Link>
     </li>
+  )
+}
+
+/** Steampunk-styled magnifying glass — single-stroke, no decorative noise. */
+function SearchGlyph({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      aria-hidden
+    >
+      <circle cx="7" cy="7" r="4.5" />
+      <line x1="10.5" y1="10.5" x2="14" y2="14" />
+    </svg>
   )
 }
