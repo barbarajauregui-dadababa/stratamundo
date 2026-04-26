@@ -256,13 +256,13 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
           />
 
           {(planContent?.overall_notes ?? masteryMap.overall_notes) && (
-            <section className="relative rounded-sm border border-stone-300/80 bg-[oklch(0.98_0.012_78)] p-6 text-sm leading-relaxed text-ink-soft" style={{ fontFamily: 'var(--font-fraunces)' }}>
+            <section className="relative rounded-sm border border-stone-300/80 bg-[oklch(0.98_0.012_78)] p-6 text-base leading-relaxed text-ink" style={{ fontFamily: 'var(--font-fraunces)' }}>
               <CornerFlourish corner="tl" className="absolute top-1.5 left-1.5 h-5 w-5 text-brass-deep" />
               <CornerFlourish corner="tr" className="absolute top-1.5 right-1.5 h-5 w-5 text-brass-deep" />
               <CornerFlourish corner="bl" className="absolute bottom-1.5 left-1.5 h-5 w-5 text-brass-deep" />
               <CornerFlourish corner="br" className="absolute bottom-1.5 right-1.5 h-5 w-5 text-brass-deep" />
               <div
-                className="mb-2 text-xs tracking-[0.25em] uppercase text-brass-deep"
+                className="mb-3 text-base sm:text-lg tracking-[0.22em] uppercase text-brass-deep font-bold"
                 style={{ fontFamily: 'var(--font-cinzel)' }}
               >
                 Analyst&apos;s notes
@@ -556,23 +556,23 @@ function Bucket({
       <CornerFlourish corner="tr" className="absolute top-1.5 right-1.5 h-5 w-5 text-brass-deep pointer-events-none" />
       <CornerFlourish corner="bl" className="absolute bottom-1.5 left-1.5 h-5 w-5 text-brass-deep pointer-events-none" />
       <CornerFlourish corner="br" className="absolute bottom-1.5 right-1.5 h-5 w-5 text-brass-deep pointer-events-none" />
-      <summary className="cursor-pointer px-4 py-3 flex items-center gap-3 list-none">
-        <span className={`inline-block h-2.5 w-2.5 rounded-full ${dot}`} />
+      <summary className="cursor-pointer px-4 py-3 flex items-center gap-3 list-none flex-wrap">
+        <span className={`inline-block h-3 w-3 rounded-full ${dot}`} />
         {showWarningGlyph && <WarningCartouche />}
         <span
-          className="font-bold uppercase text-ink"
-          style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.18em', fontSize: 13 }}
+          className="font-bold uppercase text-ink text-base sm:text-lg"
+          style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.18em' }}
         >
           {title}
         </span>
         <span
-          className="text-xs text-ink-faint"
+          className="text-base text-ink-faint font-bold"
           style={{ fontFamily: 'var(--font-cinzel)' }}
         >
           ({standardIds.length})
         </span>
         <span
-          className="text-xs text-ink-soft italic ml-2"
+          className="text-sm text-ink-soft ml-2"
           style={{ fontFamily: 'var(--font-fraunces)' }}
         >
           {subtitle}
