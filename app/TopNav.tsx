@@ -38,6 +38,7 @@ export default function TopNav() {
         >
           <NavLink href="/" label="Home" />
           <NavLink href="/methodology" label="Methodology" />
+          <NavLink href="/contribute" label="Contribute" />
           <NavLink href="/setup" label="New learner" />
           <li>
             <a

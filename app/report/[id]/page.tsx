@@ -245,12 +245,13 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
             </section>
           )}
 
-          {/* Three buckets: red (attention), yellow (working), green (demonstrated). */}
+          {/* Three buckets: red (misconception), amber (building), green (mastered). */}
           <section className="flex flex-col gap-4">
             <Bucket
-              title="Needs attention"
-              subtitle="Specific misconception detected. Start here."
+              title="Misconception detected"
+              subtitle="A specific wrong mental model is firing. Targeted intervention required."
               dot="bg-red-600"
+              showWarningGlyph
               containerClass="bg-[oklch(0.84_0.030_68)] border border-red-600/30 border-l-4 border-l-red-600"
               standardIds={sortedByLayer(byState.misconception)}
               masteryMap={masteryMap}
@@ -262,8 +263,8 @@ export default async function ReportPage(props: PageProps<'/report/[id]'>) {
               defaultOpen
             />
             <Bucket
-              title="Needs work"
-              subtitle="Building the skill. Targeted activities required."
+              title="Building the skill"
+              subtitle="Reasoning is on the right track but not yet reliable. More varied practice."
               dot="bg-amber-600"
               containerClass="bg-[oklch(0.84_0.030_68)] border border-amber-700/30 border-l-4 border-l-amber-600"
               standardIds={sortedByLayer(byState.working)}
@@ -502,6 +503,7 @@ function Bucket({
   learnerId,
   parentAssessmentId,
   showProbeButton,
+  showWarningGlyph,
   defaultOpen,
 }: {
   title: string
@@ -515,6 +517,7 @@ function Bucket({
   learnerId: string
   parentAssessmentId: string
   showProbeButton: boolean
+  showWarningGlyph?: boolean
   defaultOpen: boolean
 }) {
   const completed: CompletedActivity[] = plan?._completed_activities ?? []
@@ -527,6 +530,7 @@ function Bucket({
       <CornerFlourish corner="br" className="absolute bottom-1.5 right-1.5 h-5 w-5 text-brass-deep pointer-events-none" />
       <summary className="cursor-pointer px-4 py-3 flex items-center gap-3 list-none">
         <span className={`inline-block h-2.5 w-2.5 rounded-full ${dot}`} />
+        {showWarningGlyph && <WarningCartouche />}
         <span
           className="font-bold uppercase text-ink"
           style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.18em', fontSize: 13 }}
@@ -662,12 +666,21 @@ function Bucket({
                       >
                         Once the activities above are complete, run a focused probe — a short re-test of just this standard, ~10 minutes — to confirm the misconception has resolved.
                       </p>
-                      <FocusedProbeButton
-                        learnerId={learnerId}
-                        standardId={sid}
-                        standardName={standardName(sid)}
-                        parentAssessmentId={parentAssessmentId}
-                      />
+                      <div className="flex flex-wrap items-center gap-3">
+                        <FocusedProbeButton
+                          learnerId={learnerId}
+                          standardId={sid}
+                          standardName={standardName(sid)}
+                          parentAssessmentId={parentAssessmentId}
+                        />
+                        <Link
+                          href={`/contribute?standard=${encodeURIComponent(sid)}`}
+                          className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.18em] uppercase text-copper hover:text-brass-deep underline underline-offset-2 decoration-brass-deep/40 hover:decoration-brass-deep"
+                          style={{ fontFamily: 'var(--font-cinzel)' }}
+                        >
+                          + Suggest an activity for this standard
+                        </Link>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -702,5 +715,45 @@ function BulletedSentences({ text }: { text: string }) {
         <li key={i}>{s}</li>
       ))}
     </ul>
+  )
+}
+
+/**
+ * Brass warning cartouche — a small octagonal brass plaque with an
+ * exclamation mark, used next to "Misconception detected" to signal
+ * "intervene here" without resorting to an emoji.
+ */
+function WarningCartouche() {
+  return (
+    <span
+      aria-hidden
+      className="inline-flex items-center justify-center"
+      style={{ width: 18, height: 18 }}
+    >
+      <svg viewBox="0 0 18 18" width="18" height="18" fill="none">
+        {/* Octagonal brass plaque */}
+        <path
+          d="M 5 1 L 13 1 L 17 5 L 17 13 L 13 17 L 5 17 L 1 13 L 1 5 Z"
+          fill="oklch(0.74 0.14 80)"
+          stroke="oklch(0.42 0.10 65)"
+          strokeWidth="1"
+        />
+        {/* Inner bevel */}
+        <path
+          d="M 5.5 2 L 12.5 2 L 16 5.5 L 16 12.5 L 12.5 16 L 5.5 16 L 2 12.5 L 2 5.5 Z"
+          fill="none"
+          stroke="oklch(0.95 0.06 85 / 0.6)"
+          strokeWidth="0.5"
+        />
+        {/* Exclamation mark */}
+        <line
+          x1="9" y1="4.5" x2="9" y2="11"
+          stroke="oklch(0.20 0.03 50)"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <circle cx="9" cy="13.2" r="1" fill="oklch(0.20 0.03 50)" />
+      </svg>
+    </span>
   )
 }

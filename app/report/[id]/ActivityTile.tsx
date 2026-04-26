@@ -90,15 +90,15 @@ export default function ActivityTile({
       }`}
     >
       <div className="flex items-start gap-4 p-4">
-        {/* Modality glyph in a brass-bordered card */}
+        {/* Modality glyph in a brass-bordered card — sized large enough to read */}
         <div
-          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-sm border ${
+          className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-sm border-2 ${
             isDone
               ? 'bg-paper border-stone-300 text-ink-faint'
-              : 'bg-paper-deep border-brass-deep/40 text-brass-deep'
+              : 'bg-paper-deep border-brass-deep/50 text-brass-deep shadow-[inset_0_0_8px_oklch(0.74_0.14_80/0.12)]'
           }`}
         >
-          <ModalityGlyph modality={modality} className="h-5 w-5" />
+          <ModalityGlyph modality={modality} className="h-10 w-10" />
         </div>
 
         <div className="flex-1 min-w-0 flex flex-col gap-1">

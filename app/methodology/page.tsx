@@ -194,6 +194,82 @@ export default function MethodologyPage() {
 
         <SectionDivider />
 
+        <Section id="vetting">
+          <H2>Community contributions: AI-vetted, human-approved</H2>
+          <p className="text-base text-ink-soft leading-relaxed" style={{ fontFamily: 'var(--font-fraunces)' }}>
+            The library of activities grows the way good teaching practice has always grown — through the contributions of many practitioners. Anyone can submit a new activity for any standard via the <a href="/contribute" className="text-copper underline underline-offset-2 hover:text-brass-deep">Contribute</a> page, or directly from a learner&apos;s plan via the &quot;Suggest an activity for this standard&quot; link next to each gap.
+          </p>
+          <p className="text-base text-ink-soft leading-relaxed" style={{ fontFamily: 'var(--font-fraunces)' }}>
+            Every submission goes through a two-stage review: an AI reviewer (Claude Opus 4.7) first, then a human reviewer. The AI never approves directly — it only passes, flags, or rejects. Final approval is always human. Both sets of criteria are documented below.
+          </p>
+
+          <H3>Stage 1 — AI vetting criteria</H3>
+          <p className="text-sm text-ink-soft italic" style={{ fontFamily: 'var(--font-fraunces)' }}>
+            The AI applies the criteria in order. Each criterion has an ID; when a submission is flagged or rejected, the specific IDs are cited so the contributor knows exactly what to address.
+          </p>
+
+          <CriteriaBlock title="Section 1 — Completeness (must pass all)">
+            <li><strong>1.1</strong> Title is a specific name, not a generic phrase. ✗ &quot;Math activity&quot; ✓ &quot;Build-a-fraction interactive — PhET&quot;</li>
+            <li><strong>1.2</strong> Description explains what the learner <em>does</em> (action + concept), not just what they learn.</li>
+            <li><strong>1.3</strong> Modality matches the description.</li>
+            <li><strong>1.4</strong> At least one CCSS-M standard is selected, plausibly related to the description.</li>
+          </CriteriaBlock>
+
+          <CriteriaBlock title="Section 2 — Pedagogical fit (project hard rules; reject if violated)">
+            <li><strong>2.1</strong> NOT a learner-facing chatbot or AI tutor.</li>
+            <li><strong>2.2</strong> NOT primarily gamified with tokens, coins, streaks, or leaderboards.</li>
+            <li><strong>2.3</strong> Grade band fits 3rd–4th grade (or a Coherence Map prerequisite like 2.G.A.3).</li>
+            <li><strong>2.4</strong> Activity actually teaches the standards selected, not adjacent ones.</li>
+          </CriteriaBlock>
+
+          <CriteriaBlock title="Section 3 — Source quality (borderline if any concern)">
+            <li><strong>3.1</strong> URL (if provided) is from a recognizable educational source OR is specific enough to verify.</li>
+            <li><strong>3.2</strong> Source/vendor name matches the URL&apos;s domain.</li>
+            <li><strong>3.3</strong> For physical materials, brand or vendor identifiable.</li>
+            <li><strong>3.4</strong> No obvious blocklist domains (gambling, ads, content farms).</li>
+          </CriteriaBlock>
+
+          <CriteriaBlock title="Section 4 — Safety + appropriateness (reject if violated)">
+            <li><strong>4.1</strong> Description is on-topic for math education.</li>
+            <li><strong>4.2</strong> No promotional/advertorial language.</li>
+            <li><strong>4.3</strong> No personally identifying info about specific children.</li>
+            <li><strong>4.4</strong> Language appropriate for an educational context.</li>
+          </CriteriaBlock>
+
+          <CriteriaBlock title="Section 5 — Non-duplication (best-effort, flag for human)">
+            <li><strong>5.1</strong> If submission appears identical to a known curated resource, flag.</li>
+          </CriteriaBlock>
+
+          <CriteriaBlock title="Section 6 — Instructions to the AI itself">
+            <li><strong>6.1</strong> Never approve. Only humans approve.</li>
+            <li><strong>6.2</strong> Never reject for stylistic preferences.</li>
+            <li><strong>6.3</strong> Never reject &quot;different from typical&quot; approaches that meet pedagogical fit. Distinctive approaches are valuable.</li>
+            <li><strong>6.4</strong> When uncertain, prefer &quot;borderline&quot; over &quot;rejected.&quot;</li>
+            <li><strong>6.5</strong> Always cite the specific criterion ID(s) violated.</li>
+            <li><strong>6.6</strong> Respond only with valid JSON.</li>
+          </CriteriaBlock>
+
+          <H3>Stage 2 — Human review criteria</H3>
+          <p className="text-sm text-ink-soft italic" style={{ fontFamily: 'var(--font-fraunces)' }}>
+            The human reviewer applies all of the AI criteria above plus the following judgments, which require human discernment:
+          </p>
+
+          <CriteriaBlock title="Human-only judgments">
+            <li><strong>H1</strong> Does the activity exemplify quality teaching practice — does it model the kind of learning we want children to have?</li>
+            <li><strong>H2</strong> Is the activity additive to the existing library, or is it materially redundant with what we already have?</li>
+            <li><strong>H3</strong> If a URL is provided, the human verifies it actually points to the activity described (the AI cannot fetch URLs).</li>
+            <li><strong>H4</strong> For physical materials, the human verifies the material is purchasable/findable.</li>
+            <li><strong>H5</strong> Does the description set realistic expectations? (Misleading promises about what a learner will achieve are rejected.)</li>
+            <li><strong>H6</strong> Final pedagogical judgment: does this belong in a Strata Mundo learner&apos;s plan? When the human says yes, the activity is approved.</li>
+          </CriteriaBlock>
+
+          <p className="text-sm text-ink-soft italic" style={{ fontFamily: 'var(--font-fraunces)' }}>
+            The criteria are versioned with the codebase and revised as we learn what works. The current source of truth lives in <code className="font-mono text-sm bg-paper-deep px-1.5 py-0.5 rounded">lib/ai-vet-activity.ts</code>.
+          </p>
+        </Section>
+
+        <SectionDivider />
+
         <Section id="dont-do">
           <H2>What we deliberately don&apos;t do</H2>
           <Bullets>
@@ -212,7 +288,6 @@ export default function MethodologyPage() {
           <Bullets>
             <li>v1 only renders <code className="font-mono text-sm bg-paper-deep px-1.5 py-0.5 rounded">build_fraction</code> problems. Problem types for number-line placement, comparison, identification, and partitioning are in the bank but not yet rendered. Each focused probe currently varies in <em>surface features</em> (denominators, palettes, magnitudes) but not across <em>representation types</em>. That arrives in v1.1.</li>
             <li>v1 covers fractions only. v1.5 extends to all of 4th-grade math (Operations, Place Value, Measurement, Geometry).</li>
-            <li>The community-vetted real-world activity layer (Question III on the home page) is post-v2 — guides and older learners contributing real-world activities, AI-vetted, human-curated. Not built yet.</li>
             <li>Multi-curriculum resource picker (Beast Academy / Saxon / Singapore / Math-U-See / Montessori) is post-v2.</li>
           </Bullets>
         </Section>
@@ -384,5 +459,41 @@ function SourceRow({
         {url}
       </a>
     </li>
+  )
+}
+
+function H3({ children }: { children: React.ReactNode }) {
+  return (
+    <h3
+      className="mt-2 text-xl text-ink"
+      style={{ fontFamily: 'var(--font-fraunces)', fontWeight: 600 }}
+    >
+      {children}
+    </h3>
+  )
+}
+
+function CriteriaBlock({
+  title,
+  children,
+}: {
+  title: string
+  children: React.ReactNode
+}) {
+  return (
+    <div className="rounded-sm border border-brass-deep/40 bg-paper-deep/40 p-4">
+      <div
+        className="text-[10px] tracking-[0.2em] uppercase text-brass-deep mb-2"
+        style={{ fontFamily: 'var(--font-cinzel)' }}
+      >
+        {title}
+      </div>
+      <ul
+        className="list-none pl-0 space-y-1.5 text-sm text-ink-soft leading-relaxed"
+        style={{ fontFamily: 'var(--font-fraunces)' }}
+      >
+        {children}
+      </ul>
+    </div>
   )
 }
