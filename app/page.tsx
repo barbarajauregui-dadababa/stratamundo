@@ -32,10 +32,9 @@ export default function Home() {
           />
         </div>
 
-        {/* Slow-turning gears — top-right cluster, ember-glow */}
-        <div className="absolute top-6 right-6 sm:top-10 sm:right-16 text-brass animate-turn-slow ember-glow pointer-events-none">
-          <Gear className="h-24 w-24 sm:h-36 sm:w-36" teeth={16} />
-        </div>
+        {/* Top-right gear cluster — large gear that used to sit behind the
+            balloon was removed per Barbara. The two remaining gears mesh
+            with each other. Both turn (animate-turn-slow / -reverse). */}
         <div className="absolute top-32 right-44 hidden sm:block text-brass-deep animate-turn-slow-reverse ember-glow pointer-events-none">
           <Gear className="h-20 w-20" teeth={10} />
         </div>
@@ -84,7 +83,7 @@ export default function Home() {
               className="text-sm tracking-[0.4em] uppercase text-brass"
               style={{ fontFamily: 'var(--font-cinzel)' }}
             >
-              Built with Opus 4.7
+              Built with Claude Opus 4.7
             </p>
 
             <h1
@@ -135,24 +134,29 @@ export default function Home() {
               </Link>
             </div>
 
-            {/* Small balloon — aged-photograph asset Barbara provided
-                (balloon-old-photo.png), gently floating in the upper-right
-                of the right column. No CSS sepia filter or mixBlendMode
-                needed — the image already has the antique treatment baked
-                in. Drop shadow gives it the "lying on a surface" depth. */}
-            <div
-              className="absolute -top-12 -right-4 sm:-right-12 w-32 sm:w-44 animate-balloon-float pointer-events-none"
-              style={{
-                filter: 'drop-shadow(0 10px 22px oklch(0 0 0 / 0.45)) drop-shadow(0 2px 4px oklch(0 0 0 / 0.30))',
-              }}
-            >
-              <Image
-                src="/images/balloon-old-photo.png"
-                alt="Aérostat of the Marquis de Brantes, 1784 — aged photograph"
-                width={1045}
-                height={1505}
-                className="w-full h-auto"
-              />
+            {/* Small balloon — aged-photograph asset, slightly tilted as if
+                pinned at an angle, gently floating. The outer wrapper holds
+                position; the middle wrapper handles the rotation; the inner
+                wrapper handles the float animation. They compose cleanly
+                because rotation and translate live on separate elements. */}
+            <div className="absolute -top-12 -right-4 sm:-right-12 w-32 sm:w-44 pointer-events-none">
+              <div style={{ rotate: '4deg' }}>
+                <div
+                  className="animate-balloon-float"
+                  style={{
+                    filter:
+                      'drop-shadow(0 10px 22px oklch(0 0 0 / 0.45)) drop-shadow(0 2px 4px oklch(0 0 0 / 0.30))',
+                  }}
+                >
+                  <Image
+                    src="/images/balloon-old-photo.png"
+                    alt="Aérostat of the Marquis de Brantes, 1784 — aged photograph"
+                    width={1045}
+                    height={1505}
+                    className="w-full h-auto"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
