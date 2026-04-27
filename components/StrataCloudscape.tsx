@@ -52,7 +52,7 @@ export default function StrataCloudscape({ masteryMap, compact = false, showBall
   return (
     <section
       className="relative overflow-hidden rounded-sm border-2 border-brass-deep/50 vignette"
-      style={{ minHeight: compact ? 360 : 720 }}
+      style={{ minHeight: compact ? 360 : 1100 }}
     >
       {/* Cloudscape painting full-bleed backdrop */}
       <div className="absolute inset-0">
@@ -79,7 +79,7 @@ export default function StrataCloudscape({ masteryMap, compact = false, showBall
             className="text-sm tracking-[0.4em] uppercase text-cream-soft"
             style={{ fontFamily: 'var(--font-cinzel)' }}
           >
-            Apex of the voyage
+            ◇ The 5 progressions of 4th-grade math ◇
           </p>
         </div>
       )}
@@ -147,7 +147,7 @@ function ProgressionStratum({
   const active = progression.status === 'active'
   return (
     <li
-      className={`relative flex items-center gap-3 px-3 ${compact ? 'py-2' : 'py-5 sm:py-6'} rounded-sm transition-colors ${
+      className={`relative flex items-center gap-3 px-3 ${compact ? 'py-2' : 'py-10 sm:py-12'} rounded-sm transition-colors ${
         active
           ? 'border-2 border-brass-glow bg-paper/85 backdrop-blur-sm shadow-[0_0_25px_oklch(0.74_0.14_80/0.45)]'
           : 'border border-cream-faint/30 bg-background/40 backdrop-blur-sm opacity-70'

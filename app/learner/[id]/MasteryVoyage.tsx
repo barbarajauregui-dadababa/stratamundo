@@ -40,9 +40,12 @@ export default function MasteryVoyage({ masteryMap }: Props) {
   return (
     <div className="w-full max-w-6xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {/* Left: strata without the balloon — the balloon lives big on the
-            right panel, so on the voyage we leave the strata text uncovered. */}
-        <StrataCloudscape masteryMap={masteryMap} showBalloon={false} />
+        {/* Left: large strata panel with the same small balloon-photo as the
+            report sitting at the active 4.NF stratum, slowly rising. The
+            taller stratum bands (py-10/12 in StrataCloudscape) give the
+            small photo room to fit inside one line without overlapping
+            adjacent strata. */}
+        <StrataCloudscape masteryMap={masteryMap} showBalloon={true} />
         <ExpandedBalloonPanel masteryMap={masteryMap} />
       </div>
 
@@ -129,7 +132,7 @@ function ExpandedBalloonPanel({ masteryMap }: Props) {
           className="text-sm tracking-[0.4em] uppercase text-cream-soft"
           style={{ fontFamily: 'var(--font-cinzel)' }}
         >
-          ◇ Eleven weights · 4.NF standards ◇
+          ◇ Master a standard. Drop a weight. The balloon rises. ◇
         </p>
       </div>
 
@@ -141,9 +144,34 @@ function ExpandedBalloonPanel({ masteryMap }: Props) {
         <OldPhotoBalloon size={400} />
       </div>
 
-      {/* Sandbag overlays — 11 weights hanging from the basket area.
-          Positioned in two rows so 11 fit cleanly without overlap.
-          Each <Sandbag> uses `title` for the native hover tooltip. */}
+      {/* Ropes from basket to sandbags — drawn under the sandbags so the
+          sandbag SVGs sit on top. Basket attachment point is approximately
+          (50%, 58%) of the panel — center horizontally, just under the
+          balloon's gondola at width:60% top:6%. */}
+      <svg
+        className="absolute inset-0 z-15 pointer-events-none"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        aria-hidden
+      >
+        {sandbags.map((s, i) => {
+          const { x, y } = sandbagPosition(i, sandbags.length)
+          return (
+            <line
+              key={s.id}
+              x1={50}
+              y1={58}
+              x2={x}
+              y2={y}
+              stroke="oklch(0.30 0.04 50 / 0.8)"
+              strokeWidth="0.18"
+              strokeLinecap="round"
+            />
+          )
+        })}
+      </svg>
+
+      {/* Sandbag overlays — 11 weights hanging from the basket. */}
       <div className="absolute inset-0 z-20 pointer-events-none">
         {sandbags.map((s, i) => {
           const { x, y } = sandbagPosition(i, sandbags.length)
@@ -192,16 +220,20 @@ function buildSandbagList(
   })
 }
 
-/** Smile-shaped arc of sandbags wrapping around the balloon — edges curve
- *  up alongside the balloon body, middle dips below the basket. */
+/** Sandbags clustered tightly below the balloon basket, in two staggered
+ *  rows. Basket is at ~(50%, 58%) of the panel; ropes radiate from there.
+ *  Top row (6 bags) at y≈68%, bottom row (5 bags) at y≈78% offset by half
+ *  a step so they read like ballast on different rope lengths. */
 function sandbagPosition(i: number, total: number): { x: number; y: number } {
-  const t = total === 1 ? 0.5 : i / (total - 1)
-  const x = 10 + t * 80 // 10..90 (edges close to balloon's outer silhouette)
-  // Parabolic dip: 0 at edges, 1 at middle. Edges sit at y_top (alongside
-  // the balloon's mid-body), middle sits at y_bot (just below the basket).
-  const dip = 1 - 4 * Math.pow(t - 0.5, 2)
-  const y = 30 + dip * 46 // 30..76
-  return { x, y }
+  const topRow = Math.min(6, total)
+  const bottomRow = total - topRow
+  if (i < topRow) {
+    const t = topRow === 1 ? 0.5 : i / (topRow - 1)
+    return { x: 24 + t * 52, y: 68 }
+  }
+  const j = i - topRow
+  const t = bottomRow === 1 ? 0.5 : j / (bottomRow - 1)
+  return { x: 30 + t * 40, y: 78 }
 }
 
 function Sandbag({
@@ -236,14 +268,14 @@ function Sandbag({
         {title}
       </div>
       <svg
-        width="28"
-        height="42"
+        width="20"
+        height="30"
         viewBox="0 0 28 42"
         className="drop-shadow-[0_2px_3px_oklch(0_0_0/0.5)] hover:scale-110 transition-transform cursor-pointer"
       >
-        {/* Hanging rope — dark ink, slight twist */}
-        <line x1="14" y1="0" x2="14" y2="8" stroke={ink} strokeWidth="1.2" />
-        <line x1="13.5" y1="2" x2="14.5" y2="6" stroke={ink} strokeWidth="0.4" opacity="0.7" />
+        {/* No rope here — rope is drawn by the parent SVG overlay from the
+            balloon basket to this sandbag's position, so each rope reaches
+            the actual basket attachment point. */}
         {/* Brass clasp at top of bag */}
         <ellipse cx="14" cy="9.5" rx="3.2" ry="1.6" fill="oklch(0.74 0.14 80)" stroke={ink} strokeWidth="0.5" />
         {/* Bag body — muted state-color fill */}
