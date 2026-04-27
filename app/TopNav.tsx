@@ -36,28 +36,18 @@ export default function TopNav() {
           className="flex items-center gap-1 text-xs"
           style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.18em' }}
         >
+          <NavLink href="/" label="Home" />
+          <NavLink href="/resume" label="My voyage" />
+          <NavLink href="/contribute" label="Contribute" />
+          <NavLink href="/methodology" label="Methodology" />
           <li>
             <Link
               href="/search"
               aria-label="Search activities, standards, and contributors"
-              className="inline-flex h-7 w-7 items-center justify-center rounded-sm border border-brass-deep/60 text-cream hover:text-brass-glow hover:border-brass transition-colors mr-1"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-sm border border-brass-deep/60 text-cream hover:text-brass-glow hover:border-brass transition-colors ml-1"
             >
               <SearchGlyph className="h-4 w-4" />
             </Link>
-          </li>
-          <NavLink href="/" label="Home" />
-          <NavLink href="/methodology" label="Methodology" />
-          <NavLink href="/contribute" label="Contribute" />
-          <NavLink href="/resume" label="My voyage" />
-          <li>
-            <a
-              href="https://github.com/barbarajauregui-dadababa/stratamundo"
-              target="_blank"
-              rel="noreferrer"
-              className="px-3 py-1.5 uppercase text-cream-soft hover:text-brass-glow transition-colors"
-            >
-              GitHub
-            </a>
           </li>
         </ul>
       </div>
