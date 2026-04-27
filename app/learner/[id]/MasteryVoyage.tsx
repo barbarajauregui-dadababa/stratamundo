@@ -1,22 +1,14 @@
 /**
- * Mastery Voyage — 2-column scene.
+ * Mastery Voyage — single-column page that mirrors the report's strata
+ * image at full size, plus a standard-by-standard list below.
  *
- * LEFT: the 5-strata cloudscape with the balloon at the active 4.NF
- * stratum (the "you are here" view across the 4th-grade math
- * Progressions). Same component used in the report's hero.
- *
- * RIGHT: an expanded view of the balloon itself, with a sandbag for
- * each of the 11 fractions standards. Sandbags are colored by state
- * (red=misconception, amber=working, emerald=mastered, grey=not
- * yet probed). Hover reveals the standard name + state. The "11
- * weights drop as standards are mastered" mechanic ships in v1.5
- * — for now, all sandbags hang and signal state via color.
- *
- * Below both panels, a collapsible standard-by-standard list.
+ * Per Barbara, post-demo: removed the right-side ExpandedBalloonPanel
+ * (the big balloon with sandbags). The voyage now reads as one canonical
+ * view of "where the learner is across the 5 progressions of 4th-grade
+ * math." Same StrataCloudscape compact strip the report shows, without
+ * a competing second column.
  */
-import Image from 'next/image'
 import StrataCloudscape from '@/components/StrataCloudscape'
-import OldPhotoBalloon from '@/components/OldPhotoBalloon'
 import coherenceMapRaw from '@/content/coherence-map-fractions.json'
 
 interface CoherenceNode {
@@ -32,31 +24,22 @@ type StandardState = 'misconception' | 'working' | 'demonstrated' | 'not_assesse
 
 interface Props {
   masteryMap: { standards: Record<string, { state: StandardState }> } | null
-  /** Number of completed activities per standard. */
+  /** Number of completed activities per standard. Reserved for future use. */
   completedByStandard?: Record<string, number>
 }
 
 export default function MasteryVoyage({ masteryMap }: Props) {
   return (
-    <div className="w-full max-w-6xl mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {/* Left: large strata panel with the same small balloon-photo as the
-            report sitting at the active 4.NF stratum, slowly rising. The
-            taller stratum bands (py-10/12 in StrataCloudscape) give the
-            small photo room to fit inside one line without overlapping
-            adjacent strata. */}
-        <StrataCloudscape masteryMap={masteryMap} showBalloon={true} />
-        <ExpandedBalloonPanel masteryMap={masteryMap} />
-      </div>
+    <div className="w-full max-w-4xl mx-auto flex flex-col gap-6">
+      <StrataCloudscape masteryMap={masteryMap} compact showBalloon={true} />
 
-      {/* Standard-by-standard list — collapsible details element */}
       {masteryMap?.standards && (
-        <details className="mt-8 rounded-sm border-2 border-brass-deep/40 bg-paper p-5">
+        <details className="rounded-sm border-2 border-brass-deep/40 bg-paper p-5">
           <summary
             className="cursor-pointer list-none flex items-center justify-between text-sm tracking-[0.25em] uppercase text-brass-deep"
             style={{ fontFamily: 'var(--font-cinzel)' }}
           >
-            Standard-by-standard list (11 standards)
+            Standard-by-standard list ({Object.keys(masteryMap.standards).length} standards)
             <span className="text-ink-faint">▼</span>
           </summary>
           <ul className="mt-4 flex flex-col gap-2">
@@ -91,248 +74,6 @@ export default function MasteryVoyage({ masteryMap }: Props) {
 
       <Legend />
     </div>
-  )
-}
-
-/**
- * Right-side panel: the balloon enlarged, with 11 sandbag overlays
- * arranged in an arc beneath the basket. Each sandbag's color reflects
- * the state of one fractions standard. Native title attribute shows
- * the standard name on hover.
- */
-function ExpandedBalloonPanel({ masteryMap }: Props) {
-  const sandbags = buildSandbagList(masteryMap)
-  return (
-    <section
-      className="relative overflow-hidden rounded-sm border-2 border-brass-deep/50 vignette"
-      style={{ minHeight: 720 }}
-    >
-      {/* Cloudscape painting backdrop, dimmer here so balloon dominates */}
-      <div className="absolute inset-0">
-        <Image
-          src="/images/cloudscape-denis.jpg"
-          alt=""
-          fill
-          sizes="(max-width: 768px) 100vw, 600px"
-          className="object-cover"
-          style={{ filter: 'sepia(0.25) brightness(1.0) contrast(1.05)' }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(ellipse at 50% 35%, oklch(0.40 0.06 220 / 0.20) 0%, oklch(0.18 0.020 50 / 0.65) 60%, oklch(0.13 0.014 50 / 0.85) 100%)',
-          }}
-        />
-      </div>
-
-      {/* Apex label */}
-      <div className="absolute top-4 left-0 right-0 text-center pointer-events-none z-10">
-        <p
-          className="text-sm tracking-[0.4em] uppercase text-cream-soft"
-          style={{ fontFamily: 'var(--font-cinzel)' }}
-        >
-          ◇ Master a standard. Drop a weight. The balloon rises. ◇
-        </p>
-      </div>
-
-      {/* Big balloon as old photo, centered upper-mid, static (sandbags hang from it) */}
-      <div
-        className="absolute left-1/2 -translate-x-1/2 z-10 pointer-events-none"
-        style={{ width: '60%', top: '6%' }}
-      >
-        <OldPhotoBalloon size={400} />
-      </div>
-
-      {/* Ropes from basket to sandbags — drawn under the sandbags so the
-          sandbag SVGs sit on top. Basket attachment point is approximately
-          (50%, 58%) of the panel — center horizontally, just under the
-          balloon's gondola at width:60% top:6%. */}
-      <svg
-        className="absolute inset-0 z-15 pointer-events-none"
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
-        aria-hidden
-      >
-        {sandbags.map((s, i) => {
-          const { x, y } = sandbagPosition(i, sandbags.length)
-          return (
-            <line
-              key={s.id}
-              x1={50}
-              y1={58}
-              x2={x}
-              y2={y}
-              stroke="oklch(0.30 0.04 50 / 0.8)"
-              strokeWidth="0.18"
-              strokeLinecap="round"
-            />
-          )
-        })}
-      </svg>
-
-      {/* Sandbag overlays — 11 weights hanging from the basket. */}
-      <div className="absolute inset-0 z-20 pointer-events-none">
-        {sandbags.map((s, i) => {
-          const { x, y } = sandbagPosition(i, sandbags.length)
-          return (
-            <Sandbag
-              key={s.id}
-              x={x}
-              y={y}
-              state={s.state}
-              title={`${s.name} — ${stateLabel(s.state)} · ${s.id}`}
-            />
-          )
-        })}
-      </div>
-
-      {/* Legend strip at bottom */}
-      <div className="absolute bottom-3 left-0 right-0 px-4 z-10">
-        <div
-          className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-cream-soft"
-          style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.15em' }}
-        >
-          <LegendDot color="bg-emerald-500" label="Mastered" />
-          <LegendDot color="bg-amber-500" label="Needs work" />
-          <LegendDot color="bg-red-500" label="Needs attention" />
-          <LegendDot color="bg-stone-400" label="Not yet probed" />
-        </div>
-      </div>
-    </section>
-  )
-}
-
-interface SandbagEntry {
-  id: string
-  name: string
-  state: StandardState
-}
-
-function buildSandbagList(
-  masteryMap: { standards: Record<string, { state: StandardState }> } | null,
-): SandbagEntry[] {
-  // Always show one sandbag per Coherence Map node (11 standards).
-  // If the masteryMap is missing, all default to 'not_assessed'.
-  return coherenceMap.nodes.map((n) => {
-    const state = masteryMap?.standards?.[n.id]?.state ?? 'not_assessed'
-    return { id: n.id, name: n.name, state }
-  })
-}
-
-/** Sandbags clustered tightly below the balloon basket, in two staggered
- *  rows. Basket is at ~(50%, 58%) of the panel; ropes radiate from there.
- *  Top row (6 bags) at y≈68%, bottom row (5 bags) at y≈78% offset by half
- *  a step so they read like ballast on different rope lengths. */
-function sandbagPosition(i: number, total: number): { x: number; y: number } {
-  const topRow = Math.min(6, total)
-  const bottomRow = total - topRow
-  if (i < topRow) {
-    const t = topRow === 1 ? 0.5 : i / (topRow - 1)
-    return { x: 24 + t * 52, y: 68 }
-  }
-  const j = i - topRow
-  const t = bottomRow === 1 ? 0.5 : j / (bottomRow - 1)
-  return { x: 30 + t * 40, y: 78 }
-}
-
-function Sandbag({
-  x,
-  y,
-  state,
-  title,
-}: {
-  x: number
-  y: number
-  state: StandardState
-  title: string
-}) {
-  // Period-engraving palette: dark sepia ink for outlines and hatching,
-  // muted earth-tone fill that signals state without screaming "cartoon".
-  const ink = 'oklch(0.22 0.04 55)'
-  const inkSoft = 'oklch(0.32 0.045 55)'
-  const fill = sandbagFill(state)
-  return (
-    <div
-      className="absolute pointer-events-auto group"
-      style={{ left: `${x}%`, top: `${y}%`, transform: 'translate(-50%, 0)' }}
-      role="img"
-      aria-label={title}
-    >
-      {/* Custom hover tooltip — appears immediately on mouseover with the
-          standard name. Replaces the slow native `title` tooltip. */}
-      <div
-        className="hidden group-hover:block absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-50 whitespace-nowrap rounded-sm border-2 border-brass-deep bg-paper px-2.5 py-1 text-xs text-ink shadow-[0_4px_10px_oklch(0_0_0/0.5)] pointer-events-none"
-        style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.06em' }}
-      >
-        {title}
-      </div>
-      <svg
-        width="20"
-        height="30"
-        viewBox="0 0 28 42"
-        className="drop-shadow-[0_2px_3px_oklch(0_0_0/0.5)] hover:scale-110 transition-transform cursor-pointer"
-      >
-        {/* No rope here — rope is drawn by the parent SVG overlay from the
-            balloon basket to this sandbag's position, so each rope reaches
-            the actual basket attachment point. */}
-        {/* Brass clasp at top of bag */}
-        <ellipse cx="14" cy="9.5" rx="3.2" ry="1.6" fill="oklch(0.74 0.14 80)" stroke={ink} strokeWidth="0.5" />
-        {/* Bag body — muted state-color fill */}
-        <path
-          d="M 6 12 Q 5 10.5 14 10.5 Q 23 10.5 22 12 L 23.5 33 Q 23.5 38 14 38 Q 4.5 38 4.5 33 Z"
-          fill={fill}
-          fillOpacity="0.78"
-        />
-        {/* Vertical fold strokes — three soft curves down the bag */}
-        <path d="M 9 14 Q 9 26 10.5 36" fill="none" stroke={ink} strokeWidth="0.5" opacity="0.6" />
-        <path d="M 14 14 Q 14 26 14 37.5" fill="none" stroke={ink} strokeWidth="0.5" opacity="0.6" />
-        <path d="M 19 14 Q 19 26 17.5 36" fill="none" stroke={ink} strokeWidth="0.5" opacity="0.6" />
-        {/* Cross-hatch shadow strokes on the right (engraving shading) */}
-        <line x1="19.5" y1="20" x2="22" y2="26" stroke={inkSoft} strokeWidth="0.4" />
-        <line x1="19.5" y1="24" x2="22.5" y2="30" stroke={inkSoft} strokeWidth="0.4" />
-        <line x1="19" y1="28" x2="22" y2="34" stroke={inkSoft} strokeWidth="0.4" />
-        <line x1="18.5" y1="32" x2="21" y2="36" stroke={inkSoft} strokeWidth="0.4" />
-        {/* Counter-hatch (cross-direction) for deeper shadow */}
-        <line x1="20" y1="22" x2="20.5" y2="34" stroke={inkSoft} strokeWidth="0.3" opacity="0.7" />
-        <line x1="21.5" y1="24" x2="22" y2="34" stroke={inkSoft} strokeWidth="0.3" opacity="0.7" />
-        {/* Tie ridge — sash near top of bag */}
-        <path d="M 5 14 Q 14 16.5 23 14" fill="none" stroke={ink} strokeWidth="0.8" />
-        <path d="M 5.5 14.8 Q 14 17 22.5 14.8" fill="none" stroke={ink} strokeWidth="0.4" opacity="0.6" />
-        {/* Bag outline — heaviest ink stroke, drawn last */}
-        <path
-          d="M 6 12 Q 5 10.5 14 10.5 Q 23 10.5 22 12 L 23.5 33 Q 23.5 38 14 38 Q 4.5 38 4.5 33 Z"
-          fill="none"
-          stroke={ink}
-          strokeWidth="0.85"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </div>
-  )
-}
-
-function sandbagFill(state: StandardState): string {
-  // Earth-tone state palette so colors blend with the sepia engraving
-  // line work rather than fighting it.
-  switch (state) {
-    case 'misconception':
-      return 'oklch(0.48 0.16 25)' // muted iron-oxide red
-    case 'working':
-      return 'oklch(0.60 0.13 65)' // antique amber
-    case 'demonstrated':
-      return 'oklch(0.50 0.12 150)' // verdigris green
-    case 'not_assessed':
-      return 'oklch(0.62 0.025 75)' // faded parchment
-  }
-}
-
-function LegendDot({ color, label }: { color: string; label: string }) {
-  return (
-    <span className="inline-flex items-center gap-1.5">
-      <span className={`inline-block h-2 w-2 rounded-full ${color}`} aria-hidden />
-      {label}
-    </span>
   )
 }
 
@@ -379,13 +120,13 @@ function stateDot(state: StandardState): string {
 function Legend() {
   const items: { color: string; label: string }[] = [
     { color: 'bg-emerald-600', label: 'Mastered' },
-    { color: 'bg-amber-600', label: 'Needs work' },
-    { color: 'bg-red-600', label: 'Needs attention' },
+    { color: 'bg-amber-600', label: 'Building the skill' },
+    { color: 'bg-red-600', label: 'Misconception detected' },
     { color: 'bg-stone-400', label: 'Not yet probed' },
   ]
   return (
     <div
-      className="mt-6 flex items-center justify-center gap-5 flex-wrap text-xs text-cream-soft"
+      className="flex items-center justify-center gap-5 flex-wrap text-xs text-cream-soft"
       style={{ fontFamily: 'var(--font-special-elite)' }}
     >
       {items.map((it) => (
