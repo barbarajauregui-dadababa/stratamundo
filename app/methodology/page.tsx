@@ -372,12 +372,6 @@ export default function MethodologyPage() {
 
         <footer className="mt-4 pt-6 border-t border-stone-300/40 flex flex-col items-center gap-3">
           <OrnamentalRule className="h-4 text-brass-deep/40" width={200} />
-          <p
-            className="text-xs text-ink-faint italic text-center"
-            style={{ fontFamily: 'var(--font-special-elite)' }}
-          >
-            This is a v0.5 field manual — accurate but not yet exhaustive. The product blueprint, glossary, and source ledger have additional detail.
-          </p>
         </footer>
       </div>
     </main>
