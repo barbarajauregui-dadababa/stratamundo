@@ -52,7 +52,7 @@ export default function StrataCloudscape({ masteryMap, compact = false, showBall
   return (
     <section
       className="relative overflow-hidden rounded-sm border-2 border-brass-deep/50 vignette"
-      style={{ minHeight: compact ? 360 : 1100 }}
+      style={{ minHeight: compact ? 360 : 980 }}
     >
       {/* Cloudscape painting full-bleed backdrop */}
       <div className="absolute inset-0">
@@ -84,7 +84,7 @@ export default function StrataCloudscape({ masteryMap, compact = false, showBall
         </div>
       )}
 
-      <ol className={`relative z-10 flex flex-col gap-1 px-4 sm:px-8 ${compact ? 'pt-6 pb-6' : 'pt-16 pb-32'}`}>
+      <ol className={`relative z-10 flex flex-col gap-1 px-4 sm:px-8 ${compact ? 'pt-6 pb-6' : 'pt-16 pb-20'}`}>
         {PROGRESSIONS.map((p) => (
           <ProgressionStratum
             key={p.code}
@@ -99,8 +99,13 @@ export default function StrataCloudscape({ masteryMap, compact = false, showBall
 
       {showBalloon && (
         <div
-          className="absolute left-1/2 -translate-x-1/2 pointer-events-none z-20"
-          style={{ width: 110, top: compact ? '36%' : '37%' }}
+          className="absolute pointer-events-none z-20"
+          style={{
+            width: 110,
+            top: compact ? '36%' : '37%',
+            left: compact ? '50%' : '63%',
+            transform: 'translateX(-50%)',
+          }}
         >
           <OldPhotoBalloon size={110} tilt={-2} motion="rise" />
         </div>
@@ -138,38 +143,34 @@ function ProgressionStratum({
   totalStandards: number
 }) {
   const active = progression.status === 'active'
-  // For non-compact active stratum: 3-column layout (code+name on the left,
-  // empty space in the middle for the balloon to sit, chips on the right).
-  // The balloon is rendered at the panel level, centered horizontally —
-  // this layout leaves the center clear so it doesn't overlap text.
+  // For non-compact active stratum: chips stacked underneath the title on
+  // the LEFT half. The right portion of the band stays empty so the
+  // balloon (rendered at panel level, biased right) sits inside without
+  // overlapping any text.
   if (!compact && active && counts) {
     return (
       <li
-        className="relative grid grid-cols-[1fr_140px_1fr] items-center gap-4 px-4 py-10 sm:py-12 rounded-sm transition-colors border-2 border-brass-glow bg-paper/85 backdrop-blur-sm shadow-[0_0_25px_oklch(0.74_0.14_80/0.45)]"
+        className="relative flex items-start gap-3 px-4 py-8 sm:py-10 rounded-sm transition-colors border-2 border-brass-glow bg-paper/85 backdrop-blur-sm shadow-[0_0_25px_oklch(0.74_0.14_80/0.45)]"
       >
-        {/* LEFT: code + name */}
-        <div className="flex items-baseline gap-3 min-w-0">
+        <div className="flex flex-col items-center justify-center min-w-[48px] pt-0.5">
           <span
-            className="text-xs text-brass-deep shrink-0"
+            className="text-xs text-brass-deep"
             style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.12em' }}
           >
             {progression.code}
           </span>
+        </div>
+        {/* Title + chips + probed, stacked. Capped at ~55% width so the
+            right side stays clear for the balloon. */}
+        <div className="flex flex-col gap-2 max-w-[55%]">
           <h3
             className="text-base sm:text-lg leading-snug text-ink"
             style={{ fontFamily: 'var(--font-fraunces)', fontWeight: 600 }}
           >
             {progression.name}
           </h3>
-        </div>
-
-        {/* CENTER: empty — balloon overlays this from the panel-level absolute */}
-        <div aria-hidden />
-
-        {/* RIGHT: count chips + probed line */}
-        <div className="flex flex-col items-end gap-1 text-right">
           <div
-            className="flex flex-wrap items-center justify-end gap-x-3 gap-y-1 text-xs sm:text-sm text-ink-soft"
+            className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm text-ink-soft"
             style={{ fontFamily: 'var(--font-fraunces)' }}
           >
             <CountChip label="Mastered" value={counts.demonstrated} colorClass="bg-emerald-600" />
