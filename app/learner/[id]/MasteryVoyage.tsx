@@ -34,7 +34,7 @@ export default function MasteryVoyage({ masteryMap }: Props) {
             className="cursor-pointer list-none flex items-center justify-between text-sm tracking-[0.25em] uppercase text-brass-deep"
             style={{ fontFamily: 'var(--font-cinzel)' }}
           >
-            Standards in Progression: Number and Operations — Fractions
+            Standards in the Current Progression
             <span className="text-ink-faint">▼</span>
           </summary>
           <ul className="mt-4 flex flex-col gap-2">
