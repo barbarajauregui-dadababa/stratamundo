@@ -1,12 +1,10 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import {
-  CornerFlourish,
   Gear,
   OrnamentalRule,
   RomanNumeral,
 } from './Ornament'
-import OldPhotoBalloon from '@/components/OldPhotoBalloon'
 
 export default function Home() {
   return (
@@ -54,9 +52,28 @@ export default function Home() {
         </div>
 
         <div className="relative max-w-6xl mx-auto px-6 py-20 sm:py-28 grid sm:grid-cols-[1fr_1.2fr] gap-8 sm:gap-12 items-center">
-          {/* LEFT: aerostat as an old photograph, slightly tilted as if pinned to a journal */}
-          <div className="relative flex items-center justify-center">
-            <OldPhotoBalloon tilt={-4} size={420} />
+          {/* LEFT: clockwork celestial globe — the Emmoser piece (1579, Met Museum, CC0).
+              The Pegasus base is the visual anchor, framed as a museum plate. */}
+          <div className="relative">
+            <div className="relative aspect-square max-w-md mx-auto">
+              <Image
+                src="/images/clockwork-globe.jpg"
+                alt="Celestial globe with clockwork — Gerhard Emmoser, 1579"
+                fill
+                priority
+                sizes="(max-width: 640px) 80vw, 480px"
+                className="object-contain drop-shadow-[0_8px_30px_oklch(0.74_0.14_80/0.4)]"
+                style={{ filter: 'sepia(0.2) contrast(1.1) brightness(1.05)' }}
+              />
+              {/* Bronze frame ring */}
+              <div className="absolute inset-0 rounded-full border-2 border-brass-deep/40 pointer-events-none" />
+            </div>
+            <p
+              className="text-center text-xs tracking-[0.2em] uppercase text-cream-faint mt-4 italic"
+              style={{ fontFamily: 'var(--font-special-elite)' }}
+            >
+              Celestial globe with clockwork — Emmoser, Vienna 1579
+            </p>
           </div>
 
           {/* RIGHT: brand wordmark + tagline + balloon ascending */}
@@ -116,8 +133,17 @@ export default function Home() {
               </Link>
             </div>
 
-            {/* Small upper-right balloon removed — the big OldPhotoBalloon
-                in the left column is now the hero piece. */}
+            {/* Small balloon ascending in the upper-right of the right column */}
+            <div className="absolute -top-12 -right-4 sm:-right-12 w-32 sm:w-44 animate-balloon-float pointer-events-none ember-glow">
+              <Image
+                src="/images/balloon-flying.jpg"
+                alt="Aerostat of the Marquis de Brantes, 1784"
+                width={270}
+                height={447}
+                className="w-full h-auto"
+                style={{ filter: 'sepia(0.4) contrast(1.05) brightness(1.05)', mixBlendMode: 'screen' }}
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -145,55 +171,36 @@ export default function Home() {
             <OrnamentalRule className="h-5 text-brass-deep mt-2" width={320} />
           </div>
 
-          <DiagramPlate
-            index={1}
-            kicker="Where is the learner, really?"
-            problemTitle="No tool reads how a learner reasons"
-            problemBullets={[
-              'Schools push a fixed curriculum, ignoring what each learner has mastered',
-              'Khan-style probes measure performance, not understanding',
-              'Without the full picture, tailored learning is guesswork',
-            ]}
-            solutionTitle="A telemetry-based diagnostic, with a probe loop"
-            solutionBullets={[
-              'Reads the full trajectory, not just the final answer',
-              'Names specific misconceptions with traceable evidence',
-              'Categorical states — never percentages',
-              'Loop: assess → diagnose → plan → probe → declare',
-            ]}
-          />
-
-          <DiagramPlate
-            index={2}
-            kicker="What should they work on next?"
-            problemTitle="Knowing the gaps doesn’t tell you the order"
-            problemBullets={[
-              'Concept dependencies are real but invisible',
-              'Boxed curricula assume linear order',
-              'Guides re-cover mastered material or skip foundational gaps',
-            ]}
-            solutionTitle="A mastery atlas grounded in published progressions"
-            solutionBullets={[
-              'Every standard, every prerequisite, in one view',
-              'Skip what is mastered; focus where it is needed',
-              'Built on the Coherence Map and the IM Sections',
-            ]}
-          />
-
-          <DiagramPlate
-            index={3}
-            kicker="What tools will actually work for them?"
-            problemTitle="Hours hunting for the right activity"
-            problemBullets={[
-              'Boxed curricula offer one type of practice',
-              'Hands-on, real-world activities are hard to find',
-              'Math learned in isolation gets forgotten',
-            ]}
-            solutionTitle="A tailored plan from a curated, multimodal library"
-            solutionBullets={[
-              'Concrete → representational → abstract per gap',
-              'On-screen + off-screen + hands-on per concept',
-              'Library grown by the community: AI-vetted, human-approved',
+          <ThreeQuestions
+            questions={[
+              {
+                kicker: 'Question I',
+                title: 'Where is the learner, really?',
+                bullets: [
+                  'Reads drags, removals, commits, resets, timing — not just answers',
+                  'Produces a categorical mastery map per CCSS standard',
+                  'Four states with named misconceptions and traceable evidence',
+                ],
+              },
+              {
+                kicker: 'Question II',
+                title: 'What should they work on next?',
+                bullets: [
+                  'Mastery atlas grounded in the Coherence Map and IM Sections',
+                  'Concept dependencies visible',
+                  'Plan Architect skips mastered, starts at the first flagged section',
+                ],
+              },
+              {
+                kicker: 'Question III',
+                title: 'What tools will work for them?',
+                bullets: [
+                  'Tailored plan from a curated multimodal library',
+                  'Concrete → representational → abstract per gap',
+                  'On-screen + off-screen + hands-on per concept',
+                  'Library grown by the community: AI-vetted, human-approved',
+                ],
+              },
             ]}
           />
         </div>
@@ -220,107 +227,52 @@ export default function Home() {
 }
 
 /**
- * "Diagram plate" — problem-and-remedy pair styled as a Victorian
- * scientific plate. Roman numeral chapter mark + drop-cap on each
- * solution, asymmetric layout — engraving margins on the brass remedy.
+ * Three-questions component, mirrors the format used on the methodology
+ * page: roman numeral + "Question N" kicker + serif title + bullet list,
+ * brass-bordered card. Per Barbara — both pages should use the same format
+ * (was: home used a problem/remedy DiagramPlate, methodology used this
+ * cleaner kicker+bullets layout). Home now matches methodology.
  */
-function DiagramPlate({
-  index,
-  kicker,
-  problemTitle,
-  problemBullets,
-  solutionTitle,
-  solutionBullets,
+function ThreeQuestions({
+  questions,
 }: {
-  index: number
-  kicker: string
-  problemTitle: string
-  problemBullets: string[]
-  solutionTitle: string
-  solutionBullets: string[]
+  questions: { kicker: string; title: string; bullets: string[] }[]
 }) {
   return (
-    <article className="grid sm:grid-cols-[120px_1fr] gap-6 sm:gap-10">
-      <div className="flex flex-col gap-1 sm:gap-2 items-center sm:items-end sm:text-right">
-        <RomanNumeral
-          n={index}
-          className="text-7xl sm:text-8xl text-brass-deep leading-none"
-        />
-        <p
-          className="text-xl sm:text-2xl text-brass-deep mt-1 italic leading-snug"
-          style={{ fontFamily: 'var(--font-fraunces)', fontWeight: 600 }}
+    <ol className="flex flex-col gap-5 mt-2">
+      {questions.map((q, i) => (
+        <li
+          key={i}
+          className="relative bg-paper-deep/40 border-2 border-brass-deep/40 rounded-sm p-5 sm:p-6 flex flex-col gap-2"
         >
-          {kicker}
-        </p>
-      </div>
-
-      <div className="grid sm:grid-cols-2 gap-5">
-        <PanelCard
-          ribbonLabel="The condition observed"
-          ribbonClass="bg-paper-deep border-stone-400 text-ink-soft"
-          title={problemTitle}
-          bullets={problemBullets}
-        />
-        <PanelCard
-          ribbonLabel="Strata Mundo · the remedy"
-          ribbonClass="bg-brass/20 border-brass-deep text-brass-deep"
-          title={solutionTitle}
-          bullets={solutionBullets}
-          accent
-        />
-      </div>
-    </article>
-  )
-}
-
-function PanelCard({
-  ribbonLabel,
-  ribbonClass,
-  title,
-  bullets,
-  accent = false,
-}: {
-  ribbonLabel: string
-  ribbonClass: string
-  title: string
-  bullets: string[]
-  accent?: boolean
-}) {
-  return (
-    <div
-      className={`relative bg-paper border-2 ${
-        accent
-          ? 'border-brass-deep shadow-[0_0_20px_oklch(0.74_0.14_80/0.15)]'
-          : 'border-stone-300'
-      } p-5 sm:p-6 flex flex-col gap-3 rounded-sm`}
-    >
-      <CornerFlourish corner="tl" className={`absolute top-1.5 left-1.5 h-5 w-5 ${accent ? 'text-brass-deep' : 'text-stone-400'}`} />
-      <CornerFlourish corner="tr" className={`absolute top-1.5 right-1.5 h-5 w-5 ${accent ? 'text-brass-deep' : 'text-stone-400'}`} />
-      <CornerFlourish corner="bl" className={`absolute bottom-1.5 left-1.5 h-5 w-5 ${accent ? 'text-brass-deep' : 'text-stone-400'}`} />
-      <CornerFlourish corner="br" className={`absolute bottom-1.5 right-1.5 h-5 w-5 ${accent ? 'text-brass-deep' : 'text-stone-400'}`} />
-
-      <span
-        className={`inline-flex w-fit text-[11px] tracking-[0.2em] uppercase border-2 px-2 py-1 rounded-sm ${ribbonClass}`}
-        style={{ fontFamily: 'var(--font-cinzel)' }}
-      >
-        {ribbonLabel}
-      </span>
-
-      <h3
-        className="text-lg sm:text-xl text-ink leading-snug pr-2"
-        style={{ fontFamily: 'var(--font-fraunces)', fontWeight: 600 }}
-      >
-        {title}
-      </h3>
-
-      <ul
-        className="list-disc ml-5 space-y-1.5 text-sm text-ink-soft leading-relaxed"
-        style={{ fontFamily: 'var(--font-fraunces)' }}
-      >
-        {bullets.map((b, i) => (
-          <li key={i}>{b}</li>
-        ))}
-      </ul>
-    </div>
+          <div className="flex items-baseline gap-3">
+            <RomanNumeral
+              n={i + 1}
+              className="text-3xl text-brass-deep leading-none"
+            />
+            <p
+              className="text-sm tracking-[0.25em] uppercase text-ink-faint"
+              style={{ fontFamily: 'var(--font-cinzel)' }}
+            >
+              {q.kicker}
+            </p>
+          </div>
+          <h3
+            className="text-lg sm:text-xl text-ink leading-snug"
+            style={{ fontFamily: 'var(--font-fraunces)', fontWeight: 600 }}
+          >
+            {q.title}
+          </h3>
+          <ul
+            className="list-disc ml-5 space-y-1 text-sm sm:text-base text-ink-soft leading-relaxed"
+            style={{ fontFamily: 'var(--font-fraunces)' }}
+          >
+            {q.bullets.map((b, j) => (
+              <li key={j}>{b}</li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ol>
   )
 }
