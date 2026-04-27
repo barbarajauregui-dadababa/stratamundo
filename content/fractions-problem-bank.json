@@ -410,7 +410,7 @@
       "target_whole_value": 1,
       "available_denominators": [4, 8],
       "goal": { "numerator": 1, "denominator": 2 },
-      "real_world_context": { "scenario": null, "framing_text": "Build one-half of this bar. You do not have a 1/2 piece — find another way." },
+      "real_world_context": { "scenario": null, "framing_text": "Build one-half of this bar." },
       "difficulty": 2,
       "show_your_work_note": "Goal denom 2 is absent from palette to force equivalence reasoning. Two 1/4 pieces OR four 1/8 pieces both succeed. Which path the learner takes is diagnostic for 3.NF.A.3.a recognition.",
       "misconception_response_map": [

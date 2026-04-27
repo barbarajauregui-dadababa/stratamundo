@@ -108,8 +108,13 @@ export default function StrataCloudscape({ masteryMap, compact = false, showBall
       {!compact && (
         <div className="absolute top-4 left-0 right-0 text-center pointer-events-none px-4">
           <p
-            className="text-sm tracking-[0.4em] uppercase text-cream-soft"
-            style={{ fontFamily: 'var(--font-cinzel)' }}
+            className="text-sm tracking-[0.4em] uppercase font-bold"
+            style={{
+              fontFamily: 'var(--font-cinzel)',
+              color: 'oklch(1 0 0)',
+              textShadow:
+                '0 1px 2px oklch(0 0 0 / 0.95), 0 0 4px oklch(0 0 0 / 0.9), 0 0 14px oklch(0 0 0 / 0.7)',
+            }}
           >
             ◇ Progressions up to 4th grade including prerequisites ◇
           </p>
@@ -229,9 +234,19 @@ function ProgressionStratum({
         <div className="flex items-baseline gap-2">
           <h3
             className={`${compact ? 'text-sm' : 'text-base sm:text-lg'} leading-snug ${
-              active ? 'text-ink' : 'text-cream-soft'
+              active ? 'text-ink' : ''
             }`}
-            style={{ fontFamily: 'var(--font-fraunces)', fontWeight: 600 }}
+            style={{
+              fontFamily: 'var(--font-fraunces)',
+              fontWeight: 600,
+              ...(active
+                ? {}
+                : {
+                    color: 'oklch(0.96 0.04 85)',
+                    textShadow:
+                      '0 1px 3px oklch(0 0 0 / 0.85), 0 0 10px oklch(0 0 0 / 0.55)',
+                  }),
+            }}
           >
             {progression.title}
           </h3>
@@ -239,8 +254,12 @@ function ProgressionStratum({
         </div>
         {!compact && !active && (
           <p
-            className="mt-1 text-xs italic text-cream-faint tracking-[0.15em] uppercase"
-            style={{ fontFamily: 'var(--font-cinzel)' }}
+            className="mt-1 text-xs italic tracking-[0.15em] uppercase"
+            style={{
+              fontFamily: 'var(--font-cinzel)',
+              color: 'oklch(0.86 0.06 80)',
+              textShadow: '0 1px 2px oklch(0 0 0 / 0.8)',
+            }}
           >
             Coming in v1.5
           </p>

@@ -1,7 +1,7 @@
-import coherenceMapRaw from '@/content/coherence-map-fractions.json'
 import misconceptionsRaw from '@/content/fractions-misconceptions.json'
 import resourcesRaw from '@/content/fractions-resources.json'
 import ActivityTile, { type CompletedActivity } from './ActivityTile'
+import { standardName } from '@/lib/standard-labels'
 
 interface Activity {
   resource_id: string
@@ -40,10 +40,6 @@ export interface PlanContent {
   _completed_activities?: CompletedActivity[]
 }
 
-interface CoherenceNode {
-  id: string
-  statement: string
-}
 interface Misconception {
   id: string
   name: string
@@ -57,20 +53,9 @@ interface Resource {
   notes?: string
 }
 
-const coherenceMap = coherenceMapRaw as unknown as { nodes: CoherenceNode[] }
 const misconceptions = misconceptionsRaw as unknown as { misconceptions: Misconception[] }
 const resources = resourcesRaw as unknown as { resources: Resource[] }
 
-function standardName(id: string): string {
-  const node = coherenceMap.nodes.find((n) => n.id === id)
-  if (!node) return id
-  const stmt = node.statement
-  const semi = stmt.indexOf(';')
-  const period = stmt.indexOf('. ')
-  const cut = [semi, period].filter((i) => i > 0).sort((a, b) => a - b)[0]
-  if (cut !== undefined) return stmt.slice(0, cut).trim()
-  return stmt.length > 100 ? stmt.slice(0, 97).trim() + '…' : stmt
-}
 function misconceptionName(id: string): string {
   return misconceptions.misconceptions.find((m) => m.id === id)?.name ?? id
 }

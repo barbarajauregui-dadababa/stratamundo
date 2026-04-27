@@ -40,6 +40,7 @@ export default function TopNav() {
           <NavLink href="/resume" label="My voyage" />
           <NavLink href="/contribute" label="Contribute" />
           <NavLink href="/methodology" label="Methods" />
+          <NavLink href="/feedback" label="Help us improve" />
           <li>
             <Link
               href="/search"

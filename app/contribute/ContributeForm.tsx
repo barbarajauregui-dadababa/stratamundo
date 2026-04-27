@@ -49,12 +49,20 @@ export default function ContributeForm({ initialStandardId }: Props) {
     setError(null)
     setResult(null)
 
+    // Normalize the URL: if the contributor typed "abc.com" without a scheme,
+    // prepend https:// so the input passes <input type="url"> validation and
+    // saves as a working link. Empty stays empty (URL is optional).
+    let normalizedUrl: string | null = url.trim() || null
+    if (normalizedUrl && !/^https?:\/\//i.test(normalizedUrl)) {
+      normalizedUrl = 'https://' + normalizedUrl.replace(/^\/+/, '')
+    }
+
     try {
       const payload = {
         title: title.trim(),
         description: description.trim(),
         modality,
-        url: url.trim() || null,
+        url: normalizedUrl,
         source_site: sourceSite.trim() || null,
         duration_minutes: duration ? Number(duration) : null,
         standard_ids: standardIds,
@@ -215,12 +223,13 @@ export default function ContributeForm({ initialStandardId }: Props) {
 
       {/* 5. Link 6. Source 7. Minutes */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <FormField label="Link" hint="Optional. URL to the activity if it lives online.">
+        <FormField label="Link" hint="Optional. URL to the activity if it lives online. You can type abc.com — we'll add https:// for you.">
           <input
-            type="url"
+            type="text"
+            inputMode="url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder="https://..."
+            placeholder="abc.com or https://abc.com"
             className={inputCls}
             style={{ fontFamily: 'var(--font-fraunces)' }}
           />

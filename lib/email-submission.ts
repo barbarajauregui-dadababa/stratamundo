@@ -189,9 +189,9 @@ function contributorEmailHtml({
       ${typeof submission.duration_minutes === 'number' ? `<tr><td style="padding: 2px 8px 2px 0; vertical-align: top; color: #78716c;"><strong>Duration</strong></td><td style="padding: 2px 0; vertical-align: top;">${submission.duration_minutes} minutes</td></tr>` : ''}
     </table>
     <p style="margin: 14px 0 4px; font-family: Georgia, serif; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #92400e; font-weight: bold;">
-      Why does this work?
+      Description
     </p>
-    <p style="margin: 0; padding-left: 12px; border-left: 3px solid #c2864a; font-family: Georgia, serif; font-size: 14px; line-height: 1.6; color: #44403c; font-style: italic;">
+    <p style="margin: 0; padding-left: 12px; border-left: 3px solid #c2864a; font-family: Georgia, serif; font-size: 14px; line-height: 1.6; color: #44403c; font-style: italic; white-space: pre-wrap;">
       ${escapeHtml(submission.description)}
     </p>`
 

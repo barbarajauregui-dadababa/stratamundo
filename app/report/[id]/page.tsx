@@ -12,6 +12,7 @@ import { FractionsSectionStrip } from './RoadmapStrip'
 import StrataCloudscape from '@/components/StrataCloudscape'
 import { CornerFlourish } from '@/app/Ornament'
 import { StandardInfo } from '@/app/SourceInfo'
+import { standardName, standardIsPrerequisite } from '@/lib/standard-labels'
 import resourcesRaw from '@/content/fractions-resources.json'
 
 interface ResourceRow {
@@ -87,24 +88,6 @@ interface Misconception {
 
 const coherenceMap = coherenceMapRaw as unknown as { nodes: CoherenceNode[] }
 const misconceptions = misconceptionsRaw as unknown as { misconceptions: Misconception[] }
-
-function standardName(id: string): string {
-  const node = coherenceMap.nodes.find((n) => n.id === id)
-  if (!node) return id
-  // First clause of the verbatim CCSS-M statement: everything up to the first
-  // period+space or semicolon. Fall back to a 100-char truncation if neither
-  // appears. This stays verbatim (no paraphrase) while keeping list items short.
-  const stmt = node.statement
-  const semi = stmt.indexOf(';')
-  const period = stmt.indexOf('. ')
-  const cut = [semi, period].filter((i) => i > 0).sort((a, b) => a - b)[0]
-  if (cut !== undefined) return stmt.slice(0, cut).trim()
-  if (stmt.length > 100) return stmt.slice(0, 97).trim() + '…'
-  return stmt
-}
-function standardIsPrerequisite(id: string): boolean {
-  return coherenceMap.nodes.find((n) => n.id === id)?.role === 'prerequisite'
-}
 
 function misconceptionName(id: string): string {
   return misconceptions.misconceptions.find((m) => m.id === id)?.name ?? id
@@ -603,11 +586,43 @@ function Bucket({
         {standardIds.map((sid) => {
           const report = masteryMap.standards[sid]
           const gap = plan?.priority_gaps.find((g) => g.standard_id === sid)
+          const isMisconceptionItem = report.state === 'misconception'
+          const flaggedNames = report.flagged_misconception_ids.map((m) => misconceptionName(m))
           return (
             <li
               key={sid}
-              className="rounded-sm bg-[oklch(0.93_0.018_75)] border border-brass-deep/30 px-4 py-3"
+              className={`rounded-sm bg-[oklch(0.93_0.018_75)] border ${
+                isMisconceptionItem
+                  ? 'border-red-600/50 border-l-4 border-l-red-600'
+                  : 'border-brass-deep/30'
+              } px-4 py-3`}
             >
+              {isMisconceptionItem && (
+                <div className="mb-2 pb-2 border-b border-red-600/30">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span
+                      className="text-xs sm:text-sm tracking-[0.18em] uppercase font-bold text-red-700"
+                      style={{ fontFamily: 'var(--font-cinzel)' }}
+                    >
+                      ◆ Misconception detected
+                    </span>
+                    {flaggedNames.length > 0 && (
+                      <span
+                        className="text-xs sm:text-sm text-ink"
+                        style={{ fontFamily: 'var(--font-fraunces)' }}
+                      >
+                        — {flaggedNames.join(', ')}
+                      </span>
+                    )}
+                  </div>
+                  <p
+                    className="mt-1 text-xs text-ink-soft"
+                    style={{ fontFamily: 'var(--font-fraunces)' }}
+                  >
+                    A specific wrong mental model is firing. Targeted intervention required.
+                  </p>
+                </div>
+              )}
               <div className="flex items-baseline justify-between gap-3">
                 <div className="flex items-baseline gap-2 flex-wrap">
                   <span
@@ -632,13 +647,13 @@ function Bucket({
                   <BulletedSentences text={report.reasoning} />
                 </div>
               )}
-              {report.flagged_misconception_ids.length > 0 && (
+              {!isMisconceptionItem && report.flagged_misconception_ids.length > 0 && (
                 <div
                   className="mt-2 text-xs text-ink-soft"
                   style={{ fontFamily: 'var(--font-fraunces)' }}
                 >
                   <span className="font-medium text-ink">Flagged misconception:</span>{' '}
-                  {report.flagged_misconception_ids.map((m) => misconceptionName(m)).join(', ')}
+                  {flaggedNames.join(', ')}
                 </div>
               )}
               {report.evidence_problem_ids.length > 0 && (

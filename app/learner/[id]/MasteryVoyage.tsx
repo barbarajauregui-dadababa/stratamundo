@@ -9,28 +9,7 @@
  * a competing second column.
  */
 import StrataCloudscape from '@/components/StrataCloudscape'
-import coherenceMapRaw from '@/content/coherence-map-fractions.json'
-
-interface CoherenceNode {
-  id: string
-  statement: string
-  role?: 'prerequisite' | 'core'
-}
-const coherenceMap = coherenceMapRaw as unknown as { nodes: CoherenceNode[] }
-function standardName(id: string): string {
-  const node = coherenceMap.nodes.find((n) => n.id === id)
-  if (!node) return id
-  const stmt = node.statement
-  const semi = stmt.indexOf(';')
-  const period = stmt.indexOf('. ')
-  const cut = [semi, period].filter((i) => i > 0).sort((a, b) => a - b)[0]
-  if (cut !== undefined) return stmt.slice(0, cut).trim()
-  if (stmt.length > 100) return stmt.slice(0, 97).trim() + '…'
-  return stmt
-}
-function standardIsPrerequisite(id: string): boolean {
-  return coherenceMap.nodes.find((n) => n.id === id)?.role === 'prerequisite'
-}
+import { standardName, standardIsPrerequisite } from '@/lib/standard-labels'
 
 type StandardState = 'misconception' | 'working' | 'demonstrated' | 'not_assessed'
 
