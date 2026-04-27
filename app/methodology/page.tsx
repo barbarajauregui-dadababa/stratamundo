@@ -209,15 +209,31 @@ export default function MethodologyPage() {
         <Section id="plan">
           <H2>How the plan is generated</H2>
           <p className="text-ink-soft" style={{ fontFamily: 'var(--font-fraunces)' }}>
-            The Plan Architect is an Anthropic Managed Agent running on Claude Opus 4.7. It reads the mastery map and writes a tailored plan in 1–3 minutes.
+            The Plan Architect is an Anthropic Managed Agent running on Claude Opus 4.7. It reads the mastery map and writes a tailored plan in 1–3 minutes. The agent is given the mastery map, a curated resource library, the misconception taxonomy, the Coherence Map of CCSS prerequisites, and any prior plans for this learner.
           </p>
+          <H3>Which standards make the cut</H3>
           <Bullets>
-            <li><strong>Differential diagnosis.</strong> For each priority gap, the agent decides whether the issue is within-concept or whether it&apos;s actually a prerequisite gap from an earlier standard.</li>
-            <li><strong>Smart-skip.</strong> The agent identifies the FIRST IM Section containing any flagged standard and starts there. Earlier sections where everything is mastered or untouched are marked accordingly.</li>
-            <li><strong>2–3 activities per priority gap.</strong> Activities are picked from a curated resource library, never generated.</li>
-            <li><strong>Concrete → Representational → Abstract sequencing.</strong> Hands-on first, video/digital second, worksheet/symbolic last (Van de Walle 2014).</li>
-            <li><strong>Avoids failed resources.</strong> If a previous plan tried a resource and the misconception is still flagged, the agent picks a different resource for the next plan.</li>
-            <li><strong>Plain-language rationale.</strong> Every activity gets a 1–2 sentence explanation of why it&apos;s prescribed for this learner&apos;s specific misconception.</li>
+            <li><strong>Red and amber only.</strong> Activities are written only for standards in <em>misconception</em> or <em>building the skill</em>. Mastered and not-yet-probed standards get no activities.</li>
+            <li><strong>Smart-skip the curriculum.</strong> The 7 IM fractions sections are evaluated in order; the FIRST section with any flagged standard becomes &ldquo;now&rdquo;. Standards in later sections are deferred — the plan stays focused on one section, not scattered across the whole progression.</li>
+            <li><strong>Cap of 5 priority gaps.</strong> If more standards qualify, misconceptions outrank building-the-skill, and prerequisites outrank downstream standards.</li>
+            <li><strong>Differential diagnosis.</strong> For each priority gap, the agent checks whether the real issue is the standard itself or an earlier prerequisite. If prerequisite, activities target the prerequisite — not the downstream standard.</li>
+          </Bullets>
+          <H3>Which activities, and how many</H3>
+          <Bullets>
+            <li><strong>2–3 activities per priority gap,</strong> picked from a curated resource library — never generated. Each activity in the library is pre-tagged with the misconceptions it addresses and its modality.</li>
+            <li><strong>Modality spread.</strong> Each gap gets at least one hands-on activity (manipulative or physical) and at least one visual/digital (video, app), optionally one symbolic (worksheet). Different children land at different doors.</li>
+            <li><strong>Avoids failed resources.</strong> If a prior plan already tried a resource and the same misconception is still flagged, the agent picks a different one — same modality is fine, but a different resource.</li>
+          </Bullets>
+          <H3>In what order</H3>
+          <Bullets>
+            <li><strong>Within a gap: Concrete → Representational → Abstract.</strong> Hands-on first, then app/video, then worksheet (Van de Walle 2014).</li>
+            <li><strong>Across gaps:</strong> severity (misconceptions before building-the-skill), then by Coherence Map layer (prerequisites before downstream).</li>
+            <li><strong>The voyage view deduplicates.</strong> If one activity helps two standards, it shows once on the page; the &ldquo;Why this activity?&rdquo; disclosure tells you which standards and misconceptions it serves.</li>
+          </Bullets>
+          <H3>What every activity carries</H3>
+          <Bullets>
+            <li><strong>Plain-language rationale.</strong> A 1–2 sentence explanation of why this resource for this learner&apos;s specific misconception, hidden behind the &ldquo;Why this activity?&rdquo; disclosure.</li>
+            <li><strong>Tags.</strong> The misconception(s) and CCSS standard(s) it addresses, also inside &ldquo;Why this activity?&rdquo;.</li>
           </Bullets>
         </Section>
 
