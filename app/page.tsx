@@ -67,10 +67,12 @@ export default function Home() {
               <div className="absolute inset-0 rounded-full border-2 border-brass-deep/40 pointer-events-none" />
             </div>
             <p
-              className="text-center text-xs tracking-[0.2em] uppercase text-cream-faint mt-4 italic"
+              className="text-center text-xs tracking-[0.2em] uppercase text-cream-faint mt-4 italic leading-relaxed"
               style={{ fontFamily: 'var(--font-special-elite)' }}
             >
-              Celestial globe with clockwork — Emmoser, Vienna 1579
+              Celestial globe with clockwork
+              <br />
+              Emmoser, Vienna 1579
             </p>
           </div>
 
@@ -111,7 +113,7 @@ export default function Home() {
               className="text-base sm:text-lg text-cream-soft leading-relaxed max-w-xl"
               style={{ fontFamily: 'var(--font-fraunces)' }}
             >
-              A diagnostic that reads <em>how</em> a learner reasons, a plan that prescribes the next steps in pedagogically sound order, and a probe loop that verifies mastery as the voyage unfolds.
+              A diagnostic that reads <em>how</em> a learner reasons, a plan that prescribes pedagogically sound next steps including multimodal activities, and a probe loop that verifies mastery as the voyage unfolds.
             </p>
 
             <div className="flex flex-wrap gap-3 mt-2">
