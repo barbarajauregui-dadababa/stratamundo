@@ -399,7 +399,7 @@ function AtAGlanceSummary({
           className="text-sm tracking-[0.25em] uppercase text-brass-deep"
           style={{ fontFamily: 'var(--font-cinzel)' }}
         >
-          At a glance · CCSS Standards
+          At a glance · 4th-grade progression · CCSS Math Standards
         </span>
         <StandardInfo />
       </div>
