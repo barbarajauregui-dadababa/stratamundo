@@ -133,15 +133,23 @@ export default function Home() {
               </Link>
             </div>
 
-            {/* Small balloon ascending in the upper-right of the right column */}
-            <div className="absolute -top-12 -right-4 sm:-right-12 w-32 sm:w-44 animate-balloon-float pointer-events-none ember-glow">
+            {/* Small balloon — aged-photograph asset Barbara provided
+                (balloon-old-photo.png), gently floating in the upper-right
+                of the right column. No CSS sepia filter or mixBlendMode
+                needed — the image already has the antique treatment baked
+                in. Drop shadow gives it the "lying on a surface" depth. */}
+            <div
+              className="absolute -top-12 -right-4 sm:-right-12 w-32 sm:w-44 animate-balloon-float pointer-events-none"
+              style={{
+                filter: 'drop-shadow(0 10px 22px oklch(0 0 0 / 0.45)) drop-shadow(0 2px 4px oklch(0 0 0 / 0.30))',
+              }}
+            >
               <Image
-                src="/images/balloon-flying.jpg"
-                alt="Aerostat of the Marquis de Brantes, 1784"
-                width={270}
-                height={447}
+                src="/images/balloon-old-photo.png"
+                alt="Aérostat of the Marquis de Brantes, 1784 — aged photograph"
+                width={1045}
+                height={1505}
                 className="w-full h-auto"
-                style={{ filter: 'sepia(0.4) contrast(1.05) brightness(1.05)', mixBlendMode: 'screen' }}
               />
             </div>
           </div>

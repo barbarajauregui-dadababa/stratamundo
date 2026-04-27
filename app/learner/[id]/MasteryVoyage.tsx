@@ -31,7 +31,11 @@ interface Props {
 export default function MasteryVoyage({ masteryMap }: Props) {
   return (
     <div className="w-full max-w-4xl mx-auto flex flex-col gap-6">
-      <StrataCloudscape masteryMap={masteryMap} compact showBalloon={true} />
+      {/* Non-compact mode = much taller stratum bands so the balloon fits
+          inside one band, plus the count chips ("Mastered" / "Building the
+          skill" / "Misconception detected" / "Not yet probed") show inside
+          the active 4.NF stratum. */}
+      <StrataCloudscape masteryMap={masteryMap} showBalloon={true} />
 
       {masteryMap?.standards && (
         <details className="rounded-sm border-2 border-brass-deep/40 bg-paper p-5">

@@ -99,17 +99,15 @@ export default function StrataCloudscape({ masteryMap, compact = false, showBall
 
       {showBalloon && (
         <div
-          className="absolute left-1/2 -translate-x-1/2 pointer-events-none z-20"
-          style={{ width: compact ? 110 : 150, top: compact ? '36%' : '40%' }}
+          className={`absolute pointer-events-none z-20 ${
+            compact ? 'left-1/2 -translate-x-1/2' : 'right-6'
+          }`}
+          style={{ width: 110, top: compact ? '36%' : '40%' }}
         >
-          {/* Compact (report page): old-photo treatment, rises slowly.
-              Non-compact (voyage left, currently unused): same treatment but
-              hidden on the voyage anyway via showBalloon=false. */}
-          <OldPhotoBalloon
-            size={compact ? 110 : 150}
-            tilt={-2}
-            motion="rise"
-          />
+          {/* Compact (report): centered. Non-compact (voyage): aligned to
+              the right side of the active stratum band so it doesn't overlap
+              the progression name. */}
+          <OldPhotoBalloon size={110} tilt={-2} motion="rise" />
         </div>
       )}
 
