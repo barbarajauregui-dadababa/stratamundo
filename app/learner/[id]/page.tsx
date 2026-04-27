@@ -28,10 +28,17 @@ export default async function LearnerDashboardPage(
     .single()
   if (learnerErr || !learner) notFound()
 
+  // Pull the latest GENERAL assessment, not the latest of any type.
+  // Focused-probe assessments merge their results back into their parent
+  // (the parent's mastery_map is updated server-side at probe-analyze
+  // time), but the probe row itself only knows about the one standard it
+  // probed. Showing the probe row directly would shrink the standards
+  // table to one row. The parent already has the up-to-date picture.
   const { data: assessments } = await supabase
     .from('assessments')
     .select('id, completed_at, mastery_map, type')
     .eq('learner_id', id)
+    .eq('type', 'full')
     .not('completed_at', 'is', null)
     .order('completed_at', { ascending: false })
     .limit(1)
