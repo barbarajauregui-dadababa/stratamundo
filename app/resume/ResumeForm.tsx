@@ -56,8 +56,8 @@ export default function ResumeForm() {
           <li>The email may take up to a minute to arrive. Check your Spam folder.</li>
           <li>
             If nothing arrives, the email may not be registered. You can{' '}
-            <a href="/setup" className="text-copper hover:text-brass-deep underline underline-offset-2">
-              start a new voyage
+            <a href="/setup" className="text-blue-700 hover:text-blue-900 underline underline-offset-2">
+              begin your voyage
             </a>{' '}
             instead.
           </li>
