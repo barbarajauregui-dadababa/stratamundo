@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import { OrnamentalRule, RomanNumeral } from '@/app/Ornament'
 
 export const metadata: Metadata = {
@@ -9,8 +10,27 @@ export const metadata: Metadata = {
 
 export default function MethodologyPage() {
   return (
-    <main className="bg-paper min-h-screen">
-      <div className="max-w-3xl mx-auto px-6 py-12 flex flex-col gap-12 leading-relaxed">
+    <main className="relative min-h-screen overflow-hidden" style={{ background: 'oklch(0.88 0.025 70)' }}>
+      {/* Cloudscape backdrop — same treatment as the report and contribute pages */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden>
+        <Image
+          src="/images/cloudscape-denis.jpg"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover opacity-40"
+          style={{ filter: 'sepia(0.4) brightness(1.05) contrast(1.05)' }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(180deg, oklch(0.88 0.025 70 / 0.25) 0%, oklch(0.86 0.028 68 / 0.40) 100%)',
+          }}
+        />
+      </div>
+
+      <div className="relative max-w-3xl mx-auto px-6 py-12 flex flex-col gap-12 leading-relaxed">
         <header className="flex flex-col gap-3 items-center text-center">
           <p
             className="text-sm tracking-[0.3em] uppercase text-ink-faint"
@@ -331,7 +351,8 @@ export default function MethodologyPage() {
           <H2>Privacy and data</H2>
           <Bullets>
             <li>Learner data lives in a Supabase Postgres database with row-level security.</li>
-            <li>Anonymous authentication — no email, no password collection in v1.</li>
+            <li>Email is collected at setup so a learner can return to the same voyage by clicking a link in their inbox. No password.</li>
+            <li>Email is also used by contributors when proposing an activity (so the human reviewer can follow up if needed).</li>
             <li>Telemetry events (drags, commits, etc.) are stored alongside the assessment row. No third-party analytics.</li>
             <li>The Plan Architect agent runs on Anthropic&apos;s Managed Agents infrastructure. No learner names or PII are sent to the agent — only mastery-map states + standard codes.</li>
           </Bullets>
