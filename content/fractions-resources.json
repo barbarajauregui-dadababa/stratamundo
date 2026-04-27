@@ -33,41 +33,42 @@
       "modality": "manipulative",
       "source_site": "physical material — Lakeshore, Didax, or equivalent",
       "url": null,
+      "companion_url": "https://www.youtube.com/watch?v=3vzYq07k67Y",
       "duration_minutes": 15,
       "grade_band": "3-4",
       "misconception_ids": ["m01_bigger_denominator_bigger", "m04_equivalent_fractions_unrecognized", "m08_additive_equivalence"],
       "concept_nodes": ["s02_fraction_notation_and_unit_fractions", "s04_equivalent_fractions", "s05_fraction_comparison"],
       "prerequisites": [],
-      "notes": "Physical fraction bars (halves, thirds, fourths, sixths, eighths, twelfths all the same overall length). The learner can lay 2/4 on top of 1/2 and see they match. Excellent for m01 because it makes piece-size explicit: 1/8 piece is visibly smaller than 1/4 piece.",
-      "curation_status": "to_curate"
+      "notes": "Physical fraction bars (halves, thirds, fourths, sixths, eighths, twelfths all the same overall length). The learner can lay 2/4 on top of 1/2 and see they match. Excellent for m01 because it makes piece-size explicit: 1/8 piece is visibly smaller than 1/4 piece. Companion video: 'Explore Equivalent Fractions Using Fraction Bars' (Teach Elementary Math).",
+      "curation_status": "verified"
     },
     {
       "id": "r03",
-      "title": "[TO CURATE] Illustrative Mathematics — fraction task (3rd grade)",
+      "title": "Illustrative Mathematics — Halves, thirds, and sixths (3.NF.A.1)",
       "modality": "worksheet",
-      "source_site": "illustrativemathematics.org",
-      "url": "[TO VERIFY — Illustrative Mathematics has open-access tasks tagged by CCSS standard]",
+      "source_site": "tasks.illustrativemathematics.org",
+      "url": "https://tasks.illustrativemathematics.org/content-standards/3/NF/A/1/tasks/1502",
       "duration_minutes": 15,
       "grade_band": "3",
-      "misconception_ids": ["m05_unequal_partitioning"],
+      "misconception_ids": ["m05_unequal_partitioning", "m04_equivalent_fractions_unrecognized"],
       "concept_nodes": ["s01_equal_partitioning", "s02_fraction_notation_and_unit_fractions"],
       "prerequisites": [],
-      "notes": "Look for tasks under CCSS 3.NF.A.1 (understanding fractions as equal parts) — often involves partitioning shapes.",
-      "curation_status": "to_curate"
+      "notes": "Partitions a 6-square-unit rectangle into halves, thirds, and sixths. Surfaces equivalence (3/6 = 1/2). Hits m05 and m04. CC BY-NC-SA 4.0.",
+      "curation_status": "verified"
     },
     {
       "id": "r04",
-      "title": "[TO CURATE] Math Antics — Fractions are Parts — video",
+      "title": "Math Antics — Fractions Are Parts (video)",
       "modality": "video",
-      "source_site": "mathantics.com (or their YouTube channel)",
-      "url": "[TO VERIFY]",
-      "duration_minutes": 10,
+      "source_site": "youtube.com (Math Antics)",
+      "url": "https://www.youtube.com/watch?v=CA9XLJpQp3c",
+      "duration_minutes": 5,
       "grade_band": "3-4",
       "misconception_ids": ["m07_notational_confusion", "m05_unequal_partitioning"],
       "concept_nodes": ["s01_equal_partitioning", "s02_fraction_notation_and_unit_fractions"],
       "prerequisites": [],
-      "notes": "Math Antics tends to be the video style that engages kids who dislike Khan. Use as alternative when a kid rejects Khan for tone reasons.",
-      "curation_status": "to_curate"
+      "notes": "Math Antics tends to be the video style that engages kids who dislike Khan. Use as an alternative when a kid rejects Khan for tone reasons.",
+      "curation_status": "verified"
     },
     {
       "id": "r05",
@@ -75,27 +76,28 @@
       "modality": "manipulative",
       "source_site": "teacher-led activity — no URL, description follows",
       "url": null,
+      "companion_url": "https://www.downrivereducationresources.com/2022/01/paper-folding-to-teach-fractions-conceptually.html",
       "duration_minutes": 20,
       "grade_band": "3-4",
       "misconception_ids": ["m04_equivalent_fractions_unrecognized", "m08_additive_equivalence"],
       "concept_nodes": ["s04_equivalent_fractions"],
       "prerequisites": ["s01_equal_partitioning"],
-      "notes": "Fold a strip of paper in half, mark 1/2. Unfold. Fold again (now into fourths); see that the original 1/2 mark now aligns with 2/4. Repeat: fold again for eighths; same crease is at 4/8. Directly shows that the multiplicative doubling of denominator pairs with doubling of numerator — confronts the additive-equivalence misconception visually.",
-      "curation_status": "to_curate"
+      "notes": "Fold a strip of paper in half, mark 1/2. Unfold. Fold again (now into fourths); see that the original 1/2 mark now aligns with 2/4. Repeat: fold again for eighths; same crease is at 4/8. Directly shows that the multiplicative doubling of denominator pairs with doubling of numerator — confronts the additive-equivalence misconception visually. Companion guide: Down River Resources article 'Top 4 Ways to Use Paper Folding to Teach Fractions Conceptually'.",
+      "curation_status": "verified"
     },
     {
       "id": "r06",
-      "title": "[TO CURATE] Number line fractions — interactive applet",
+      "title": "GeoGebra — Fractions on a number line",
       "modality": "game_or_interactive",
-      "source_site": "mathlearningcenter.org (Number Pieces / Number Line apps) OR geogebra.org",
-      "url": "[TO VERIFY]",
+      "source_site": "geogebra.org",
+      "url": "https://www.geogebra.org/m/WrN4Q4Hh",
       "duration_minutes": 15,
       "grade_band": "3-4",
       "misconception_ids": ["m03_fractions_less_than_one", "m01_bigger_denominator_bigger"],
       "concept_nodes": ["s03_visual_representations", "s05_fraction_comparison", "s06_improper_fractions"],
       "prerequisites": ["s02_fraction_notation_and_unit_fractions"],
-      "notes": "A number-line app lets the learner place fractions on a continuum from 0 to 2+, which directly addresses m03 (fractions > 1 exist) and supports comparison work.",
-      "curation_status": "to_curate"
+      "notes": "Sliders create proper and improper fractions on a number line; supports mixed-number conversion (e.g., 11/3, 21/8). Directly addresses m03 (fractions > 1 exist) and m01 (more pieces = smaller pieces).",
+      "curation_status": "verified"
     },
     {
       "id": "r07",
@@ -117,27 +119,28 @@
       "modality": "manipulative",
       "source_site": "teacher/parent-led, no URL",
       "url": null,
+      "companion_url": "https://tasks.illustrativemathematics.org/content-standards/4/NF/B/tasks/819",
       "duration_minutes": 10,
       "grade_band": "3-4",
       "misconception_ids": ["m06_whole_irrelevant"],
       "concept_nodes": ["s03_visual_representations", "s05_fraction_comparison"],
       "prerequisites": [],
-      "notes": "Cut two paper 'pizzas' of visibly different sizes. Each into fourths. Ask: 'Is 1/4 of this pizza the same as 1/4 of that pizza?' Make the size difference obvious. The referent-whole insight lands when the kid says the words 'it depends on the pizza size' in their own voice.",
-      "curation_status": "to_curate"
+      "notes": "Cut two paper 'pizzas' of visibly different sizes. Each into fourths. Ask: 'Is 1/4 of this pizza the same as 1/4 of that pizza?' Make the size difference obvious. The referent-whole insight lands when the kid says the words 'it depends on the pizza size' in their own voice. Companion: Illustrative Mathematics task 819 'Comparing two different pizzas'.",
+      "curation_status": "verified"
     },
     {
       "id": "r09",
-      "title": "[TO CURATE] Open Up Resources — Fraction lessons",
+      "title": "Open Up Resources K-5 Math — Grade 4 Unit 2: Fraction Equivalence and Comparison",
       "modality": "worksheet",
-      "source_site": "openupresources.org",
-      "url": "[TO VERIFY — Open Up has a 4th grade fractions unit]",
+      "source_site": "access.openupresources.org",
+      "url": "https://access.openupresources.org/curricula/our-k5-math/en/grade-4/unit-2/index.html",
       "duration_minutes": 30,
       "grade_band": "4",
       "misconception_ids": ["m02_separate_num_den_addition", "m04_equivalent_fractions_unrecognized"],
       "concept_nodes": ["s07_addition_like_denominators", "s08_intro_unlike_denominators"],
       "prerequisites": ["s04_equivalent_fractions"],
-      "notes": "Full lessons with problems sequenced from like to unlike denominators. Good for consolidation work.",
-      "curation_status": "to_curate"
+      "notes": "Full lessons sequenced from like to unlike denominators. Section A uses fraction strips; Section B moves to number-line equivalence. Free public access.",
+      "curation_status": "verified"
     },
     {
       "id": "r10",
@@ -159,13 +162,14 @@
       "modality": "manipulative",
       "source_site": "Montessori material — Nienhuis, Alison's Montessori, Ikon, or similar Montessori supplier",
       "url": null,
+      "companion_url": "https://www.youtube.com/watch?v=odDFDXn3BFI",
       "duration_minutes": 20,
       "grade_band": "3-4",
       "misconception_ids": ["m04_equivalent_fractions_unrecognized", "m01_bigger_denominator_bigger", "m05_unequal_partitioning"],
       "concept_nodes": ["s01_equal_partitioning", "s02_fraction_notation_and_unit_fractions", "s04_equivalent_fractions"],
       "prerequisites": [],
-      "notes": "Classic Montessori circular fraction insets: whole, halves, thirds, fourths, fifths, sixths, eighths, ninths, tenths. Kids can physically swap 2/4 pieces for 1/2 piece and confirm equivalence by matching perimeter. Strong fit for mastery-based settings.",
-      "curation_status": "to_curate"
+      "notes": "Classic Montessori circular fraction insets: whole, halves, thirds, fourths, fifths, sixths, eighths, ninths, tenths. Kids can physically swap 2/4 pieces for 1/2 piece and confirm equivalence by matching perimeter. Strong fit for mastery-based settings. Companion video: 'Montessori Fraction Circles - The First Lesson'.",
+      "curation_status": "verified"
     },
     {
       "id": "r12",
@@ -187,13 +191,14 @@
       "modality": "manipulative",
       "source_site": "real-world activity, no URL",
       "url": null,
+      "companion_url": "https://www.math4fun.io/blog/kitchen-math-for-kids.html",
       "duration_minutes": 30,
       "grade_band": "3-4",
       "misconception_ids": ["m04_equivalent_fractions_unrecognized", "m02_separate_num_den_addition"],
       "concept_nodes": ["s04_equivalent_fractions", "s07_addition_like_denominators", "s08_intro_unlike_denominators"],
       "prerequisites": [],
-      "notes": "Measuring cups come in 1, 1/2, 1/3, 1/4. Give a recipe asking for 3/4 cup with only a 1/4 cup. Kid discovers 3 × 1/4 = 3/4. Scale up to '2/3 cup using 1/6 scoop' to build fluency. Applied mastery is the key test per spec §1.",
-      "curation_status": "to_curate"
+      "notes": "Measuring cups come in 1, 1/2, 1/3, 1/4. Give a recipe asking for 3/4 cup with only a 1/4 cup. Kid discovers 3 × 1/4 = 3/4. Scale up to '2/3 cup using 1/6 scoop' to build fluency. Applied mastery is the key test per spec §1. Companion: math4fun.io 'Kitchen Math for Kids' explainer.",
+      "curation_status": "verified"
     },
     {
       "id": "r14",
@@ -211,31 +216,31 @@
     },
     {
       "id": "r15",
-      "title": "[TO CURATE] GeoGebra — Fraction comparison sandbox",
+      "title": "GeoGebra — Comparing Fractions (sliders)",
       "modality": "game_or_interactive",
       "source_site": "geogebra.org",
-      "url": "[TO VERIFY — GeoGebra has multiple user-built fraction comparison applets]",
+      "url": "https://www.geogebra.org/m/QGDkZFu7",
       "duration_minutes": 15,
       "grade_band": "3-4",
       "misconception_ids": ["m01_bigger_denominator_bigger", "m06_whole_irrelevant"],
       "concept_nodes": ["s05_fraction_comparison"],
       "prerequisites": ["s04_equivalent_fractions"],
-      "notes": "Interactive sliders let the learner drag denominator values and watch piece size change. Good for building the 'more pieces = smaller pieces' intuition.",
-      "curation_status": "to_curate"
+      "notes": "Top sliders set numerator/denominator; bottom sliders multiply to reach equivalence. Supports comparison via equivalence reasoning.",
+      "curation_status": "verified"
     },
     {
       "id": "r16",
-      "title": "Fraction war — card game",
+      "title": "Math = Love — Fraction War printable card deck",
       "modality": "game_or_interactive",
-      "source_site": "printable fraction cards — many open sources",
-      "url": "[TO CURATE a printable source]",
+      "source_site": "mathequalslove.net",
+      "url": "https://mathequalslove.net/fraction-war-card-game/",
       "duration_minutes": 20,
       "grade_band": "3-4",
       "misconception_ids": ["m01_bigger_denominator_bigger", "m04_equivalent_fractions_unrecognized"],
       "concept_nodes": ["s05_fraction_comparison", "s04_equivalent_fractions"],
       "prerequisites": ["s02_fraction_notation_and_unit_fractions"],
-      "notes": "Like the card game 'war' but with fraction cards. Each player flips a card; bigger fraction takes both. Builds comparison fluency with repeated reps. Good for small-group practice.",
-      "curation_status": "to_curate"
+      "notes": "Like the card game 'war' but with fraction cards. Each player flips a card; bigger fraction takes both. Builds comparison fluency with repeated reps. Free PDF, 24 cards 1/12 through 1; consider downloading and hosting locally to avoid link rot.",
+      "curation_status": "verified"
     },
     {
       "id": "r17",
@@ -257,27 +262,14 @@
       "modality": "manipulative",
       "source_site": "physical material — Didax, ETA, or similar",
       "url": null,
+      "companion_url": null,
       "duration_minutes": 20,
       "grade_band": "3-4",
       "misconception_ids": ["m04_equivalent_fractions_unrecognized", "m06_whole_irrelevant"],
       "concept_nodes": ["s02_fraction_notation_and_unit_fractions", "s03_visual_representations", "s04_equivalent_fractions"],
       "prerequisites": [],
-      "notes": "Cuisenaire rods are the classic tool for referent-whole reasoning: if orange (10 cm) is 'the whole', what is white (1 cm)? 1/10. But if red (2 cm) is 'the whole', what is white? 1/2. Directly confronts m06 (the whole doesn't matter).",
-      "curation_status": "to_curate"
-    },
-    {
-      "id": "r19",
-      "title": "[TO CURATE] Prodigy Math or similar adaptive game — fraction level",
-      "modality": "game_or_interactive",
-      "source_site": "prodigygame.com (or equivalent)",
-      "url": "[TO VERIFY — Prodigy has fraction content; check existing game selection first]",
-      "duration_minutes": 20,
-      "grade_band": "3-4",
-      "misconception_ids": [],
-      "concept_nodes": ["s02_fraction_notation_and_unit_fractions", "s04_equivalent_fractions", "s05_fraction_comparison"],
-      "prerequisites": [],
-      "notes": "Included cautiously — games are motivating but often don't target specific misconceptions well. Use for practice fluency, not diagnosis.",
-      "curation_status": "to_curate"
+      "notes": "Cuisenaire rods are the classic tool for referent-whole reasoning: if orange (10 cm) is 'the whole', what is white (1 cm)? 1/10. But if red (2 cm) is 'the whole', what is white? 1/2. Directly confronts m06 (the whole doesn't matter). Companion explainer pending — Annenberg Learner and NRICH 'Rod Fractions' are candidates.",
+      "curation_status": "needs_companion_url"
     },
     {
       "id": "r20",
@@ -285,13 +277,14 @@
       "modality": "worksheet",
       "source_site": "teacher-created prompt, no URL",
       "url": null,
+      "companion_url": "https://www.youcubed.org/resources/fractions-sense-making/",
       "duration_minutes": 15,
       "grade_band": "3-4",
       "misconception_ids": ["m04_equivalent_fractions_unrecognized", "m08_additive_equivalence", "m07_notational_confusion"],
       "concept_nodes": ["s02_fraction_notation_and_unit_fractions", "s03_visual_representations", "s04_equivalent_fractions"],
       "prerequisites": [],
-      "notes": "Give the kid a blank sheet. Prompt: 'Draw a picture that shows what 2/3 means. Then draw a picture that shows why 2/3 and 4/6 are the same.' The act of drawing surfaces misconceptions that typed-answer problems can hide. Useful as a guide-administered probe between assessments.",
-      "curation_status": "to_curate"
+      "notes": "Give the kid a blank sheet. Prompt: 'Draw a picture that shows what 2/3 means. Then draw a picture that shows why 2/3 and 4/6 are the same.' The act of drawing surfaces misconceptions that typed-answer problems can hide. Useful as a guide-administered probe between assessments. Companion: YouCubed 'Fractions with Sense Making' (Cathy Humphreys).",
+      "curation_status": "verified"
     }
   ]
 }
