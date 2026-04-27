@@ -106,18 +106,20 @@ export default function StrataCloudscape({ masteryMap, compact = false, showBall
       </div>
 
       {!compact && (
-        <div className="absolute top-4 left-0 right-0 text-center pointer-events-none px-4">
-          <p
-            className="text-sm tracking-[0.4em] uppercase font-bold"
+        <div className="absolute top-3 left-0 right-0 text-center pointer-events-none px-4">
+          <span
+            className="inline-block rounded-sm px-4 py-1.5 text-sm sm:text-base tracking-[0.32em] uppercase font-bold"
             style={{
               fontFamily: 'var(--font-cinzel)',
               color: 'oklch(1 0 0)',
-              textShadow:
-                '0 1px 2px oklch(0 0 0 / 0.95), 0 0 4px oklch(0 0 0 / 0.9), 0 0 14px oklch(0 0 0 / 0.7)',
+              background: 'oklch(0.13 0.014 50 / 0.72)',
+              border: '1px solid oklch(0.74 0.14 80 / 0.45)',
+              boxShadow: '0 2px 12px oklch(0 0 0 / 0.5)',
+              textShadow: '0 1px 2px oklch(0 0 0 / 0.95)',
             }}
           >
             ◇ Progressions up to 4th grade including prerequisites ◇
-          </p>
+          </span>
         </div>
       )}
 
