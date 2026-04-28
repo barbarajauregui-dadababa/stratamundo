@@ -7,12 +7,15 @@ export default function FeedbackForm() {
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [attemptedSubmit, setAttemptedSubmit] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (isSubmitting) return
+    setAttemptedSubmit(true)
+    if (currentMissing().length > 0) return
     setIsSubmitting(true)
     setError(null)
 
@@ -72,10 +75,13 @@ export default function FeedbackForm() {
     )
   }
 
-  const missing: string[] = []
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) missing.push('A valid email')
-  if (message.trim().length < 5) missing.push('A message (at least 5 characters)')
-  const canSubmit = missing.length === 0 && !isSubmitting
+  function currentMissing(): string[] {
+    const m: string[] = []
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) m.push('A valid email')
+    if (message.trim().length < 5) m.push('A message (at least 5 characters)')
+    return m
+  }
+  const missing = currentMissing()
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -132,14 +138,14 @@ export default function FeedbackForm() {
         <div className="flex items-center gap-3 flex-wrap">
           <button
             type="submit"
-            disabled={!canSubmit}
+            disabled={isSubmitting}
             className="inline-flex h-11 items-center justify-center rounded-sm bg-brass-deep px-7 text-xs font-bold uppercase text-cream hover:bg-brass disabled:opacity-50 transition-colors border border-brass shadow-[0_0_15px_oklch(0.74_0.14_80/0.4)]"
             style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.18em' }}
           >
             {isSubmitting ? 'Sending…' : 'Send note ◇'}
           </button>
         </div>
-        {missing.length > 0 && !isSubmitting && (
+        {missing.length > 0 && !isSubmitting && attemptedSubmit && (
           <div
             className="rounded-sm border-2 border-red-700/60 bg-red-50 px-4 py-3 text-sm text-red-800"
             style={{ fontFamily: 'var(--font-fraunces)' }}
