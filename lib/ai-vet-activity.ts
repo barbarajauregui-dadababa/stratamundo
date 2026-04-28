@@ -113,6 +113,11 @@ export interface ActivityVetResult {
   reasoning: string
   /** Specific criterion ids violated (e.g. ["1.1", "2.2"]). Empty if pass. */
   flags: string[]
+  /** CCSS-M standard ids the AI thinks this activity addresses. Used when
+   *  the contributor did not specify any (the form no longer asks). */
+  suggested_standard_ids: string[]
+  /** Misconception ids (mNN_*) the activity helps address. */
+  suggested_misconception_ids: string[]
 }
 
 const SYSTEM_PROMPT = `You are the AI vetting reviewer for Strata Mundo, a 3rd–4th grade fractions mastery tool. Anyone can propose a new learning activity to add to a learner's plan. Your job is to apply the documented vetting criteria and return a structured verdict.
@@ -129,7 +134,8 @@ You apply the criteria in order. Every criterion has an ID like "1.1" or "2.3". 
     ✓ "Build-a-fraction interactive — PhET"
 1.2 Description explains what the LEARNER DOES (action + concept).
 1.3 Modality matches the description.
-1.4 At least one CCSS-M standard selected, plausibly related to the description.
+1.4 [DEPRECATED — contributor no longer picks standards. The AI now infers
+    them; see Section 7 below.]
 
 ## Section 2 — PEDAGOGICAL FIT (project hard rules; REJECT if violated)
 2.1 NOT a learner-facing chatbot or AI tutor.
@@ -160,21 +166,43 @@ You apply the criteria in order. Every criterion has an ID like "1.1" or "2.3". 
 6.5 Always cite the specific criterion ID(s) violated.
 6.6 Respond ONLY with valid JSON in the schema below — no prose, no markdown.
 
+## Section 7 — STANDARD AND MISCONCEPTION TAGGING (always provide)
+7.1 Read the title and description. Suggest the CCSS-M standard ids the
+    activity actually addresses. Pick from the EXACT list of valid standard
+    ids provided in the user message. Do not invent ids.
+7.2 Suggest the misconception ids (mNN_*) the activity helps resolve. Pick
+    from the EXACT list of valid misconception ids provided in the user
+    message.
+7.3 If the description is too vague to map, return empty arrays for both
+    fields and add criterion 1.2 to flags (description not specific enough).
+
 # RESPONSE SCHEMA
 
 \`\`\`json
 {
   "verdict": "pass" | "borderline" | "reject",
   "reasoning": "- Bullet 1.\\n- Bullet 2.\\n- Bullet 3.",
-  "flags": ["1.1", "2.2"]
+  "flags": ["1.1", "2.2"],
+  "suggested_standard_ids": ["3.NF.A.1", "3.NF.A.3.a"],
+  "suggested_misconception_ids": ["m04_equivalent_fractions_unrecognized"]
 }
 \`\`\`
 
 The "reasoning" field MUST be formatted as bullet points (one per line, each starting with "- "). Aim for 2–4 short bullets. Each bullet should be a single fact or observation; cite the relevant criterion ID inline (e.g. "- Title is specific and informative (1.1)."). NEVER write paragraphs in this field — Strata Mundo's design rule is no prose anywhere user-facing.
 
-If verdict is "pass", flags is empty. If "borderline" or "reject", flags lists the criterion IDs that triggered the decision.`
+If verdict is "pass", flags is empty. If "borderline" or "reject", flags lists the criterion IDs that triggered the decision. suggested_standard_ids and suggested_misconception_ids must always be present (use empty arrays if you cannot map).`
 
-function buildUserMessage(s: ActivitySubmissionInput): string {
+function buildUserMessage(
+  s: ActivitySubmissionInput,
+  taxonomy: { standards: { id: string; statement: string }[]; misconceptions: { id: string; name: string }[] },
+): string {
+  const standardsList = taxonomy.standards
+    .map((n) => `  - ${n.id}: ${n.statement}`)
+    .join('\n')
+  const misconceptionsList = taxonomy.misconceptions
+    .map((m) => `  - ${m.id}: ${m.name}`)
+    .join('\n')
+
   return `# Submission to vet
 
 **Title:** ${s.title}
@@ -193,9 +221,17 @@ ${s.description}
 **Rationale (why this works):**
 ${s.rationale ?? '(none provided)'}
 
-**CCSS-M standards selected:** ${s.standard_ids.join(', ')}
+**CCSS-M standards (contributor-selected):** ${s.standard_ids.length > 0 ? s.standard_ids.join(', ') : '(none — please infer in suggested_standard_ids per Section 7)'}
 
 **Contributor:** ${s.contributor_name} <${s.contributor_email}>
+
+---
+
+# Valid CCSS-M standard ids (use ONLY these in suggested_standard_ids)
+${standardsList}
+
+# Valid misconception ids (use ONLY these in suggested_misconception_ids)
+${misconceptionsList}
 
 ---
 
@@ -203,12 +239,16 @@ Apply the criteria. Respond with JSON only.`
 }
 
 /**
- * Run the AI vet. Returns a structured verdict.
+ * Run the AI vet. Returns a structured verdict + suggested tags.
  * Throws on API errors — caller should catch and degrade gracefully.
  */
 export async function vetActivitySubmission(
   submission: ActivitySubmissionInput,
   apiKey: string,
+  taxonomy: {
+    standards: { id: string; statement: string }[]
+    misconceptions: { id: string; name: string }[]
+  },
 ): Promise<ActivityVetResult> {
   const client = new Anthropic({ apiKey })
 
@@ -216,7 +256,7 @@ export async function vetActivitySubmission(
     model: 'claude-opus-4-7',
     max_tokens: 1024,
     system: SYSTEM_PROMPT,
-    messages: [{ role: 'user', content: buildUserMessage(submission) }],
+    messages: [{ role: 'user', content: buildUserMessage(submission, taxonomy) }],
   })
 
   const textBlock = response.content.find((b) => b.type === 'text')
@@ -246,6 +286,12 @@ export async function vetActivitySubmission(
   }
   if (!Array.isArray(parsed.flags)) {
     parsed.flags = []
+  }
+  if (!Array.isArray(parsed.suggested_standard_ids)) {
+    parsed.suggested_standard_ids = []
+  }
+  if (!Array.isArray(parsed.suggested_misconception_ids)) {
+    parsed.suggested_misconception_ids = []
   }
 
   return parsed

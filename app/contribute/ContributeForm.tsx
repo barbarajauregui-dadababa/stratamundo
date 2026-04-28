@@ -1,7 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import StandardSearchPicker from './StandardSearchPicker'
+import { standardName } from '@/lib/standard-labels'
+import misconceptionsRaw from '@/content/fractions-misconceptions.json'
+
+const misconceptions = misconceptionsRaw as unknown as {
+  misconceptions: { id: string; name: string }[]
+}
+function misconceptionName(id: string): string {
+  return misconceptions.misconceptions.find((m) => m.id === id)?.name ?? id
+}
 
 const MODALITIES: { value: string; label: string; hint: string }[] = [
   { value: 'video', label: 'Video', hint: 'A video the learner watches.' },
@@ -27,9 +35,18 @@ export default function ContributeForm({ initialStandardId }: Props) {
   const [url, setUrl] = useState('')
   const [sourceSite, setSourceSite] = useState('')
   const [duration, setDuration] = useState('')
+  // Standards are no longer collected from the contributor — the AI vet
+  // infers them from the description. We retain the standard_ids array
+  // (initialized empty, or pre-populated when the contributor came in via
+  // a "+ Suggest activity for this standard" deep link) so the API can
+  // pass the contributor's hint along to the vet.
   const [standardIds, setStandardIds] = useState<string[]>(
     initialStandardId ? [initialStandardId] : [],
   )
+  // setStandardIds is currently only used by the reset handler; the
+  // standards picker UI is gone. Keep the setter to silence unused
+  // warnings via the reset path.
+  void setStandardIds
   const [contributorName, setContributorName] = useState('')
   const [contributorEmail, setContributorEmail] = useState('')
 
@@ -41,6 +58,8 @@ export default function ContributeForm({ initialStandardId }: Props) {
     reasoning: string | null
     flags: string[]
     submission_id: string
+    suggested_standard_ids: string[]
+    suggested_misconception_ids: string[]
   }>(null)
 
   async function handleSubmit(e: React.FormEvent) {
@@ -84,7 +103,13 @@ export default function ContributeForm({ initialStandardId }: Props) {
         error?: string
         debug?: string
         submission_id?: string
-        vet?: { verdict: 'pass' | 'borderline' | 'reject'; reasoning: string; flags: string[] } | null
+        vet?: {
+          verdict: 'pass' | 'borderline' | 'reject'
+          reasoning: string
+          flags: string[]
+          suggested_standard_ids?: string[]
+          suggested_misconception_ids?: string[]
+        } | null
         vet_error?: string | null
       }
 
@@ -99,6 +124,8 @@ export default function ContributeForm({ initialStandardId }: Props) {
         reasoning: data.vet?.reasoning ?? data.vet_error ?? null,
         flags: data.vet?.flags ?? [],
         submission_id: data.submission_id ?? '',
+        suggested_standard_ids: data.vet?.suggested_standard_ids ?? [],
+        suggested_misconception_ids: data.vet?.suggested_misconception_ids ?? [],
       })
       setIsSubmitting(false)
     } catch (err) {
@@ -131,7 +158,6 @@ export default function ContributeForm({ initialStandardId }: Props) {
   function missingValidationKeys(): string[] {
     const m: string[] = []
     if (title.trim().length < 3) m.push('Activity title (at least 3 characters)')
-    if (standardIds.length === 0) m.push('Pick at least one standard')
     if (description.trim().length < 20) {
       m.push(
         `"What does the learner do" needs at least 20 characters (you have ${description.trim().length})`,
@@ -161,24 +187,14 @@ export default function ContributeForm({ initialStandardId }: Props) {
         />
       </FormField>
 
-      {/* 2. Math progressions, concepts, or standards applied */}
-      <FormField
-        label="Math progressions, concepts, or standards applied"
-        required
-        hint="Search by name or by CCSS-M code. Select at least one. Standards roll up into Progressions per the McCallum framework."
-      >
-        <StandardSearchPicker
-          selected={standardIds}
-          onChange={setStandardIds}
-          lockedToStandard={initialStandardId}
-        />
-      </FormField>
-
-      {/* 3. What does the learner do — primary descriptive field */}
+      {/* 2. What does the learner do — primary descriptive field.
+              The standards picker is gone: AI infers standards and
+              misconceptions from the description during vetting.
+              Per Barbara, 2026-04-28. */}
       <FormField
         label="What does the learner do, and what concepts does it teach?"
         required
-        hint="Describe the action and the concept together. (At least 20 characters.)"
+        hint="Describe the action and the concept together. The AI will tag the CCSS standards and misconceptions for you. (At least 20 characters.)"
       >
         <textarea
           value={description}
@@ -417,7 +433,14 @@ function ResultPanel({
   onReset,
   onBackToEdit,
 }: {
-  result: { verdict: 'pass' | 'borderline' | 'reject' | null; reasoning: string | null; flags: string[]; submission_id: string }
+  result: {
+    verdict: 'pass' | 'borderline' | 'reject' | null
+    reasoning: string | null
+    flags: string[]
+    submission_id: string
+    suggested_standard_ids: string[]
+    suggested_misconception_ids: string[]
+  }
   onReset: () => void
   onBackToEdit: () => void
 }) {
@@ -470,6 +493,50 @@ function ResultPanel({
       <p className="text-sm text-ink-soft" style={{ fontFamily: 'var(--font-fraunces)' }}>
         {next}
       </p>
+
+      {(result.suggested_standard_ids.length > 0 || result.suggested_misconception_ids.length > 0) && (
+        <div className="rounded-sm bg-paper px-4 py-3 border border-brass-deep/30 flex flex-col gap-2">
+          <div
+            className="text-sm tracking-[0.2em] uppercase text-brass-deep"
+            style={{ fontFamily: 'var(--font-cinzel)' }}
+          >
+            AI tagged your activity with
+          </div>
+          {result.suggested_standard_ids.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {result.suggested_standard_ids.map((sid) => (
+                <span
+                  key={`s-${sid}`}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-brass-deep/40 bg-paper-deep/30 px-2.5 py-0.5 text-xs text-ink"
+                  style={{ fontFamily: 'var(--font-fraunces)' }}
+                >
+                  <span style={{ fontFamily: 'var(--font-special-elite)' }}>{sid}</span>
+                  <span className="text-ink-soft">{standardName(sid)}</span>
+                </span>
+              ))}
+            </div>
+          )}
+          {result.suggested_misconception_ids.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {result.suggested_misconception_ids.map((mid) => (
+                <span
+                  key={`m-${mid}`}
+                  className="inline-flex items-center gap-1 rounded-full border border-red-600/40 bg-red-50/80 px-2.5 py-0.5 text-xs text-red-800"
+                  style={{ fontFamily: 'var(--font-fraunces)' }}
+                >
+                  ◆ {misconceptionName(mid)}
+                </span>
+              ))}
+            </div>
+          )}
+          <p
+            className="text-xs text-ink-faint italic mt-1"
+            style={{ fontFamily: 'var(--font-fraunces)' }}
+          >
+            If anything looks off, note it in your reply when the human-review email arrives.
+          </p>
+        </div>
+      )}
 
       {bullets.length > 0 && (
         <div className="rounded-sm bg-paper px-4 py-3 border border-brass-deep/30">
