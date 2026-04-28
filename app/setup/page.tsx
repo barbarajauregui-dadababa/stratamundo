@@ -119,14 +119,15 @@ export default function SetupPage() {
             className="text-xs text-cream-faint italic mt-1"
             style={{ fontFamily: 'var(--font-fraunces)' }}
           >
-            Returning?{' '}
-            <a
-              href="/resume"
-              className="text-brass hover:text-brass-glow underline underline-offset-2 not-italic"
-            >
-              Resume an existing voyage →
-            </a>
+            Returning?
           </p>
+          <a
+            href="/resume"
+            className="inline-flex h-12 items-center justify-center rounded-sm border-2 border-brass-deep bg-transparent px-7 text-sm font-bold uppercase text-cream hover:bg-brass-deep/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass-glow focus-visible:ring-offset-2 focus-visible:ring-offset-background w-fit"
+            style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.18em' }}
+          >
+            Continue your voyage
+          </a>
         </header>
 
         <form

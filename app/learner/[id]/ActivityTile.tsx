@@ -152,7 +152,7 @@ export default function ActivityTile({
               href={resource!.url!}
               target="_blank"
               rel="noreferrer"
-              className="text-xs text-copper hover:text-brass-deep underline underline-offset-2"
+              className="text-xs text-brass-deep hover:text-brass underline underline-offset-2 decoration-brass-deep/40 hover:decoration-brass"
               style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.08em' }}
             >
               Open

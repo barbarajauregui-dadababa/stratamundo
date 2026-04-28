@@ -34,6 +34,7 @@ export default function ContributeForm({ initialStandardId }: Props) {
   const [contributorEmail, setContributorEmail] = useState('')
 
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [attemptedSubmit, setAttemptedSubmit] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<null | {
     verdict: 'pass' | 'borderline' | 'reject' | null
@@ -45,6 +46,10 @@ export default function ContributeForm({ initialStandardId }: Props) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (isSubmitting) return
+    setAttemptedSubmit(true)
+    // If validation says we're missing fields, surface the warning panel
+    // and stop here — don't hit the API.
+    if (missingValidationKeys().length > 0) return
     setIsSubmitting(true)
     setError(null)
     setResult(null)
@@ -123,19 +128,22 @@ export default function ContributeForm({ initialStandardId }: Props) {
     )
   }
 
-  const missing: string[] = []
-  if (title.trim().length < 3) missing.push('Activity title (at least 3 characters)')
-  if (standardIds.length === 0) missing.push('Pick at least one standard')
-  if (description.trim().length < 20) {
-    missing.push(
-      `"What does the learner do" needs at least 20 characters (you have ${description.trim().length})`,
-    )
+  function missingValidationKeys(): string[] {
+    const m: string[] = []
+    if (title.trim().length < 3) m.push('Activity title (at least 3 characters)')
+    if (standardIds.length === 0) m.push('Pick at least one standard')
+    if (description.trim().length < 20) {
+      m.push(
+        `"What does the learner do" needs at least 20 characters (you have ${description.trim().length})`,
+      )
+    }
+    if (contributorName.trim().length < 2) m.push('Your name')
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contributorEmail.trim())) {
+      m.push('A valid email')
+    }
+    return m
   }
-  if (contributorName.trim().length < 2) missing.push('Your name')
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contributorEmail.trim())) {
-    missing.push('A valid email')
-  }
-  const canSubmit = missing.length === 0 && !isSubmitting
+  const missing = missingValidationKeys()
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -306,7 +314,7 @@ export default function ContributeForm({ initialStandardId }: Props) {
         <div className="flex items-center gap-3 flex-wrap">
           <button
             type="submit"
-            disabled={!canSubmit}
+            disabled={isSubmitting}
             className="inline-flex h-11 items-center justify-center rounded-sm bg-brass-deep px-7 text-xs font-bold uppercase text-cream hover:bg-brass disabled:opacity-50 transition-colors border border-brass shadow-[0_0_15px_oklch(0.74_0.14_80/0.4)]"
             style={{ fontFamily: 'var(--font-cinzel)', letterSpacing: '0.18em' }}
           >
@@ -319,7 +327,7 @@ export default function ContributeForm({ initialStandardId }: Props) {
             Reviewed by Claude Opus 4.7 first, then by a human.
           </p>
         </div>
-        {missing.length > 0 && !isSubmitting && (
+        {missing.length > 0 && !isSubmitting && attemptedSubmit && (
           <div
             className="rounded-sm border-2 border-red-700/60 bg-red-50 px-4 py-3 text-sm text-red-800"
             style={{ fontFamily: 'var(--font-fraunces)' }}

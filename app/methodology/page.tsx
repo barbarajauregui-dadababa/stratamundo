@@ -145,6 +145,13 @@ export default function MethodologyPage() {
               authors="Student Achievement Partners, based on Jason Zimba's Wiring Diagram"
               url="https://tools.achievethecore.org/coherence-map/"
             />
+            <SourceRow
+              label="Misconceptions"
+              description="The 8 named misconceptions Strata Mundo detects (e.g., 'Bigger denominator means bigger fraction', 'Notational confusion'). Each carries diagnostic signals, manifestation patterns, and prerequisite links used by the analyzer and Plan Architect."
+              sourceName="Synthesized from Van de Walle's Elementary and Middle School Mathematics, the K-5 CCSS-M Progressions documents (3-5 Number and Operations — Fractions), and rational-number misconception research"
+              authors="Behr, Lesh, Post (rational-number quartet); Mack (informal knowledge of fractions); Siegler (overlapping waves theory of strategy use)"
+              url="https://mathematicalmusings.org/2013/09/30/the-progressions-for-the-common-core-state-standards-in-mathematics/"
+            />
           </SourceTable>
           <p className="text-sm text-ink-soft" style={{ fontFamily: 'var(--font-fraunces)' }}>
             The hierarchy:{' '}
